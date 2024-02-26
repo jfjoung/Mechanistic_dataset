@@ -4,17 +4,12 @@ import json
 import rdkit
 import gzip
 import AcidBase_lookup, Reaction_templates
-
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from tqdm import tqdm
 from joblib import Parallel, delayed
 import itertools 
 from itertools import product, permutations
-<<<<<<< HEAD
-=======
-import AcidBase_lookup, Reaction_templates
->>>>>>> f4ddac8 (add parsing)
 import networkx as nx
 from collections import defaultdict
 import matplotlib.pyplot as plt

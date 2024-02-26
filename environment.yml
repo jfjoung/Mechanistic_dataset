@@ -1,0 +1,13 @@
+name: mechdata
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - networkx
+  - tqdm
+  - joblib
+  - matplotlib
+  - numpy
+  - rdkit=2020.09.5
+  - pandas

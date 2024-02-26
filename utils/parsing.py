@@ -23,7 +23,7 @@ def parse_arguments():
     parser.add_argument('--data', help='Path to the reaction data',
                         type=str, default='./data/reaction_test.jsonl')
     parser.add_argument('--save', help='Path to the saving data',
-                        type=str, default='./data/elementary_reaction.jsonl')
+                        type=str, default='./results/elementary_reaction.jsonl')
 
 
     #TODO: set the verbosity level

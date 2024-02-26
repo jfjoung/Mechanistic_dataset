@@ -4,7 +4,7 @@ import time
 import json
 import sys
 import os
-import csv
+# import csv
 from multiprocessing import Pool
 from tqdm import tqdm
 

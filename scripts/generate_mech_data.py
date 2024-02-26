@@ -1,18 +1,22 @@
+import os
 import sys
-sys.path.append('/mnt/home/jjoung/Mechanistic_dataset_generation')
-
+import networkx as nx
 from utils.parsing import parse_arguments
 from utils.apply_mechanistic_template import get_mechanistic_network, elementary_reaction
 import json
 
 def generate_mechanism_for_one_reaction(rxn, args):
+    # os.makedirs(args.save, exist_ok=True)
+    print(rxn)
     G_list = get_mechanistic_network(rxn, v=False, simple=args.simple)
+    elem_dict=dict()
     for G in G_list:
-        elem_list = elementary_reaction(G, v=False, byproduct=args.byproduct, spectator=args.spectator, full=args.full,
-                                        end=args.end, plain=args.plain,reagent=args.reagent)
-        for elem_rxn in elem_list:
-            print(elem_rxn)
+        try:
+            elem_rxns = elementary_reaction(G, v=False, byproduct=args.byproduct, spectator=args.spectator, full=args.full,
+                                            end=args.end, plain=args.plain,reagent=args.reagent)
+        except: pass
 
+    return
 
 if __name__ == '__main__':
     args = parse_arguments()
@@ -20,6 +24,5 @@ if __name__ == '__main__':
 
     with open(args.data, 'r') as file:
         for line in file:
-            json_object = json.loads(line.strip())
-            print(json_object)
-            break
+            rxn = json.loads(line.strip())
+            generate_mechanism_for_one_reaction(rxn, args)
