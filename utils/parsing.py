@@ -1,7 +1,7 @@
 import argparse
 
 
-def add_common_args():
+def parse_arguments():
     parser = argparse.ArgumentParser("Set the arguments for mechanistic dataset generation")
     parser.add_argument("--byproduct", help="Add byproduct in reaction SMARTS",
                        type=bool, default=True)
@@ -16,10 +16,14 @@ def add_common_args():
     parser.add_argument("--reagent", help="Locate reagents at middle of the reaction (reactants>reagents>products) instead of both sides of reactants and products.",
                        type=bool, default=False)
 
+    parser.add_argument("--simple", help="Use all simple path finding instead of shortest path during reaction network generation",
+                        type=bool, default=False)
+
+
     parser.add_argument('--data', help='Path to the reaction data',
-                        type=str, default='../data/reaction_test.jsonl')
+                        type=str, default='./data/reaction_test.jsonl')
     parser.add_argument('--save', help='Path to the saving data',
-                        type=str, default='../data/elementary_reaction.jsonl')
+                        type=str, default='./data/elementary_reaction.jsonl')
 
 
     #TODO: set the verbosity level

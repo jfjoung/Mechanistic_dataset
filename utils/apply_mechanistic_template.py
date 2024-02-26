@@ -11,6 +11,10 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 import itertools 
 from itertools import product, permutations
+<<<<<<< HEAD
+=======
+import AcidBase_lookup, Reaction_templates
+>>>>>>> f4ddac8 (add parsing)
 import networkx as nx
 from collections import defaultdict
 import matplotlib.pyplot as plt
@@ -792,7 +796,7 @@ def draw_reaction_graph(G, size=[5,5], labels = True):
     nx.draw_networkx_nodes(G, posit, nodelist=product_list, node_color="magenta")
     nx.draw_networkx_nodes(G, posit, nodelist=spectator_list, node_color="tab:purple")
 
-def get_mechanistic_network(rxn, v=False, simple=False, light=True):
+def get_mechanistic_network(rxn, v=False, simple=False, light=False):
     condition = calling_rxn_template(rxn)
     rxn_flask=prepare_reactants(rxn)
     rxn_flasks, tot_networks=run_full_reaction(rxn_flask, condition, v=v)
