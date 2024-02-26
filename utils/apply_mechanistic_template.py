@@ -9,7 +9,7 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 import itertools 
 from itertools import product, permutations
-from templates import AcidBase_lookup, Reaction_templates
+from templates import acidBase_lookup, reaction_templates
 import networkx as nx
 from collections import defaultdict
 import matplotlib.pyplot as plt
