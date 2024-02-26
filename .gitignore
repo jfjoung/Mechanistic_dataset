@@ -48,5 +48,5 @@ data/
 ######################
 *.ipynb
 **/.ipynb_checkpoints
-
+__pycache__/
 scratch/
