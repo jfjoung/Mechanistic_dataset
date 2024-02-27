@@ -4,7 +4,6 @@ sys.path.append("../")
 sys.path.append("../utils")
 import networkx as nx
 from tqdm import tqdm
-from utils.parsing import parse_arguments
 from utils.apply_mechanistic_template import get_mechanistic_network, elementary_reaction, flatten_list, reagent_matching_for_single_reaction
 import json
 # import signal
