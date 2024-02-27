@@ -1,5 +1,7 @@
+import os
+import sys
+from scripts.generate_mech_data import generate_mechdata_known_condition, generate_mechdata_unknown_condition
 import argparse
-
 
 def parse_arguments():
     parser = argparse.ArgumentParser("Set the arguments for mechanistic dataset generation")
@@ -24,7 +26,7 @@ def parse_arguments():
 
 
     parser.add_argument('--data', help='Path to the reaction data',
-                        type=str, default='./data/reaction_test.jsonl')
+                        type=str, default='./data/test_data.txt')
     parser.add_argument('--save', help='Path to the saving data',
                         type=str, default='./results/elementary_reaction.txt')
 
@@ -34,3 +36,21 @@ def parse_arguments():
                        type=int, default=0)
 
     return parser.parse_args()
+
+if __name__ == '__main__':
+    args = parse_arguments()
+    print(args)
+    '''
+    If you have a list of reactions in the form of 
+    {'reaction_name': NameRXN name,
+    'reaction_smiles': Reaction SMILES,
+    'conditions': a list of conditions for a given reaction name},
+    then RUN generate_mechdata_known_condition(args)
+    
+    or
+    if you have a reaction string of 'reaction_smiles NameRXN_name', 
+    then RUN generate_mechdata_unknown_condition(args)
+    '''
+
+    # generate_mechdata_known_condition(args)
+    generate_mechdata_unknown_condition(args)

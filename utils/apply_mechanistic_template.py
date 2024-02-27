@@ -38,66 +38,76 @@ def isotope_to_atommap(mol):
         a.SetIsotope(0)
     return mol
 
-def collect_reaction_class(reactions):
-    '''
-    To collect one reaction class from list of reaction, in the form of {'rxnsmiles': {'reaction_name': name}}.
-    reactions: list of reactions 
-    lst_rxn: A reaction list
-    rxn_class_name: Reaction name to be collected
-    '''
-    rxns_grouped_by_class = {}
-    unclassified = []
-    
-    for reaction in reactions:
-        if 'reaction_name' in reaction.keys():
-            rxns_grouped_by_class[reaction['reaction_name']] = rxns_grouped_by_class.get(reaction['reaction_name'], []) + [reaction]
-        else: 
-            print("No reaction name for", reaction)
-            unclassified.append(reaction)
-        
-    
-    print(len(unclassified))
-    
-    return rxns_grouped_by_class
+# def collect_reaction_class(reactions):
+#     '''
+#     To collect one reaction class from list of reaction, in the form of {'rxnsmiles': {'reaction_name': name}}.
+#     reactions: list of reactions
+#     lst_rxn: A reaction list
+#     rxn_class_name: Reaction name to be collected
+#     '''
+#     rxns_grouped_by_class = {}
+#     unclassified = []
+#
+#     for reaction in reactions:
+#         if 'reaction_name' in reaction.keys():
+#             rxns_grouped_by_class[reaction['reaction_name']] = rxns_grouped_by_class.get(reaction['reaction_name'], []) + [reaction]
+#         else:
+#             print("No reaction name for", reaction)
+#             unclassified.append(reaction)
+#
+#
+#     print(len(unclassified))
+#
+#     return rxns_grouped_by_class
 
 def get_class_key(class_name):
-    
+
     '''
     returns the key(tuple) of class_reaction_templates that includes the class_name
     '''
-    
+
     for classes in Reaction_templates.class_reaction_templates.keys():
         if class_name in classes:
             return classes
-        
+
     return None
+#
+# def reagent_matching_for_class(class_name, reactions):
+#
+#
+#     matched_reactions = {}
+#     class_key = get_class_key(class_name)
+#
+#     if class_key:
+#         results = Parallel(n_jobs=10)(delayed(reagent_matching_for_single_reaction)(class_key, reaction) for reaction in tqdm(reactions))
+#         return results
+#
+#     else:
+#         print("No class key for class", class_name)
+#         return None
 
-def reagent_matching_for_class(class_name, reactions):
-    
 
-    matched_reactions = {}
-    class_key = get_class_key(class_name)
-    
-    if class_key:
-        results = Parallel(n_jobs=10)(delayed(reagent_matching_for_single_reaction)(class_key, reaction) for reaction in tqdm(reactions))
-        return results
-    
-    else:
-        print("No class key for class", class_name)
-        return None
-
-def reagent_matching_for_single_reaction(class_key, reaction):
+def reagent_matching_for_single_reaction(reaction, class_key):
     '''
     To match reagents for a certain class from list of reaction, in the form of {'rxnsmiles': {'reaction_name': name}}.
     reactions: list of reactions 
     '''
     reactants, agents, products = reaction['reaction_smiles'].split(">")
-    mols = [Chem.MolFromSmiles(smi) for smi in reactants.split(".")+agents.split(".")]
-    
+    mols = [Chem.MolFromSmiles(smi) for smi in reactants.split(".") + agents.split(".")]
+
+    class_key = get_class_key(class_key)
     class_data = Reaction_templates.class_reaction_templates[class_key]
-    
+
+    # keys = Reaction_templates.class_reaction_templates.keys()
+    # try:
+    #     classkey = [key for key in keys if class_key in key][0]
+    #     class_data = Reaction_templates.class_reaction_templates[classkey]
+    # except:
+    #
+    #     reaction['conditions'] = []
+    #     return reaction
+
     reaction['conditions'] = []
-    
     for cond_name, cond_data in class_data.items():
         # print(cond_name, cond_data)
         if cond_data['Reagent']:
@@ -108,13 +118,10 @@ def reagent_matching_for_single_reaction(class_key, reaction):
                     if mol.GetSubstructMatch(patt):
                         matched_reagents.append(mol)
                         break
-
-            if len(cond_mols) == len(matched_reagents):     
+            if len(cond_mols) == len(matched_reagents):
                 reaction['conditions'].append(cond_name)
-                
         else:
             reaction['conditions'].append(cond_name)
-    
     return reaction
 
 def calling_rxn_template(reaction_dict):
