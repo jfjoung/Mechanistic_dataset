@@ -39,6 +39,7 @@ Thumbs.db
 # data files #
 ######################
 data/
+results/
 *.csv
 *.json
 *.jsonl

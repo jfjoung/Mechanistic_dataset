@@ -3,7 +3,7 @@ import sys
 import json
 import rdkit
 import gzip
-import AcidBase_lookup, Reaction_templates
+from . import AcidBase_lookup, Reaction_templates
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from tqdm import tqdm
@@ -26,13 +26,11 @@ def mols_from_smiles_list(all_smiles):
         mols.append(Chem.MolFromSmiles(smiles,sanitize=False))
     return mols
 
-
 def remove_atom_map(mol, isotope=False):
     for atom in mol.GetAtoms():
         atom.SetAtomMapNum(0)
         if isotope: atom.SetIsotope(0)
     return mol
-    
 
 def isotope_to_atommap(mol):
     for idx, a in enumerate(mol.GetAtoms()):
@@ -73,7 +71,6 @@ def get_class_key(class_name):
             return classes
         
     return None
- 
 
 def reagent_matching_for_class(class_name, reactions):
     
@@ -89,7 +86,6 @@ def reagent_matching_for_class(class_name, reactions):
         print("No class key for class", class_name)
         return None
 
-    
 def reagent_matching_for_single_reaction(class_key, reaction):
     '''
     To match reagents for a certain class from list of reaction, in the form of {'rxnsmiles': {'reaction_name': name}}.
@@ -120,7 +116,6 @@ def reagent_matching_for_single_reaction(class_key, reaction):
             reaction['conditions'].append(cond_name)
     
     return reaction
-    
 
 def calling_rxn_template(reaction_dict):
     """
@@ -329,7 +324,6 @@ def allow_unimolecular_rxn(rxn_templates):
             new_temp='>>'.join([r,p])
             new_templates.append(new_temp)
     return new_templates
-    
 
 def find_acid_base(rxn_flask, filtered_list, ab_condition):
     possible_acid_base=[]
@@ -465,8 +459,8 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False):
     return rxn_flask, reactive_dict
 
 def has_duplicates(input_list):
-    lst=list()
-    elem=list()
+    lst=[]
+    elem=[]
     for item in input_list:
         if type(item) is list:
             lst.append(item)
@@ -477,8 +471,6 @@ def has_duplicates(input_list):
             if item in lst_item:
                 return True    
     return False
-
-
 
 def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, stoichiometry=False, v=False):
     """Run single elementary reactions
@@ -612,7 +604,6 @@ def find_product(example_rxn, rxn_flask):
     else:
         return None
 
-    
 def topo_pos(G):
     """Display in topological order, with simple offsetting for legibility"""
     pos_dict = {}
@@ -795,20 +786,19 @@ def get_mechanistic_network(rxn, v=False, simple=False, light=False):
     condition = calling_rxn_template(rxn)
     rxn_flask=prepare_reactants(rxn)
     rxn_flasks, tot_networks=run_full_reaction(rxn_flask, condition, v=v)
-    G_list=list()
-    for rxn_flask,tot_network in zip(rxn_flasks, tot_networks):
+
+    G_dict=dict()
+    for rxn_condition, rxn_flask,tot_network in zip(rxn['conditions'], rxn_flasks, tot_networks):
         rxn_flask=find_product(rxn, rxn_flask)
         if rxn_flask:
             G=reaction_network(rxn_flask, tot_network, simple=simple, light=light)
-            G_list.append(G)
-            
-    if G_list:
-        return G_list
+            G_dict[rxn_condition]=G
+
+    if G_dict:
+        return G_dict
     else: 
         raise ValueError("Products are not produced.")
-        
-        
-        
+
 def flatten_list(lst):
     flattened = []
     for item in lst:
@@ -817,7 +807,6 @@ def flatten_list(lst):
         else:
             flattened.append(item)
     return flattened
-
 
 def find_chemical_nodes(G):
     reaction_node, reactant_node, product_node, byproduct_node, intermediate_node, spectator_node=[], [], [], [], [], []
@@ -907,31 +896,36 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
     if plain:
         smiles='smiles'
     else: smiles= 'smiles_w_mapping'
-   
     reaction_nodes, reactant_nodes, product_nodes, byproduct_nodes, intermediate_nodes, spectator_nodes=find_chemical_nodes(G)
-#     elem_dict=dict()
     elem_dict=defaultdict(lambda: list())
+    if len(reaction_nodes)>50:
+        raise ValueError("Too many reaction nodes.")
+
     # Check if there are cycles
     cycle_pathways=[i for i in nx.simple_cycles(G)]
-    
+    if v:
+        print('There are {} cycles'.format(len(cycle_pathways)))
     reaction_node_for_product=[node for node in G.predecessors(product_nodes[0])][0]
-    
+
     if cycle_pathways:
-        if len(cycle_pathways)>1: 
+        if len(cycle_pathways)>9:
+            raise ValueError("Too many cycles.")
+        if len(cycle_pathways)>1:
             filtered_cycles = []
-            for cycle in cycle_pathways:
+            for i, cycle in enumerate(cycle_pathways):
                 filtered_cycle = [node for node in cycle if node.startswith('Reaction')]
                 filtered_cycles.append(filtered_cycle)
         elif len(cycle_pathways)==1: 
             filtered_cycles=[node for node in cycle_pathways[0] if node.startswith('Reaction')]
         cycle_dict=find_shared_nodes(filtered_cycles)
         reaction_nodes_inside=list(set(flatten_list(filtered_cycles)))
-        
         reaction_nodes_outside=list(set(reaction_nodes)-set(flatten_list(filtered_cycles)))
         combination_of_cycles=create_combinations(cycle_dict) # In case of more than 2 cycles
         reaction_paths=[flatten_list(list(combi)+reaction_nodes_outside) for combi in combination_of_cycles]
     else: reaction_paths = [reaction_nodes]
-        
+    if v:
+        print('There are {} paths'.format(reaction_paths))
+
     if full or end:
         output_smiles=list()
         for reaction_path in reaction_paths:

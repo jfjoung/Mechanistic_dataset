@@ -631,8 +631,8 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Reductive elimination'}}}, 
      
-        'Reaction with Pd coordinated with 2 ligands': {'Reagent': ['[!Cl,!Br,!I,!O][Pd;D2;+0][!Cl,!Br,!I,!O]'],                           
-   'Stages': {0: {'Templates': ['[Pd;D2;+0:1](-[*:6])-[*:5]>>[Pd;+0:1].[*:6].[*:5]',],
+        'Reaction with Pd coordinated with 2 ligands': {'Reagent': ['[!Cl,!Br,!I,!O][Pd;D2;+0;!$([Pd]~[Cl,Br,I,O])][!Cl,!Br,!I,!O]'],
+   'Stages': {0: {'Templates': ['[Pd;D2;+0;!$([Pd]~[Cl,Br,I,O]:1](-[*,!Cl,!Br,!I,!O:6])-[*,!Cl,!Br,!I,!O:5]>>[Pd;+0:1].[*:6].[*:5]',],
      'pKa': [None],
      'Description': 'Ligand leaving'},
     1: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd;D0;+0:6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
