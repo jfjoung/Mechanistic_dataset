@@ -9,7 +9,7 @@ from utils.apply_mechanistic_template import get_mechanistic_network, elementary
 
 def generate_mechanism_for_one_reaction(rxn, args):
     logging.info('Generating mechanism for: ' + rxn['reaction_smiles'])
-    G_dict = get_mechanistic_network(rxn, v=args.verbosity, simple=args.simple)
+    G_dict = get_mechanistic_network(rxn, args)
 
     if args.all_info:
         elem_dict = dict()
@@ -18,7 +18,7 @@ def generate_mechanism_for_one_reaction(rxn, args):
 
     for cond, G in G_dict.items():
         try:
-            elem_rxns = elementary_reaction(G, v=False, byproduct=args.byproduct, spectator=args.spectator, full=args.full,
+            elem_rxns = elementary_reaction(G, args, v=False, byproduct=args.byproduct, spectator=args.spectator, full=args.full,
                                             end=args.end, plain=args.plain,reagent=args.reagent)
             if args.all_info:
                 elem_dict[cond]={'Reaction graph': nx.node_link_data(G),

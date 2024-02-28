@@ -147,55 +147,6 @@ def check_products_validity(outcome):
         return True
     else: return False
 
-# def find_reactants(rxn_flask, rxn_templates, stoichiometry):
-#     reactive_dict = dict()
-#     for templ in rxn_templates:
-#         reactant_dict=dict()
-#         r, p = templ.split('>>')
-#         r=r.split('.')
-#         num_reactants=len(r)
-#
-#         mol_dict = {reactant: Chem.MolFromSmiles(rxn_flask[reactant]['smiles']) for reactant in rxn_flask}
-#         templ_dict = {reac_temp: Chem.MolFromSmarts(reac_temp) for reac_temp in r}
-#
-#         # Find reactive chemical species
-#         for mol_key in mol_dict:
-#             mol = mol_dict[mol_key]
-#             for temp_key in templ_dict:
-#                 pat = templ_dict[temp_key]
-#                 if mol.GetSubstructMatch(pat):
-#                     if temp_key not in reactant_dict:
-#                         reactant_dict[temp_key] = []
-#                     reactant_dict[temp_key].append(mol_key)
-#         print(reactant_dict)
-#         combinations = [list(combination) for combination in itertools.product(*reactant_dict.values()) if len(combination)==num_reactants]
-#
-#         # Check the atom map collision
-#         reactive_combination = []
-#         for combination in combinations:
-#             reactant_history_per_com=list()
-#             if num_reactants>1:
-#                 reactant_atommap=[set(i) for i in [rxn_flask[num]['atom_mapping'] for num in combination]]
-#                 # Check if there is the same atom in two reactants
-#                 if reactant_atommap[0]&reactant_atommap[1]:
-#                     continue
-#                 reactant_history=[i for i in [rxn_flask[num]['rxn_history'] for num in combination]]
-#                 reactant_history.extend(combination)
-#
-#                 # Check if two species come from the same reactant
-#                 if has_duplicates(reactant_history):
-#                     continue
-#             reactive_combination.append(combination)
-#             reactant_history_per_com.append(reactant_history)
-#             if num_reactants>1:
-#                 reactive_combination.append(list(reversed(combination)))
-#                 reactant_history_per_com.append(reactant_history)
-#             reactive_dict[templ]={'combination': reactive_combination,
-#                                   'num_reactants': num_reactants,
-#                                   'reactant_history': reactant_history_per_com}
-#
-#     return reactive_dict
-
 def remove_isotope(prod_mol):
     prod_istope_smi=Chem.MolToSmiles(prod_mol)
     for a in prod_mol.GetAtoms():
@@ -301,7 +252,7 @@ def find_acid_base(rxn_flask, filtered_list, ab_condition):
                 possible_acid_base.append([reactant, product])
     return possible_acid_base
 
-def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False, num_combination=10):
+def find_reactants(rxn_flask, rxn_templates, args):
     reactive_dict = dict()
     mol_dict = {reactant: Chem.MolFromSmiles(rxn_flask[reactant]['smiles']) for reactant in rxn_flask if type(reactant) is int}
     
@@ -328,7 +279,7 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False, num_combina
         # Check the atom map collision
         reactive_combination = list()
         reactant_history_per_com=list()
-        if stoichiometry:
+        if args.stoichiometry:
             # To save every combination
             duplicated_combi=list()
             
@@ -342,7 +293,7 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False, num_combina
             reactant_history.extend(combination)
             # Check if at least one species came from the same reactant
             if has_duplicates(reactant_history): 
-                if stoichiometry:
+                if args.stoichiometry:
                     duplicated_combi.append(combination)
                     continue     
                 else:
@@ -361,7 +312,7 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False, num_combina
         '''
         Hereafter, it is a code for matching the stoichiometric details
         '''
-        if stoichiometry and duplicated_combi and not reactive_dict:
+        if args.stoichiometry and duplicated_combi and not reactive_dict:
             idx = rxn_flask['last_mapping_number']+1
             new_combination_list=list()
             
@@ -414,16 +365,15 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False, num_combina
     final_reactive_dict=dict()
     for key, value in reactive_dict.items():
         num_reactive_comb=len(value['combination'])
-        if num_reactive_comb > num_combination:
-            if v > 1:
-                print(f'{num_reactive_comb} are detected as reactive combination in this reaction flask. \n This reaction is abandoned to prevent combination explosion.')
+        if num_reactive_comb > args.num_combination:
+            if args.verbosity > 2:
+                print('The template {} has too many reactive combinations'.format(key))
+            if args.verbosity > 1:
+                print('{} combinations are reactive in this reaction flask.'.format(num_reactive_comb))
+                print('This template is abandoned to prevent combination explosion.\n')
         else:
             final_reactive_dict[key]=value
-
-    if v > 1:
-        print('\n', final_reactive_dict, '\n')
-
-    if v > 1 and not final_reactive_dict:
+    if args.verbosity > 1 and not final_reactive_dict:
         print('No reactants are found!')
 
     return rxn_flask, final_reactive_dict
@@ -442,7 +392,7 @@ def has_duplicates(input_list):
                 return True    
     return False
 
-def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, stoichiometry=False, v=False, num_combination=10):
+def run_single_reaction(rxn_flask, single_step, args):
     """Run single elementary reactions
     rxn_flask: a dictionary contains all the reactants
     single_step: a dictionary contains the templates, pKa condition, and description (elementary step)
@@ -458,33 +408,33 @@ def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, sto
     reaction_network=[]
     reaction_pair=[]
     
-    if v: 
+    if args.verbosity > 2:
         num_original_temp=len(rxn_templates)
+        print('The number of the original templates is ', num_original_temp)
     
-    if proton: # Get proton balanced reaction template
+    if args.proton: # Get proton balanced reaction template
         # TODO: label acids and bases (e.g. 'acid' instead of just 'reactant' when labelling), add isAcid, isBase
         rxn_templates=proton_balanced_template(rxn_flask, pKas, rxn_templates)
         num_proton_temp=len(rxn_templates)
         # if num_proton_temp > num_combination:
         #     raise ValueError(f"{num_proton_temp} templates are generated, which is too many.")
-        if v > 2:
-            print('New proton balanced {} templates are generated'.format(num_proton_temp-num_original_temp))
+        if args.verbosity > 2:
+            print('New proton balanced {} templates are generated'.format(max(num_proton_temp-num_original_temp, 0)))
             num_original_temp=len(rxn_templates)
         
-    if uni_rxn: # Get unimolecular reaction template
+    if args.uni_rxn: # Get unimolecular reaction template
         rxn_templates=allow_unimolecular_rxn(rxn_templates)
         num_uni_temp = len(rxn_templates)
-        # if num_proton_temp > num_combination:
-        #     raise ValueError(f"{num_uni_temp} templates are generated, which is too many.")
-        if v > 2:
-            print('New unimolecular {} templates are generated \n'.format(num_uni_temp-num_original_temp))
+        if args.verbosity > 2:
+            print('New unimolecular {} templates are generated \n'.format(max(num_uni_temp-num_original_temp,0)))
     
     #Define the reactive chemicals
     #rxn_flask may be updated if stoichiometry is on
-    rxn_flask, reactive_dict=find_reactants(rxn_flask, rxn_templates, stoichiometry, v, num_combination=num_combination)
+    rxn_flask, reactive_dict=find_reactants(rxn_flask, rxn_templates, args)
     
     for templ in reactive_dict:        
-        if v: print('Template is ', templ)
+        if args.verbosity > 3:
+            print('Template is ', templ)
         
         combinations=reactive_dict[templ]['combination']
         num_reactants=reactive_dict[templ]['num_reactants']
@@ -498,7 +448,7 @@ def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, sto
             if not outcomes:
                 continue
                 
-            if v > 3:
+            if args.verbosity > 3:
                 reactants_smi=[rxn_flask[num]['smiles'] for num in combination]  
                 print('The reactants are {}'.format(reactants_smi))
                 
@@ -506,7 +456,7 @@ def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, sto
                 reactant_id=set(num for num in combination)
                 if not check_products_validity(outcome): continue
                 product_id=set()
-                if v > 3: print('{} products are formed \n'.format(len(outcome)))
+                if args.verbosity > 3: print('{} products are formed'.format(len(outcome)))
                 for prod_mol in outcome:     
                     new_prod=product_dict(prod_mol, reactant_id, history)
                     r_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in reactant_id]))
@@ -529,7 +479,7 @@ def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, sto
                 
     return rxn_flask, reaction_network
 
-def run_full_reaction(rxn_flask, condition, v=False):
+def run_full_reaction(rxn_flask, condition, args):
     
     """
     Given an initial rxn_flask, applies the templates for each condition and
@@ -539,15 +489,14 @@ def run_full_reaction(rxn_flask, condition, v=False):
     rxn_flasks: a list of final reaction flasks for each condition
     tot_networks: a list of tot_net for each condition
     """
-    
-    
+
     tot_networks = list()
     rxn_flasks = list()
     for cond in condition:
         tot_net = list()
         rxn_flask_cond = rxn_flask
         for temp in cond['Stages'].values():
-            rxn_flask_cond, reaction_network=run_single_reaction(rxn_flask_cond , temp, uni_rxn=True, proton=True, stoichiometry=True, v=v)
+            rxn_flask_cond, reaction_network=run_single_reaction(rxn_flask_cond, temp, args)
             tot_net+=reaction_network
             
         tot_networks.append(tot_net)
@@ -589,7 +538,7 @@ def topo_pos(G):
 
     return pos_dict
 
-def reaction_network(rxn_flask, tot_network, simple=False, light=True, full=False):
+def reaction_network(rxn_flask, tot_network, args):
     '''
     simple: find all shortest paths or all simple paths 
     '''
@@ -612,20 +561,12 @@ def reaction_network(rxn_flask, tot_network, simple=False, light=True, full=Fals
         G.add_node(reaction_node, reaction={'Template': template})
         for chemical in first_set:
             chemical_node=f"Molecule {chemical}"
-            if light:
-                molecule={'identity': rxn_flask[chemical]['identity'],
-                         'smiles_w_mapping': rxn_flask[chemical]['smiles_w_mapping'],
-                         'smiles': rxn_flask[chemical]['smiles']}
-            else: molecule=rxn_flask[chemical]
+            molecule=rxn_flask[chemical]
             G.add_node(chemical_node, molecule=molecule)
             G.add_edge(chemical_node, reaction_node)            
         for chemical in last_set:
             chemical_node=f"Molecule {chemical}"
-            if light:
-                molecule={'identity': rxn_flask[chemical]['identity'],
-                         'smiles_w_mapping': rxn_flask[chemical]['smiles_w_mapping'],
-                         'smiles': rxn_flask[chemical]['smiles']}
-            else: molecule=rxn_flask[chemical]
+            molecule=rxn_flask[chemical]
             G.add_node(chemical_node, molecule=molecule)
             G.add_edge(reaction_node,chemical_node)
     
@@ -645,7 +586,7 @@ def reaction_network(rxn_flask, tot_network, simple=False, light=True, full=Fals
     reaction_path=list()
     for rid in reactant_ids:
         for pid in product_ids:
-            if simple:
+            if args.simple:
                 if nx.all_simple_paths(G, source=rid, target=pid):
                     for path in nx.all_simple_paths(G, source=rid, target=pid):
                         if len(reaction_nodes_in_path) < 7:
@@ -669,8 +610,7 @@ def reaction_network(rxn_flask, tot_network, simple=False, light=True, full=Fals
             path_node.append(nn)
             
     # TODO: Check if byproducts react further
-#     print(path_node)
-    if full: return G
+    if args.do_not_pruning: return G
     
     # Make subgraph of a true path    
     G_sub = nx.DiGraph(G.subgraph(path_node))
@@ -707,11 +647,7 @@ def reaction_network(rxn_flask, tot_network, simple=False, light=True, full=Fals
     
     for node_id in missing_molecule_nodes:
         chemical_node=f"Molecule {node_id}"
-        if light:
-            molecule={'identity': rxn_flask[node_id]['identity'],
-                     'smiles_w_mapping': rxn_flask[node_id]['smiles_w_mapping'],
-                     'smiles': rxn_flask[node_id]['smiles']}
-        else: molecule=rxn_flask[node_id]
+        molecule=rxn_flask[node_id]
                 
         molecule['identity']='spectator'
         G_sub.add_node(chemical_node, molecule=molecule)
@@ -755,18 +691,18 @@ def draw_reaction_graph(G, size=[5,5], labels = True):
     nx.draw_networkx_nodes(G, posit, nodelist=product_list, node_color="magenta")
     nx.draw_networkx_nodes(G, posit, nodelist=spectator_list, node_color="tab:purple")
 
-def get_mechanistic_network(rxn, v=0, simple=False, light=False):
+def get_mechanistic_network(rxn, args):
     condition = calling_rxn_template(rxn)
-    if v > 2:
-        print('Condition for this reaction is retrived')
+    if args.verbosity > 2:
+        print('Condition for this reaction is retrieved')
     rxn_flask=prepare_reactants(rxn)
-    rxn_flasks, tot_networks=run_full_reaction(rxn_flask, condition, v=v)
+    rxn_flasks, tot_networks=run_full_reaction(rxn_flask, condition, args)
 
     G_dict=dict()
     for rxn_condition, rxn_flask,tot_network in zip(rxn['conditions'], rxn_flasks, tot_networks):
         rxn_flask=find_product(rxn, rxn_flask)
         if rxn_flask:
-            G=reaction_network(rxn_flask, tot_network, simple=simple, light=light)
+            G=reaction_network(rxn_flask, tot_network,args)
             G_dict[rxn_condition]=G
 
     if G_dict:
@@ -858,7 +794,7 @@ def find_shared_nodes(cycles):
     
     return shared_nodes_dict
 
-def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=True, end=True, reagent=False, v=False):
+def elementary_reaction(G, args):
     '''
     Input: Reaction graph
     full: returns full reactions
@@ -868,22 +804,22 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
     end: returns additional reactions for the end. products>>products
     v: verbose
     '''
-    if plain:
+    if args.plain:
         smiles='smiles'
     else: smiles= 'smiles_w_mapping'
     reaction_nodes, reactant_nodes, product_nodes, byproduct_nodes, intermediate_nodes, spectator_nodes=find_chemical_nodes(G)
     elem_dict=defaultdict(lambda: list())
-    if len(reaction_nodes)>50:
+    if len(reaction_nodes)> args.num_reaction_node:
         raise ValueError("Too many reaction nodes.")
 
     # Check if there are cycles
     cycle_pathways=[i for i in nx.simple_cycles(G)]
-    if v:
+    if args.verbosity > 2:
         print('There are {} cycles'.format(len(cycle_pathways)))
     reaction_node_for_product=[node for node in G.predecessors(product_nodes[0])][0]
 
     if cycle_pathways:
-        if len(cycle_pathways)>9:
+        if len(cycle_pathways)> args.num_cycles:
             raise ValueError("Too many cycles.")
         if len(cycle_pathways)>1:
             filtered_cycles = []
@@ -893,15 +829,14 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
         elif len(cycle_pathways)==1: 
             filtered_cycles=[node for node in cycle_pathways[0] if node.startswith('Reaction')]
         cycle_dict=find_shared_nodes(filtered_cycles)
-        reaction_nodes_inside=list(set(flatten_list(filtered_cycles)))
         reaction_nodes_outside=list(set(reaction_nodes)-set(flatten_list(filtered_cycles)))
         combination_of_cycles=create_combinations(cycle_dict) # In case of more than 2 cycles
         reaction_paths=[flatten_list(list(combi)+reaction_nodes_outside) for combi in combination_of_cycles]
     else: reaction_paths = [reaction_nodes]
-    if v:
+    if args.verbosity > 2:
         print('There are {} paths'.format(reaction_paths))
 
-    if full or end:
+    if args.full or args.end:
         output_smiles=list()
         for reaction_path in reaction_paths:
             # Check the reactant can be used.
@@ -941,7 +876,7 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
                     if is_produced: break
                         
             final_reaction_node = [node for node in G.predecessors(product_nodes[0])][0]
-            if byproduct:
+            if args.byproduct:
                 final_products=[node for node in G.successors(final_reaction_node)]
             else: final_products = product_nodes
             
@@ -949,20 +884,20 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
             p_smiles=sorted([G.nodes[x]['molecule'][smiles] for x in final_products])
             
             not_used_reactant=list(set(reactant_nodes) - set(usable_reactant_nodes))
-            if reagent: reagent_smiles=list()
-            if byproduct:
-                if reagent:
+            if args.reagent: reagent_smiles=list()
+            if args.byproduct:
+                if args.reagent:
                     reagent_smiles=sorted([G.nodes[x]['molecule'][smiles] for x in produced_byproduct_nodes if x not in final_products])
                 else:
                     p_smiles=p_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in produced_byproduct_nodes if x not in final_products])
-            if spectator:
-                if reagent:
+            if args.spectator:
+                if args.eagent:
                     reagent_smiles=reagent_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in spectator_nodes+not_used_reactant])
                 else:
                     r_smiles=r_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in spectator_nodes+not_used_reactant])
                     p_smiles=p_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in spectator_nodes+not_used_reactant])
             
-            if reagent:
+            if args.reagent:
                 r_string='.'.join(r_smiles)
                 reagent_string='.'.join(reagent_smiles)
                 p_string='.'.join(p_smiles)
@@ -971,8 +906,8 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
                 output_smiles.append('>>'.join(['.'.join(r_smiles),'.'.join(p_smiles)]))
  
                 
-        if full: return output_smiles
-        if end: 
+        if args.full: return output_smiles
+        if args.end:
             for i, rxn_smi in enumerate(output_smiles):
                 r_smi,reagent_smi, p_smi = rxn_smi.split('>')
                 elem_dict['End'].append(f'{p_smi}>{reagent_smi}>{p_smi}')
@@ -983,7 +918,7 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
             successor_nodes=[node for node in G.successors(elem_node)]
             conmused_reactant_node=[]
 
-            if spectator: 
+            if args.spectator:
                 for r_node in reactant_nodes:
                     for precursor in precursor_nodes:
                         is_used=False                            
@@ -1006,7 +941,7 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
                 not_used_reactant=list(set(reactant_nodes) - set(conmused_reactant_node))
             else: not_used_reactant=[]
 
-            if byproduct:  
+            if args.byproduct:
                 produced_byproduct_nodes=list()
                 for by_node in byproduct_nodes:
                     reaction_node_for_byproduct=[node for node in G.predecessors(by_node)][0]
@@ -1029,7 +964,7 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
                                     break
                             if is_produced: break
                         except Exception as e:
-                            if v:
+                            if args.verbosity > 0:
                                 print(e)
                             pass
             else: produced_byproduct_nodes=list()
@@ -1037,23 +972,23 @@ def elementary_reaction(G, full=False, spectator=True, plain=False, byproduct=Tr
             r_smiles=sorted([G.nodes[x]['molecule'][smiles] for x in precursor_nodes])
             p_smiles=sorted([G.nodes[x]['molecule'][smiles] for x in successor_nodes])
 
-            if reagent:
+            if args.reagent:
                 reagent_smiles=list()
 
-            if byproduct:
-                if reagent: 
+            if args.byproduct:
+                if args.reagent:
                     reagent_smiles=reagent_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in produced_byproduct_nodes])
                 else:
                     r_smiles=r_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in produced_byproduct_nodes])
                     p_smiles=p_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in produced_byproduct_nodes])
-            if spectator:
-                if reagent:
+            if args.spectator:
+                if args.reagent:
                     reagent_smiles=reagent_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in spectator_nodes+not_used_reactant])
                 else:
                     r_smiles=r_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in spectator_nodes+not_used_reactant])
                     p_smiles=p_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in spectator_nodes+not_used_reactant])
 
-            if reagent:
+            if args.reagent:
                 r_string='.'.join(r_smiles)
                 reagent_string='.'.join(reagent_smiles)
                 p_string='.'.join(p_smiles)
