@@ -8,12 +8,9 @@ from utils.apply_mechanistic_template import get_mechanistic_network, elementary
 
 
 def generate_mechanism_for_one_reaction(rxn, args):
-<<<<<<< HEAD
     logging.info(f'Generating mechanism for {rxn['reaction_smiles']}...')
-    G_dict = get_mechanistic_network(rxn, v=False, simple=args.simple)
-=======
     G_dict = get_mechanistic_network(rxn, v=args.verbosity, simple=args.simple)
->>>>>>> 8c285c8 (Restrict the combination of possible reactants)
+
     if args.all_info:
         elem_dict = dict()
     else:
