@@ -1,3 +1,4 @@
+import os
 import argparse
 import logging
 from datetime import datetime
@@ -35,7 +36,7 @@ def parse_arguments():
 
     #TODO: set the verbosity level
     parser.add_argument("--verbosity", help="control the verbosity",
-                       type=int, default=2)
+                       type=int, default=0)
 
     return parser.parse_args()
 
@@ -53,6 +54,8 @@ if __name__ == '__main__':
     if you have a reaction string of 'reaction_smiles NameRXN_name', 
     then RUN generate_mechdata_unknown_condition(args)
     '''
+
+    os.makedirs('./logs/', exist_ok=True)
     time = datetime.now().strftime('%Y-%m-%d_%H-%M')
     logging.basicConfig(filename=f'./logs/generate_mechanism_data_{time}.log', level=logging.DEBUG, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
     logging.info('Starting mechanistic dataset generation...')

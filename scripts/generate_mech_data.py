@@ -8,7 +8,7 @@ from utils.apply_mechanistic_template import get_mechanistic_network, elementary
 
 
 def generate_mechanism_for_one_reaction(rxn, args):
-    logging.info(f'Generating mechanism for {rxn['reaction_smiles']}...')
+    logging.info('Generating mechanism for: ' + rxn['reaction_smiles'])
     G_dict = get_mechanistic_network(rxn, v=args.verbosity, simple=args.simple)
 
     if args.all_info:
