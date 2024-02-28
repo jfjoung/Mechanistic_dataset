@@ -1,4 +1,6 @@
 import argparse
+import logging
+from datetime import datetime
 from scripts.generate_mech_data import generate_mechdata_known_condition, generate_mechdata_unknown_condition
 
 def parse_arguments():
@@ -49,6 +51,9 @@ if __name__ == '__main__':
     if you have a reaction string of 'reaction_smiles NameRXN_name', 
     then RUN generate_mechdata_unknown_condition(args)
     '''
-
+    time = datetime.now().strftime('%Y-%m-%d_%H-%M')
+    logging.basicConfig(filename=f'./logs/generate_mechanism_data_{time}.log', level=logging.DEBUG, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    logging.info('Starting mechanistic dataset generation...')
+    logging.info(f'Arguments: {args}')
     # generate_mechdata_known_condition(args)
     generate_mechdata_unknown_condition(args)

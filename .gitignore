@@ -51,3 +51,4 @@ results/
 **/.ipynb_checkpoints
 __pycache__/
 scratch/
+logs/
