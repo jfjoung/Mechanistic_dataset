@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 import networkx as nx
 from tqdm import tqdm
 import json
@@ -7,6 +8,7 @@ from utils.apply_mechanistic_template import get_mechanistic_network, elementary
 
 
 def generate_mechanism_for_one_reaction(rxn, args):
+    logging.info(f'Generating mechanism for {rxn['reaction_smiles']}...')
     G_dict = get_mechanistic_network(rxn, v=False, simple=args.simple)
     if args.all_info:
         elem_dict = dict()
