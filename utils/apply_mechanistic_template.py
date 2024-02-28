@@ -147,54 +147,54 @@ def check_products_validity(outcome):
         return True
     else: return False
 
-def find_reactants(rxn_flask, rxn_templates, stoichiometry):
-    reactive_dict = dict()
-    for templ in rxn_templates:
-        reactant_dict=dict()
-        r, p = templ.split('>>')
-        r=r.split('.')
-        num_reactants=len(r)    
-
-        mol_dict = {reactant: Chem.MolFromSmiles(rxn_flask[reactant]['smiles']) for reactant in rxn_flask}
-        templ_dict = {reac_temp: Chem.MolFromSmarts(reac_temp) for reac_temp in r}
-
-        # Find reactive chemical species
-        for mol_key in mol_dict:        
-            mol = mol_dict[mol_key]
-            for temp_key in templ_dict:
-                pat = templ_dict[temp_key]
-                if mol.GetSubstructMatch(pat):
-                    if temp_key not in reactant_dict:
-                        reactant_dict[temp_key] = []
-                    reactant_dict[temp_key].append(mol_key)
-        print(reactant_dict)
-        combinations = [list(combination) for combination in itertools.product(*reactant_dict.values()) if len(combination)==num_reactants]
-        
-        # Check the atom map collision
-        reactive_combination = []
-        for combination in combinations:
-            reactant_history_per_com=list()
-            if num_reactants>1: 
-                reactant_atommap=[set(i) for i in [rxn_flask[num]['atom_mapping'] for num in combination]]
-                # Check if there is the same atom in two reactants
-                if reactant_atommap[0]&reactant_atommap[1]: 
-                    continue
-                reactant_history=[i for i in [rxn_flask[num]['rxn_history'] for num in combination]]
-                reactant_history.extend(combination)
-                
-                # Check if two species come from the same reactant
-                if has_duplicates(reactant_history): 
-                    continue        
-            reactive_combination.append(combination)
-            reactant_history_per_com.append(reactant_history)
-            if num_reactants>1:
-                reactive_combination.append(list(reversed(combination)))
-                reactant_history_per_com.append(reactant_history)
-            reactive_dict[templ]={'combination': reactive_combination,
-                                  'num_reactants': num_reactants,
-                                  'reactant_history': reactant_history_per_com}
-            
-    return reactive_dict
+# def find_reactants(rxn_flask, rxn_templates, stoichiometry):
+#     reactive_dict = dict()
+#     for templ in rxn_templates:
+#         reactant_dict=dict()
+#         r, p = templ.split('>>')
+#         r=r.split('.')
+#         num_reactants=len(r)
+#
+#         mol_dict = {reactant: Chem.MolFromSmiles(rxn_flask[reactant]['smiles']) for reactant in rxn_flask}
+#         templ_dict = {reac_temp: Chem.MolFromSmarts(reac_temp) for reac_temp in r}
+#
+#         # Find reactive chemical species
+#         for mol_key in mol_dict:
+#             mol = mol_dict[mol_key]
+#             for temp_key in templ_dict:
+#                 pat = templ_dict[temp_key]
+#                 if mol.GetSubstructMatch(pat):
+#                     if temp_key not in reactant_dict:
+#                         reactant_dict[temp_key] = []
+#                     reactant_dict[temp_key].append(mol_key)
+#         print(reactant_dict)
+#         combinations = [list(combination) for combination in itertools.product(*reactant_dict.values()) if len(combination)==num_reactants]
+#
+#         # Check the atom map collision
+#         reactive_combination = []
+#         for combination in combinations:
+#             reactant_history_per_com=list()
+#             if num_reactants>1:
+#                 reactant_atommap=[set(i) for i in [rxn_flask[num]['atom_mapping'] for num in combination]]
+#                 # Check if there is the same atom in two reactants
+#                 if reactant_atommap[0]&reactant_atommap[1]:
+#                     continue
+#                 reactant_history=[i for i in [rxn_flask[num]['rxn_history'] for num in combination]]
+#                 reactant_history.extend(combination)
+#
+#                 # Check if two species come from the same reactant
+#                 if has_duplicates(reactant_history):
+#                     continue
+#             reactive_combination.append(combination)
+#             reactant_history_per_com.append(reactant_history)
+#             if num_reactants>1:
+#                 reactive_combination.append(list(reversed(combination)))
+#                 reactant_history_per_com.append(reactant_history)
+#             reactive_dict[templ]={'combination': reactive_combination,
+#                                   'num_reactants': num_reactants,
+#                                   'reactant_history': reactant_history_per_com}
+#
+#     return reactive_dict
 
 def remove_isotope(prod_mol):
     prod_istope_smi=Chem.MolToSmiles(prod_mol)
@@ -301,7 +301,7 @@ def find_acid_base(rxn_flask, filtered_list, ab_condition):
                 possible_acid_base.append([reactant, product])
     return possible_acid_base
 
-def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False):
+def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False, num_combination=10):
     reactive_dict = dict()
     mol_dict = {reactant: Chem.MolFromSmiles(rxn_flask[reactant]['smiles']) for reactant in rxn_flask if type(reactant) is int}
     
@@ -323,11 +323,7 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False):
                         if Chem.MolToSmarts(pat) not in reactant_dict:
                             reactant_dict[Chem.MolToSmarts(pat)] = []
                         reactant_dict[Chem.MolToSmarts(pat)].append(mol_key)
-        
-        if v and reactant_dict: 
-            print('A dictionary of all possible reactants for a template of {}'.format(templ))
-            print(reactant_dict, '\n')
-            
+
         combinations = [list(combination) for combination in itertools.product(*reactant_dict.values()) if len(combination)==num_reactants]
         # Check the atom map collision
         reactive_combination = list()
@@ -359,9 +355,12 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False):
                 reactive_combination.append(list(reversed(combination)))
                 reactant_history_per_com.append(reactant_history)
             reactive_dict[templ]={'combination': reactive_combination,
-                                  'num_reactants': num_reactants,
-                                  'reactant_history': reactant_history_per_com}
-            
+                              'num_reactants': num_reactants,
+                              'reactant_history': reactant_history_per_com}
+
+        '''
+        Hereafter, it is a code for matching the stoichiometric details
+        '''
         if stoichiometry and duplicated_combi and not reactive_dict:
             idx = rxn_flask['last_mapping_number']+1
             new_combination_list=list()
@@ -388,7 +387,7 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False):
                 new_combination_list.append(new_combination)
                         
             rxn_flask['last_mapping_number']=idx-1
-            
+
             for combination in new_combination_list:
                 reactant_history_per_com=list()
                 if num_reactants>1: 
@@ -400,21 +399,34 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry, v=False):
                 reactant_history.extend(combination)
                 # Check if at least one species came from the same reactant
                 if has_duplicates(reactant_history):
-                    continue        
-
+                    continue
                 reactive_combination.append(combination)
                 reactant_history_per_com.append(reactant_history)
 
                 if num_reactants>1:
                     reactive_combination.append(list(reversed(combination)))
                     reactant_history_per_com.append(reactant_history)
-                reactive_dict[templ]={'combination': reactive_combination,
-                                      'num_reactants': num_reactants,
-                                      'reactant_history': reactant_history_per_com}
-            
-    if v and not reactive_dict:
+
+                reactive_dict[templ] = {'combination': reactive_combination,
+                                        'num_reactants': num_reactants,
+                                        'reactant_history': reactant_history_per_com}
+
+    final_reactive_dict=dict()
+    for key, value in reactive_dict.items():
+        num_reactive_comb=len(value['combination'])
+        if num_reactive_comb > num_combination:
+            if v > 1:
+                print(f'{num_reactive_comb} are detected as reactive combination in this reaction flask. \n This reaction is abandoned to prevent combination explosion.')
+        else:
+            final_reactive_dict[key]=value
+
+    if v > 1:
+        print('\n', final_reactive_dict, '\n')
+
+    if v > 1 and not final_reactive_dict:
         print('No reactants are found!')
-    return rxn_flask, reactive_dict
+
+    return rxn_flask, final_reactive_dict
 
 def has_duplicates(input_list):
     lst=[]
@@ -430,7 +442,7 @@ def has_duplicates(input_list):
                 return True    
     return False
 
-def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, stoichiometry=False, v=False):
+def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, stoichiometry=False, v=False, num_combination=10):
     """Run single elementary reactions
     rxn_flask: a dictionary contains all the reactants
     single_step: a dictionary contains the templates, pKa condition, and description (elementary step)
@@ -453,19 +465,23 @@ def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, sto
         # TODO: label acids and bases (e.g. 'acid' instead of just 'reactant' when labelling), add isAcid, isBase
         rxn_templates=proton_balanced_template(rxn_flask, pKas, rxn_templates)
         num_proton_temp=len(rxn_templates)
-        if v:
+        # if num_proton_temp > num_combination:
+        #     raise ValueError(f"{num_proton_temp} templates are generated, which is too many.")
+        if v > 2:
             print('New proton balanced {} templates are generated'.format(num_proton_temp-num_original_temp))
             num_original_temp=len(rxn_templates)
         
     if uni_rxn: # Get unimolecular reaction template
         rxn_templates=allow_unimolecular_rxn(rxn_templates)
-        if v:
-            num_uni_temp=len(rxn_templates)
+        num_uni_temp = len(rxn_templates)
+        # if num_proton_temp > num_combination:
+        #     raise ValueError(f"{num_uni_temp} templates are generated, which is too many.")
+        if v > 2:
             print('New unimolecular {} templates are generated \n'.format(num_uni_temp-num_original_temp))
     
     #Define the reactive chemicals
     #rxn_flask may be updated if stoichiometry is on
-    rxn_flask, reactive_dict=find_reactants(rxn_flask, rxn_templates, stoichiometry, v)
+    rxn_flask, reactive_dict=find_reactants(rxn_flask, rxn_templates, stoichiometry, v, num_combination=num_combination)
     
     for templ in reactive_dict:        
         if v: print('Template is ', templ)
@@ -482,7 +498,7 @@ def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, sto
             if not outcomes:
                 continue
                 
-            if v:
+            if v > 3:
                 reactants_smi=[rxn_flask[num]['smiles'] for num in combination]  
                 print('The reactants are {}'.format(reactants_smi))
                 
@@ -490,7 +506,7 @@ def run_single_reaction(rxn_flask, single_step, proton=False, uni_rxn=False, sto
                 reactant_id=set(num for num in combination)
                 if not check_products_validity(outcome): continue
                 product_id=set()
-                if v: print('{} products are formed \n'.format(len(outcome)))
+                if v > 3: print('{} products are formed \n'.format(len(outcome)))
                 for prod_mol in outcome:     
                     new_prod=product_dict(prod_mol, reactant_id, history)
                     r_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in reactant_id]))
@@ -531,7 +547,7 @@ def run_full_reaction(rxn_flask, condition, v=False):
         tot_net = list()
         rxn_flask_cond = rxn_flask
         for temp in cond['Stages'].values():
-            rxn_flask_cond, reaction_network=run_single_reaction(rxn_flask_cond , temp, uni_rxn=True, proton=True, stoichiometry=True, v=v)        
+            rxn_flask_cond, reaction_network=run_single_reaction(rxn_flask_cond , temp, uni_rxn=True, proton=True, stoichiometry=True, v=v)
             tot_net+=reaction_network
             
         tot_networks.append(tot_net)
@@ -739,8 +755,10 @@ def draw_reaction_graph(G, size=[5,5], labels = True):
     nx.draw_networkx_nodes(G, posit, nodelist=product_list, node_color="magenta")
     nx.draw_networkx_nodes(G, posit, nodelist=spectator_list, node_color="tab:purple")
 
-def get_mechanistic_network(rxn, v=False, simple=False, light=False):
+def get_mechanistic_network(rxn, v=0, simple=False, light=False):
     condition = calling_rxn_template(rxn)
+    if v > 2:
+        print('Condition for this reaction is retrived')
     rxn_flask=prepare_reactants(rxn)
     rxn_flasks, tot_networks=run_full_reaction(rxn_flask, condition, v=v)
 

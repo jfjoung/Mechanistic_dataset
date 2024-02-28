@@ -24,6 +24,8 @@ def parse_arguments():
     parser.add_argument("--simple", help="Use all simple path finding instead of shortest path during reaction network generation",
                         type=bool, default=False)
 
+    parser.add_argument("--num_combination", help="The number of possible reactions to be considered, it prevents the explosions of many reactions",
+                        type=int, default=30)
 
     parser.add_argument('--data', help='Path to the reaction data',
                         type=str, default='./data/test_data.txt')
@@ -33,7 +35,7 @@ def parse_arguments():
 
     #TODO: set the verbosity level
     parser.add_argument("--verbosity", help="control the verbosity",
-                       type=int, default=1)
+                       type=int, default=2)
 
     return parser.parse_args()
 

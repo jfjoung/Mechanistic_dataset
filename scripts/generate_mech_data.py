@@ -8,8 +8,12 @@ from utils.apply_mechanistic_template import get_mechanistic_network, elementary
 
 
 def generate_mechanism_for_one_reaction(rxn, args):
+<<<<<<< HEAD
     logging.info(f'Generating mechanism for {rxn['reaction_smiles']}...')
     G_dict = get_mechanistic_network(rxn, v=False, simple=args.simple)
+=======
+    G_dict = get_mechanistic_network(rxn, v=args.verbosity, simple=args.simple)
+>>>>>>> 8c285c8 (Restrict the combination of possible reactants)
     if args.all_info:
         elem_dict = dict()
     else:
@@ -47,6 +51,8 @@ def generate_mechdata_known_condition(args):
 
     with open(args.data, 'r') as file, open(args.save, 'w') as fout:
         for i, line in tqdm(enumerate(file)):
+            if args.verbosity > 1:
+                print(f'Started {i}th reaction')
             try:
                 rxn = json.loads(line.strip())
                 new_rxn = generate_mechanism_for_one_reaction(rxn, args)
@@ -56,8 +62,9 @@ def generate_mechdata_known_condition(args):
                     for step_rxn in new_rxn:
                         fout.write('{}\n'.format(step_rxn))
             except Exception as e:
-                print(f'{i}th reaction has a problem of ...')
-                print(e, '\n')
+                if args.verbosity > 0:
+                    print(f'{i}th reaction has a problem of ...')
+                    print(e, '\n')
                 pass
 
 def generate_mechdata_unknown_condition(args):
@@ -72,6 +79,8 @@ def generate_mechdata_unknown_condition(args):
     with open(args.data, 'r') as file, open(args.save, 'w') as fout:
         lines = file.readlines()
         for i, line in tqdm(enumerate(lines)):
+            if args.verbosity > 1:
+                print(f'\n Started {i}th reaction')
             try:
                 rxn = line.split()[0]
                 if len(line.split()[1:])==1:
