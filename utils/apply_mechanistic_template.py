@@ -38,28 +38,6 @@ def isotope_to_atommap(mol):
         a.SetIsotope(0)
     return mol
 
-# def collect_reaction_class(reactions):
-#     '''
-#     To collect one reaction class from list of reaction, in the form of {'rxnsmiles': {'reaction_name': name}}.
-#     reactions: list of reactions
-#     lst_rxn: A reaction list
-#     rxn_class_name: Reaction name to be collected
-#     '''
-#     rxns_grouped_by_class = {}
-#     unclassified = []
-#
-#     for reaction in reactions:
-#         if 'reaction_name' in reaction.keys():
-#             rxns_grouped_by_class[reaction['reaction_name']] = rxns_grouped_by_class.get(reaction['reaction_name'], []) + [reaction]
-#         else:
-#             print("No reaction name for", reaction)
-#             unclassified.append(reaction)
-#
-#
-#     print(len(unclassified))
-#
-#     return rxns_grouped_by_class
-
 def get_class_key(class_name):
 
     '''
@@ -71,21 +49,6 @@ def get_class_key(class_name):
             return classes
 
     return None
-#
-# def reagent_matching_for_class(class_name, reactions):
-#
-#
-#     matched_reactions = {}
-#     class_key = get_class_key(class_name)
-#
-#     if class_key:
-#         results = Parallel(n_jobs=10)(delayed(reagent_matching_for_single_reaction)(class_key, reaction) for reaction in tqdm(reactions))
-#         return results
-#
-#     else:
-#         print("No class key for class", class_name)
-#         return None
-
 
 def reagent_matching_for_single_reaction(reaction, class_key):
     '''
@@ -97,15 +60,6 @@ def reagent_matching_for_single_reaction(reaction, class_key):
 
     class_key = get_class_key(class_key)
     class_data = Reaction_templates.class_reaction_templates[class_key]
-
-    # keys = Reaction_templates.class_reaction_templates.keys()
-    # try:
-    #     classkey = [key for key in keys if class_key in key][0]
-    #     class_data = Reaction_templates.class_reaction_templates[classkey]
-    # except:
-    #
-    #     reaction['conditions'] = []
-    #     return reaction
 
     reaction['conditions'] = []
     for cond_name, cond_data in class_data.items():
@@ -177,9 +131,9 @@ def prepare_reactants(reaction_dict):
     return reactant_dict
 
 def check_products_validity(outcome):
- #Many different outcomes can be producted from one template (e.g. symmetric molecules)
+ #Many outcomes can be produced from one template (e.g. symmetric molecules)
 
-    good_molecule=0 # To check every molecules make sense
+    good_molecule=0 # To check every molecule is making sense
     for prod_mol in outcome:
         try:# Not realistic molecule should be rejected, except aromaticity error.
             prod_mol.UpdatePropertyCache(strict=False)
@@ -198,10 +152,7 @@ def find_reactants(rxn_flask, rxn_templates, stoichiometry):
     for templ in rxn_templates:
         reactant_dict=dict()
         r, p = templ.split('>>')
-#         if '.' in r:
         r=r.split('.')
-#         else: 
-#             r=[r]        
         num_reactants=len(r)    
 
         mol_dict = {reactant: Chem.MolFromSmiles(rxn_flask[reactant]['smiles']) for reactant in rxn_flask}
@@ -752,7 +703,6 @@ def reaction_network(rxn_flask, tot_network, simple=False, light=True, full=Fals
     return G_sub
 
 def draw_reaction_graph(G, size=[5,5], labels = True):
-#     G=nx.node_link_graph(G)
     try:
         posit =  topo_pos(G)
     except:

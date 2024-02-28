@@ -1,12 +1,10 @@
 import os
 import sys
-sys.path.append("../")
-sys.path.append("../utils")
 import networkx as nx
 from tqdm import tqdm
-from utils.apply_mechanistic_template import get_mechanistic_network, elementary_reaction, flatten_list, reagent_matching_for_single_reaction
 import json
-# import signal
+from utils.apply_mechanistic_template import get_mechanistic_network, elementary_reaction, flatten_list, reagent_matching_for_single_reaction
+
 
 def generate_mechanism_for_one_reaction(rxn, args):
     G_dict = get_mechanistic_network(rxn, v=False, simple=args.simple)
@@ -40,6 +38,11 @@ def generate_mechdata_known_condition(args):
     'reaction_smiles': Reaction SMILES,
     'conditions': a list of conditions for a given reaction name}
     '''
+
+    # Make directory for saving file
+    save_dir_path=os.path.dirname(args.save)
+    os.makedirs(save_dir_path, exist_ok=True)
+
     with open(args.data, 'r') as file, open(args.save, 'w') as fout:
         for i, line in tqdm(enumerate(file)):
             try:
@@ -59,6 +62,10 @@ def generate_mechdata_unknown_condition(args):
     '''
     Input format is a string of 'reaction_smiles NameRXN_name'
     '''
+
+    # Make directory for saving file
+    save_dir_path=os.path.dirname(args.save)
+    os.makedirs(save_dir_path, exist_ok=True)
 
     with open(args.data, 'r') as file, open(args.save, 'w') as fout:
         lines = file.readlines()
@@ -80,6 +87,7 @@ def generate_mechdata_unknown_condition(args):
                         for step_rxn in new_rxn:
                             fout.write('{}\n'.format(step_rxn))
             except Exception as e:
-                print(f'{i}th reaction has a problem of ...')
-                print(e, '\n')
+                if args.verbosity > 0:
+                    print(f'{i}th reaction has a problem of ...')
+                    print(e, '\n')
                 pass

@@ -2,3 +2,4 @@
 [Br:1][CH2:2][CH2:3][CH2:4][OH:5].[CH3:11][CH2:12][O:13][CH2:14][CH3:15].[CH3:6][S:7](=[O:8])(=[O:9])[Cl:10]>[CH2:16]([N:17]([CH2:18][CH3:19])[CH2:20][CH3:21])[CH3:22]>[Br:1][CH2:2][CH2:3][CH2:4][O:5][S:7]([CH3:6])(=[O:8])=[O:9] Sulfonic ester Schotten-Baumann
 [CH2:1]([Cl:2])[CH2:3][OH:4].[CH2:5]([S:6](=[O:7])(=[O:8])[Cl:17])[CH:9]([CH3:10])[CH3:11].[CH3:12][CH2:13][O:14][CH2:15][CH3:16]>[CH2:18]([N:19]([CH2:20][CH3:21])[CH2:22][CH3:23])[CH3:24]>[CH2:1]([Cl:2])[CH2:3][O:4][S:6]([CH2:5][CH:9]([CH3:10])[CH3:11])(=[O:7])=[O:8] Sulfonic ester Schotten-Baumann
 [Br:1][CH2:2][CH2:3][OH:4].[CH2:5]([S:6](=[O:7])(=[O:8])[Cl:10])[CH3:9].[CH3:11][CH2:12][O:13][CH2:14][CH3:15]>[CH2:16]([N:17]([CH2:18][CH3:19])[CH2:20][CH3:21])[CH3:22]>[Br:1][CH2:2][CH2:3][O:4][S:6]([CH2:5][CH3:9])(=[O:7])=[O:8] Sulfonic ester Schotten-Baumann
+O=C(C1C(C(OCC)=O)C(C(OCC)=O)C(C(OCC)=O)O1)OCC.[OH-]>>O=C(C2C(C(O)=O)C(C(O)=O)C(C(O)=O)O2)O CO2H-Et deprotection

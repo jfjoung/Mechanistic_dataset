@@ -1,7 +1,5 @@
-import os
-import sys
-from scripts.generate_mech_data import generate_mechdata_known_condition, generate_mechdata_unknown_condition
 import argparse
+from scripts.generate_mech_data import generate_mechdata_known_condition, generate_mechdata_unknown_condition
 
 def parse_arguments():
     parser = argparse.ArgumentParser("Set the arguments for mechanistic dataset generation")
@@ -33,7 +31,7 @@ def parse_arguments():
 
     #TODO: set the verbosity level
     parser.add_argument("--verbosity", help="control the verbosity",
-                       type=int, default=0)
+                       type=int, default=1)
 
     return parser.parse_args()
 
