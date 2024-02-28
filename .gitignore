@@ -40,6 +40,7 @@ Thumbs.db
 ######################
 data/
 results/
+logs/
 *.csv
 *.json
 *.jsonl
@@ -48,6 +49,7 @@ results/
 # ipynb files and checkpoints#
 ######################
 *.ipynb
+*.pyc
 **/.ipynb_checkpoints
 __pycache__/
 scratch/
