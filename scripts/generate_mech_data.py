@@ -84,7 +84,7 @@ def generate_mechdata_unknown_condition(args):
 
     with open(args.data, 'r') as file, open(args.save, 'w') as fout:
         lines = file.readlines()
-        for i, line in tqdm(enumerate(lines)):
+        for i, line in enumerate(tqdm(lines)):
             if args.verbosity > 0:
                 logging.info(f'Started {i}th reaction')
 
