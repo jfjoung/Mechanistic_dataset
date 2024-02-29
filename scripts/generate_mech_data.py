@@ -8,7 +8,8 @@ from utils.apply_mechanistic_template import get_mechanistic_network, elementary
 
 
 def generate_mechanism_for_one_reaction(rxn, args):
-    logging.info('Generating mechanism for: ' + rxn['reaction_smiles'])
+    if args.verbosity > 0:
+        logging.info('Generating mechanism for: ' + rxn['reaction_smiles'])
     G_dict = get_mechanistic_network(rxn, args)
 
     if args.all_info:
@@ -18,15 +19,18 @@ def generate_mechanism_for_one_reaction(rxn, args):
 
     for cond, G in G_dict.items():
         try:
-            elem_rxns = elementary_reaction(G, args, v=False, byproduct=args.byproduct, spectator=args.spectator, full=args.full,
-                                            end=args.end, plain=args.plain,reagent=args.reagent)
+            elem_rxns = elementary_reaction(G, args)
             if args.all_info:
                 elem_dict[cond]={'Reaction graph': nx.node_link_data(G),
                                  'Elementary steps': elem_rxns}
             else:
                 elem_list.append(elem_rxns)
 
-        except Exception as e: pass
+        except Exception as e:
+            if args.verbosity > 0:
+                logging.info('Error occured in {}'.format(cond))
+                logging.info(f'{e}')
+            pass
 
     if args.all_info:
         rxn['Mechanism'] = elem_dict
@@ -49,7 +53,7 @@ def generate_mechdata_known_condition(args):
     with open(args.data, 'r') as file, open(args.save, 'w') as fout:
         for i, line in tqdm(enumerate(file)):
             if args.verbosity > 1:
-                print(f'Started {i}th reaction')
+                logging.info(f'Started {i}th reaction')
             try:
                 rxn = json.loads(line.strip())
                 new_rxn = generate_mechanism_for_one_reaction(rxn, args)
@@ -60,8 +64,8 @@ def generate_mechdata_known_condition(args):
                         fout.write('{}\n'.format(step_rxn))
             except Exception as e:
                 if args.verbosity > 0:
-                    print(f'{i}th reaction has a problem of ...')
-                    print(e, '\n')
+                    logging.info('The reaction has problem!')
+                    logging.info(f'{e}\n')
                 pass
 
 def generate_mechdata_unknown_condition(args):
@@ -76,8 +80,8 @@ def generate_mechdata_unknown_condition(args):
     with open(args.data, 'r') as file, open(args.save, 'w') as fout:
         lines = file.readlines()
         for i, line in tqdm(enumerate(lines)):
-            if args.verbosity > 1:
-                print(f'\n Started {i}th reaction')
+            if args.verbosity > 0:
+                logging.info(f'Started {i}th reaction')
             try:
                 rxn = line.split()[0]
                 if len(line.split()[1:])==1:
@@ -92,10 +96,14 @@ def generate_mechdata_unknown_condition(args):
                     if args.all_info:
                         fout.write('{}\n'.format(new_rxn))
                     else:
+                        if args.verbosity > 0:
+                            logging.info(
+                                'Total {} elementary reactions are generated \n'.format(len(new_rxn)))
                         for step_rxn in new_rxn:
                             fout.write('{}\n'.format(step_rxn))
             except Exception as e:
                 if args.verbosity > 0:
-                    print(f'{i}th reaction has a problem of ...')
-                    print(e, '\n')
+                    logging.info('The reaction has problem!')
+                    logging.info(f'{line}')
+                    logging.info(e, '\n')
                 pass

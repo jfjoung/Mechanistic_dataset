@@ -56,8 +56,6 @@ def parse_arguments():
     return parser.parse_args()
 
 if __name__ == '__main__':
-    args = parse_arguments()
-    print(args)
     '''
     If you have a list of reactions in the form of 
     {'reaction_name': NameRXN name,
@@ -69,11 +67,13 @@ if __name__ == '__main__':
     if you have a reaction string of 'reaction_smiles NameRXN_name', 
     then RUN generate_mechdata_unknown_condition(args)
     '''
-
+    args = parse_arguments()
     os.makedirs('./logs/', exist_ok=True)
     time = datetime.now().strftime('%Y-%m-%d_%H-%M')
     logging.basicConfig(filename=f'./logs/generate_mechanism_data_{time}.log', level=logging.DEBUG, format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
     logging.info('Starting mechanistic dataset generation...')
-    logging.info(f'Arguments: {args}')
+    logging.info(f'Arguments')
+    for key, value in vars(args).items():
+        logging.info('{}: {}'.format(key, value))
     # generate_mechdata_known_condition(args)
     generate_mechdata_unknown_condition(args)
