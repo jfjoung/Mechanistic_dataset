@@ -59,24 +59,24 @@ def reagent_matching_for_single_reaction(reaction, class_key):
     '''
     reactants, agents, products = reaction['reaction_smiles'].split(">")
     mols = [Chem.MolFromSmiles(smi) for smi in reactants.split(".") + agents.split(".")]
-
-    class_key = get_class_key(class_key)
-    class_data = Reaction_templates.class_reaction_templates[class_key]
-
     reaction['conditions'] = []
-    for cond_name, cond_data in class_data.items():
-        if cond_data['Reagent']:
-            cond_mols = [Chem.MolFromSmarts(x) for x in cond_data['Reagent']]
-            matched_reagents = []
-            for patt in cond_mols:
-                for mol in mols:
-                    if mol.GetSubstructMatch(patt):
-                        matched_reagents.append(mol)
-                        break
-            if len(cond_mols) == len(matched_reagents):
+    class_key = get_class_key(class_key)
+    if class_key in Reaction_templates.class_reaction_templates:
+        class_data = Reaction_templates.class_reaction_templates[class_key]
+
+        for cond_name, cond_data in class_data.items():
+            if cond_data['Reagent']:
+                cond_mols = [Chem.MolFromSmarts(x) for x in cond_data['Reagent']]
+                matched_reagents = []
+                for patt in cond_mols:
+                    for mol in mols:
+                        if mol.GetSubstructMatch(patt):
+                            matched_reagents.append(mol)
+                            break
+                if len(cond_mols) == len(matched_reagents):
+                    reaction['conditions'].append(cond_name)
+            else:
                 reaction['conditions'].append(cond_name)
-        else:
-            reaction['conditions'].append(cond_name)
     return reaction
 
 def calling_rxn_template(reaction_dict):
@@ -193,11 +193,10 @@ def proton_balanced_template(rxn_flask, pKas, rxn_templates):
 #             data['acid_or_base'] = [None for temp in rxn_templates] 
 #         return rxn_flask, rxn_templates
         return rxn_templates
-    
     for pKa in pKas:
         if not pKa: continue
         A=pKa.get('A')
-        B=pKa.get('B')      
+        B=pKa.get('B')
         if A:
             filtered_data = [d for d in AcidBase_lookup.Acid_base if 'A' in d['role'] and d['pKa'] < A]
             sorted_data = sorted(filtered_data, key=lambda x: x['pKa'])
@@ -707,7 +706,8 @@ def get_mechanistic_network(rxn, args):
     for rxn_condition, rxn_flask,tot_network in zip(rxn['conditions'], rxn_flasks, tot_networks):
         rxn_flask=find_product(rxn, rxn_flask)
         if rxn_flask:
-            logging.info('Products for {} have been found.'.format(rxn_condition))
+            if args.verbosity > 0:
+                logging.info('Products for {} have been found.'.format(rxn_condition))
             G=reaction_network(rxn_flask, tot_network,args)
             G_dict[rxn_condition]=G
     if G_dict:

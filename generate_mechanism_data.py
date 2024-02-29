@@ -49,6 +49,8 @@ def parse_arguments():
                         type=str, default='./results/elementary_reaction.txt')
     parser.add_argument("--all_info", help="Save all the information you can get, or you can get only elementary steps if not",
                         type=bool, default=False)
+    parser.add_argument("--stat", help="Save the statistics dictionary",
+                        type=bool, default=True)
 
     parser.add_argument("--verbosity", help="control the verbosity; 0: silent, 1: prints the critical errors, 2: prints some details, 3: prints all",
                        type=int, default=0)

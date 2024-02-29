@@ -1514,7 +1514,7 @@ class_reaction_templates={
  ('Darzens chlorination',
   'Darzens bromination'): {'Reaction': {'Reagent': None,
    'Stages': {0: {'Templates': ['[#6X4][#8;H1:1]>>[#8;H0;-1:1]'],
-     'pKa': [14],
+     'pKa': [{'B': 14}],
      'Description': 'Deprotonation of alcohol'},
     1: {'Templates': ['[#6:4]-[#8;H0;-1:1].[S:2]-[Cl,Br:3]>>[#6:4]-[#8;H0;+0:1]-[S:2].[Cl,Br;-1:3]'],
      'pKa': [None],
