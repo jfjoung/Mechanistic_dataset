@@ -125,8 +125,7 @@ def generate_mechdata_unknown_condition(args):
                             fout.write('{}\n'.format(step_rxn))
 
                 except Exception as e:
-                    if str(e) == "Products are not produced.":
-                        conditions_stats[label]['w_conditions_failed'] += 1
+                    conditions_stats[label]['w_conditions_failed'] += 1
                     if args.verbosity > 0:
                         logging.info('The reaction has problem!')
                         logging.info(f'{line}')
