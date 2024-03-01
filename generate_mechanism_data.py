@@ -4,6 +4,14 @@ import logging
 from datetime import datetime
 from scripts.generate_mech_data import generate_mechdata
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+
 def parse_arguments():
     parser = argparse.ArgumentParser("Set the arguments for mechanistic dataset generation")
 
@@ -11,19 +19,19 @@ def parse_arguments():
     parser.add_argument("--num_combination", help="The number of possible reactions to be considered, it prevents combinatorial explosions",
                         type=int, default=12)
     parser.add_argument("--uni_rxn", help="Allow the unimolecular reactions",
-                        type=bool, default=True)
+                        type=str2bool, default=True)
     parser.add_argument("--proton", help="Allow the proton-balanced reactions",
-                        type=bool, default=True)
+                        type=str2bool, default=True)
     parser.add_argument("--max_num_temp", help="The maximum number of templates allowed to consider. If uni_rxn or proton is true, the combinatorial explosion could occur",
                         type=int, default=50)
     parser.add_argument("--stoichiometry", help="Duplicate the reactants when needed",
-                        type=bool, default=True)
+                        type=str2bool, default=True)
 
     # Arguments for handling the reaction network
     parser.add_argument("--simple", help="Use all simple path finding instead of shortest path during reaction network generation",
-                        type=bool, default=False)
+                        type=str2bool, default=False)
     parser.add_argument("--do_not_pruning", help="Get full reaction network instead of the pruned network containing only paths toward product",
-                        type=bool, default=False)
+                        type=str2bool, default=False)
 
     # Arguments for preventing the combinatorial explosions in the reaction network
     parser.add_argument("--num_cycles", help="The maximum number of cycles allowed in the reaction graph",
@@ -44,17 +52,17 @@ def parse_arguments():
     '''
 
     parser.add_argument("--byproduct", help="Add produced byproduct in reaction SMARTS",
-                       type=bool, default=False)
+                       type=str2bool, default=False)
     parser.add_argument("--spectator", help="Add spectator in reaction SMARTS",
-                       type=bool, default=False)
+                       type=str2bool, default=False)
     parser.add_argument("--full", help="Get overall reaction instead of elementary steps",
-                       type=bool, default=False)
+                       type=str2bool, default=False)
     parser.add_argument("--end", help="Get termination reactions (products>>products)",
-                       type=bool, default=False)
+                       type=str2bool, default=False)
     parser.add_argument("--plain", help="Get reaction SMARTS without atom-mapping",
-                       type=bool, default=False)
+                       type=str2bool, default=False)
     parser.add_argument("--reagent", help="Locate reagents at middle of the reaction (reactants>reagents>products) instead of both sides of reactants and products.",
-                       type=bool, default=False)
+                       type=str2bool, default=False)
 
     # Arguments for data loading and saving
     parser.add_argument('--data', help='Path to the reaction data',
@@ -62,12 +70,12 @@ def parse_arguments():
     parser.add_argument('--save', help='Path to the saving data',
                         type=str, default='./results/elementary_reaction.txt')
     parser.add_argument("--all_info", help="Save all the information you can get, or you can get only elementary steps if not",
-                        type=bool, default=False)
+                        type=str2bool, default=False)
     parser.add_argument("--stat", help="Save the statistics dictionary",
-                        type=bool, default=True)
+                        type=str2bool, default=True)
     parser.add_argument("--rxn_class", help="Specify the reaction class to work on. If not specified, it will work on all classes.",
                         type=str, default='')
-    parser.add_argument("--verbosity", help="control the verbosity; 0: silent, 1: prints the critical errors, 2: prints some details, 3: prints all",
+    parser.add_argument("--verbosity", help="control the verbosity; 0: silent, 1: prints the critical errors, 2: prints some details (do not recommend more than 10 reactions), 3: prints the process, 4: prints all",
                        type=int, default=0)
 
     return parser.parse_args()

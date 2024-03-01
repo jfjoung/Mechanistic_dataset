@@ -438,7 +438,7 @@ def run_single_reaction(rxn_flask, single_step, args):
     
     for templ in reactive_dict:        
         if args.verbosity > 3:
-            logging.info('Template is ', templ)
+            logging.info('Template is {}'.format(templ))
         
         combinations=reactive_dict[templ]['combination']
         num_reactants=reactive_dict[templ]['num_reactants']
@@ -463,6 +463,7 @@ def run_single_reaction(rxn_flask, single_step, args):
                 if args.verbosity > 3: logging.info('{} products are formed'.format(len(outcome)))
                 for prod_mol in outcome:     
                     new_prod=product_dict(prod_mol, reactant_id, history)
+
                     r_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in reactant_id]))
                     prod_num = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] == new_prod['smiles'] and sorted(value['atom_mapping']) == sorted(new_prod['atom_mapping'])]
                     p_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in prod_num]))
@@ -476,7 +477,8 @@ def run_single_reaction(rxn_flask, single_step, args):
                         num_mols=len(rxn_flask)+1
                         product_id.add(num_mols)
                         rxn_flask[num_mols]= new_prod
-                        
+                        if args.verbosity > 3: logging.info('{} is formed'.format(rxn_flask[num_mols]['smiles']))
+
                 if [reactant_id,product_id] not in reaction_pair:
                     reaction_pair.append([reactant_id,product_id])
                     reaction_network.append([reactant_id,templ, product_id])

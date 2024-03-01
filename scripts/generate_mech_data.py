@@ -52,12 +52,11 @@ def generate_mechdata(args):
     elem_steps_per_cond = {} # Statistics on how many elementary reaction is generated
     num_generated_rxn=0
 
-    with open(args.data, 'r') as file, open(args.save, 'w') as fout:
+    with open(args.data, 'r') as file:
         lines = file.readlines()
-        for i, line in enumerate(tqdm(lines)):
-            if args.verbosity > 0:
-                logging.info(f'Started {i}th reaction')
 
+    with open(args.save, 'w') as fout:
+        for i, line in enumerate(tqdm(lines)):
             rxn = line.split()[0]
             if len(line.split()[1:])==1:
                 label = line.split()[-1]
@@ -68,6 +67,8 @@ def generate_mechdata(args):
 
             # When reaction class is specified, then corresponding reactions will only be considered.
             if args.rxn_class and args.rxn_class != label: continue
+            if args.verbosity > 0:
+                logging.info(f'Started {i}th reaction')
 
             if label not in conditions_stats:
                 conditions_stats[label] = {'RXN_generated': 0, 'Failed': 0,
