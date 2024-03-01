@@ -66,15 +66,15 @@ def generate_mechdata(args):
             rxn_dict = {'reaction_name': label,
                         'reaction_smiles': rxn,}
             if label not in conditions_stats:
-                conditions_stats[label] = {'w_conditions_rxn_generated': 0, 'w_conditions_failed': 0,
-                                           'wo_conditions': 0}
+                conditions_stats[label] = {'RXN_generated': 0, 'Failed': 0,
+                                           'no_template': 0}
 
             rxn_dict = reagent_matching_for_single_reaction(rxn_dict, label)
             if rxn_dict['conditions']:
                 try:
                     new_rxn, elem_steps_stats = generate_mechanism_for_one_reaction(rxn_dict, args)
                     if new_rxn:
-                        conditions_stats[label]['w_conditions_rxn_generated'] += 1
+                        conditions_stats[label]['RXN_generated'] += 1
                         if label not in elem_steps_per_cond:
                             elem_steps_per_cond[label] = {}
                         for cond, steps in elem_steps_stats.items():
@@ -83,7 +83,7 @@ def generate_mechdata(args):
                             else:
                                 elem_steps_per_cond[label][cond] = steps
                     else:
-                        conditions_stats[label]['w_conditions_failed'] += 1
+                        conditions_stats[label]['Failed'] += 1
                     if args.all_info:
                         fout.write('{}\n'.format(new_rxn))
                     else:
@@ -95,14 +95,14 @@ def generate_mechdata(args):
                             fout.write('{}\n'.format(step_rxn))
 
                 except Exception as e:
-                    conditions_stats[label]['w_conditions_failed'] += 1
+                    conditions_stats[label]['Failed'] += 1
                     if args.verbosity > 0:
                         logging.info('The reaction has problem!')
                         logging.info(f'{line}')
                         logging.info(f'{e}\n')
                     pass
             else:
-                conditions_stats[label]['wo_conditions'] += 1
+                conditions_stats[label]['no_template'] += 1
 
     if args.stat:
         base_file_root, _ = os.path.splitext(args.save)

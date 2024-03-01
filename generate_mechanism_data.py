@@ -23,7 +23,24 @@ def parse_arguments():
     parser.add_argument("--do_not_pruning", help="Get full reaction network instead of the pruned network containing only paths toward product",
                         type=bool, default=False)
 
+    # Arguments for preventing the combinatorial explosions in the reaction network
+    parser.add_argument("--num_cycles", help="The maximum number of cycles allowed in the reaction graph",
+                       type=int, default=9)
+    parser.add_argument("--num_reaction_node", help="The maximum number of reaction nodes allowed in the reaction graph",
+                       type=int, default=50)
+
     # Arguments for extracting reaction SMARTS from the reaction network
+    '''
+    spectator: It will add spectators for all reactions. Reactants that have not yet participated in the reaction are also included. 
+               e.g. Reactants.Spectators>>Products.Spectators
+    byproduct: It will add produced byproducts as spectators for downstream reaction. 
+               e.g. upstream reaction; reactants>>intermediates.byproducts
+                    downstream reaction; reactants.intermediates.byproducts>>new_intermediates.byproducts
+    full: It returns the overall reactions.
+    end: It returns the termination reactions. e.g. products>>products
+    reagent: It changes the SMARTS format from reactants.spectators>>products.spectators to reactants>spectators>products
+    '''
+
     parser.add_argument("--byproduct", help="Add produced byproduct in reaction SMARTS",
                        type=bool, default=False)
     parser.add_argument("--spectator", help="Add spectator in reaction SMARTS",
@@ -36,11 +53,6 @@ def parse_arguments():
                        type=bool, default=False)
     parser.add_argument("--reagent", help="Locate reagents at middle of the reaction (reactants>reagents>products) instead of both sides of reactants and products.",
                        type=bool, default=False)
-
-    parser.add_argument("--num_cycles", help="The maximum number of cycles allowed in the reaction graph",
-                       type=int, default=9)
-    parser.add_argument("--num_reaction_node", help="The maximum number of reaction nodes allowed in the reaction graph",
-                       type=int, default=50)
 
     # Arguments for data loading and saving
     parser.add_argument('--data', help='Path to the reaction data',
@@ -60,7 +72,7 @@ def parse_arguments():
 if __name__ == '__main__':
     '''
     You need a reaction string of 'reaction_smiles NameRXN_name', 
-    generate_mechdata_unknown_condition(args)
+    generate_mechdata(args)
     '''
     args = parse_arguments()
     os.makedirs('./logs/', exist_ok=True)
