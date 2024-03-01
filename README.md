@@ -10,3 +10,4 @@ conda activate mechdata
 ```
 
 ## Step 1 - Data preparation
+In order to generate mechanistic dataset from the overall reactions, the reaction class name as in NameRXN.

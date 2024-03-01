@@ -2,12 +2,12 @@ import os
 import argparse
 import logging
 from datetime import datetime
-from scripts.generate_mech_data import generate_mechdata_known_condition, generate_mechdata_unknown_condition
+from scripts.generate_mech_data import generate_mechdata
 
 def parse_arguments():
     parser = argparse.ArgumentParser("Set the arguments for mechanistic dataset generation")
 
-    # Argumenets for applying reaction templates to get every elementary reactions
+    # Arguments for applying reaction templates to get every elementary reactions
     parser.add_argument("--num_combination", help="The number of possible reactions to be considered, it prevents combinatorial explosions",
                         type=int, default=12)
     parser.add_argument("--uni_rxn", help="Allow the unimolecular reactions",
@@ -59,15 +59,8 @@ def parse_arguments():
 
 if __name__ == '__main__':
     '''
-    If you have a list of reactions in the form of 
-    {'reaction_name': NameRXN name,
-    'reaction_smiles': Reaction SMILES,
-    'conditions': a list of conditions for a given reaction name},
-    then RUN generate_mechdata_known_condition(args)
-    
-    or
-    if you have a reaction string of 'reaction_smiles NameRXN_name', 
-    then RUN generate_mechdata_unknown_condition(args)
+    You need a reaction string of 'reaction_smiles NameRXN_name', 
+    generate_mechdata_unknown_condition(args)
     '''
     args = parse_arguments()
     os.makedirs('./logs/', exist_ok=True)
@@ -77,5 +70,4 @@ if __name__ == '__main__':
     logging.info(f'Arguments')
     for key, value in vars(args).items():
         logging.info('{}: {}'.format(key, value))
-    # generate_mechdata_known_condition(args)
-    generate_mechdata_unknown_condition(args)
+    generate_mechdata(args)

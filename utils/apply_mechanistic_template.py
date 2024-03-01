@@ -193,30 +193,31 @@ def proton_balanced_template(rxn_flask, pKas, rxn_templates):
 #             data['acid_or_base'] = [None for temp in rxn_templates] 
 #         return rxn_flask, rxn_templates
         return rxn_templates
-    for pKa in pKas:
-        if not pKa: continue
+
+    for pKa, templ in zip(pKas, rxn_templates):
+        if not pKa:
+            proton_balanced_rxn_templates.append(templ)
+            continue
         A=pKa.get('A')
         B=pKa.get('B')
         if A:
-            filtered_data = [d for d in AcidBase_lookup.Acid_base if 'A' in d['role'] and d['pKa'] < A]
+            filtered_data = [d for d in AcidBase_lookup.Acid_base if 'A' in d['role'] and d['pKa'] <= A]
             sorted_data = sorted(filtered_data, key=lambda x: x['pKa'])
             possible_acid_base=find_acid_base(rxn_flask, sorted_data, 'A')
         if B:
-            filtered_data = [d for d in AcidBase_lookup.Acid_base if 'B' in d['role'] and d['pKa'] > B]
+            filtered_data = [d for d in AcidBase_lookup.Acid_base if 'B' in d['role'] and d['pKa'] >= B]
             sorted_data = sorted(filtered_data, key=lambda x: x['pKa'], reverse=True)
             possible_acid_base=find_acid_base(rxn_flask, sorted_data, 'B')
         if not possible_acid_base: continue
-        
 
         for acid_base in possible_acid_base:
-            for templ in rxn_templates:
-                r, p = templ.split('>>')
-                new_r = '.'.join([r, acid_base[0]])
-                new_p = '.'.join([p, acid_base[1]])
-                templ='>>'.join([new_r,new_p])
-                proton_balanced_rxn_templates.append(templ)       
-        
-    # return rxn_flask, proton_balanced_rxn_templates
+            # for templ in rxn_templates:
+            r, p = templ.split('>>')
+            new_r = '.'.join([r, acid_base[0]])
+            new_p = '.'.join([p, acid_base[1]])
+            templ='>>'.join([new_r,new_p])
+            proton_balanced_rxn_templates.append(templ)
+
     return proton_balanced_rxn_templates
 
 def allow_unimolecular_rxn(rxn_templates):
@@ -400,7 +401,6 @@ def run_single_reaction(rxn_flask, single_step, args):
     stoichiometry: boolean to allow duplicate reactants
     v: verbose    
     """
-    
     rxn_templates = single_step['Templates']
     pKas = single_step['pKa']
     

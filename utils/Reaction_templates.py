@@ -169,7 +169,6 @@ class_reaction_templates={
     {'Reaction': 
      {'Reagent': None,
    'Stages': {0: {
-
        'Templates': [# Acidic pKa
                      '[#6:1]-[#8;H1;+0:2].[Cl,Br,I:4]-[C:5]>>[Cl,Br,I;H0;-1:4].[#6:1]-[#8;H1;+1:2]-[C:5]',
                      '[#6:1]-[#8;H1;+0:2].[O:3]=[S:4]([O:5]-[C:6])=[O:7]>>[O:3]=[S:4]([O;H0;-1:5])=[O:7].[#6:1]-[#8;H1;+1:2]-[C:6]',
@@ -177,7 +176,7 @@ class_reaction_templates={
                      '[#6:1]-[#8;H0,+0:2][Li,Na,K:3]>>[Li,Na,K;+1:3].[#6:1]-[#8;H0,-1:2]',
                      '[#6:1]-[#8;H1;+0:2]>>[#6:1]-[#8;H0;-1:2]',
                     ],
-     'pKa': [None, None, None, {'B': 15.5}],
+     'pKa': [None, None, None, {'B': 14}],
      'Description': 'Addition of alcohol under acidic / deprotonation of alcohol'},
         1: {
        'Templates': [# Acidic pKa
@@ -186,7 +185,7 @@ class_reaction_templates={
                      '[#6:1]-[#8;H0;-1:2].[Cl,Br,I:4]-[C:5]>>[Cl,Br,I;H0;-1:4].[#6:1]-[#8;H0;+0:2]-[C:5]',
                      '[#6:1]-[#8;H0;-1:2].[O:3]=[S:4]([O:5]-[C:6])=[O:7]>>[O:3]=[S:4]([O;H0;-1:5])=[O:7].[#6:1]-[#8;H0;+0:2]-[C:6]',
                     ],
-     'pKa': [{'B': -2}, None, None],
+     'pKa': [{'B': -1.7}, None, None],
      'Description': 'Neutralization of protonated ester / Addition of alcohol under basic pKa'},    
             }}},
     

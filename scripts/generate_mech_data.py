@@ -39,37 +39,7 @@ def generate_mechanism_for_one_reaction(rxn, args):
     else:
         return flatten_list(elem_list), elem_steps_stats
 
-def generate_mechdata_known_condition(args):
-    '''
-    Input format is
-    {'reaction_name': NameRXN name,
-    'reaction_smiles': Reaction SMILES,
-    'conditions': a list of conditions for a given reaction name}
-    '''
-
-    # Make directory for saving file
-    save_dir_path=os.path.dirname(args.save)
-    os.makedirs(save_dir_path, exist_ok=True)
-
-    with open(args.data, 'r') as file, open(args.save, 'w') as fout:
-        for i, line in tqdm(enumerate(file)):
-            if args.verbosity > 1:
-                logging.info(f'Started {i}th reaction')
-            try:
-                rxn = json.loads(line.strip())
-                new_rxn  = generate_mechanism_for_one_reaction(rxn, args)
-                if args.all_info:
-                    fout.write('{}\n'.format(new_rxn))
-                else:
-                    for step_rxn in new_rxn:
-                        fout.write('{}\n'.format(step_rxn))
-            except Exception as e:
-                if args.verbosity > 0:
-                    logging.info('The reaction has problem!')
-                    logging.info(f'{e}\n')
-                pass
-
-def generate_mechdata_unknown_condition(args):
+def generate_mechdata(args):
     '''
     Input format is a string of 'reaction_smiles NameRXN_name'
     '''
