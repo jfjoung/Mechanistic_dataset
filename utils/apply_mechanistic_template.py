@@ -426,7 +426,12 @@ def run_single_reaction(rxn_flask, single_step, args):
         num_uni_temp = len(rxn_templates)
         if args.verbosity > 2:
             logging.info('New unimolecular {} templates are generated'.format(max(num_uni_temp-num_original_temp,0)))
-    
+
+    if len(rxn_templates) > args.max_num_temp:
+        if args.verbosity > 2:
+            logging.info('{} templates are generated, skipping it to avoid combinatorial explosion'.format(num_uni_temp))
+        raise ValueError("Too many templates are generated.")
+
     #Define the reactive chemicals
     #rxn_flask may be updated if stoichiometry is on
     rxn_flask, reactive_dict=find_reactants(rxn_flask, rxn_templates, args)

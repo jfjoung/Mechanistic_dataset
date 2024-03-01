@@ -14,6 +14,8 @@ def parse_arguments():
                         type=bool, default=True)
     parser.add_argument("--proton", help="Allow the proton-balanced reactions",
                         type=bool, default=True)
+    parser.add_argument("--max_num_temp", help="The maximum number of templates allowed to consider. If uni_rxn or proton is true, the combinatorial explosion could occur",
+                        type=int, default=50)
     parser.add_argument("--stoichiometry", help="Duplicate the reactants when needed",
                         type=bool, default=True)
 
@@ -63,7 +65,8 @@ def parse_arguments():
                         type=bool, default=False)
     parser.add_argument("--stat", help="Save the statistics dictionary",
                         type=bool, default=True)
-
+    parser.add_argument("--rxn_class", help="Specify the reaction class to work on. If not specified, it will work on all classes.",
+                        type=str, default='')
     parser.add_argument("--verbosity", help="control the verbosity; 0: silent, 1: prints the critical errors, 2: prints some details, 3: prints all",
                        type=int, default=0)
 

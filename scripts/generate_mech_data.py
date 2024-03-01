@@ -65,6 +65,10 @@ def generate_mechdata(args):
                 label = ' '.join(line.split()[1:])
             rxn_dict = {'reaction_name': label,
                         'reaction_smiles': rxn,}
+
+            # When reaction class is specified, then corresponding reactions will only be considered.
+            if args.rxn_class and args.rxn_class != label: continue
+
             if label not in conditions_stats:
                 conditions_stats[label] = {'RXN_generated': 0, 'Failed': 0,
                                            'no_template': 0}
