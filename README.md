@@ -17,3 +17,15 @@ BrCCCOC1=CC(OCO2)=C2C=C1.OC3C(CCN(C3)C(OC(C)(C)C)=O)C4=CC=C(O)C=C4.[OH-]>>OC1C(C
 ```
 
 ## Step 2 - Run a code to generate mechanistic data
+
+Mechanistic data can be generated with either of the two methods: 
+1. with bash script
+<code>generate_mechanism_data.sh</code> can be modified with the arguments. 
+```shell
+bash run/generate_mechanism_data.sh
+```
+
+2. with python script
+```shell
+python generate_mechanism_data.py
+```
