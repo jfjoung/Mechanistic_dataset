@@ -25,7 +25,7 @@ Mechanistic data can be generated with either of the two methods: \
 bash run/generate_mechanism_data.sh
 ```
 
-2. with python script\
+2. with python script
 ```shell
 python generate_mechanism_data.py
 ```
