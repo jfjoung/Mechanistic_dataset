@@ -24,12 +24,7 @@ def generate_mechdata_single(input):
                 'reaction_smiles': rxn, }
 
     elem_steps_stats = {label: {'No templates': 0,
-                                'No products': 0,
-                                'Too many reactions':0,
-                                'Error': 0,
-                                'Success': {},
-
-    }}  # To get statistics
+                                'Error': 0,}}  # To get statistics
 
     rxn_dict = reagent_matching_for_single_reaction(rxn_dict, label)
     if not rxn_dict['conditions']:
@@ -41,17 +36,11 @@ def generate_mechdata_single(input):
         try:
             G_dict = get_mechanistic_network(rxn_dict, args)
         except Exception as e:
-            if str(e) == "Products are not produced.":
-                elem_steps_stats[label]['No products']+=1
-                if args.verbosity > 0:
-                    logging.info('Products are not produced for the reaction')
-                return elem_steps_stats # 2
-            else:
-                elem_steps_stats[label]['Error'] += 1
-                if args.verbosity > 0:
-                    logging.info('Error occured in {}'.format(rxn))
-                    logging.info(f'{e}')
-                return elem_steps_stats  # 0
+            elem_steps_stats[label]['Error'] += 1
+            if args.verbosity > 0:
+                logging.info('Error occured in {}'.format(rxn))
+                logging.info(f'{e}')
+            return elem_steps_stats  # 0
 
         if args.all_info:
             elem_dict = dict()
@@ -59,45 +48,57 @@ def generate_mechdata_single(input):
             elem_list = list()
 
         for cond, G in G_dict.items():
-            try:
-                elem_rxns = elementary_reaction(G, args)
-                reaction_node, reactant_node, product_node, byproduct_node, intermediate_node, spectator_node=find_chemical_nodes(G)
-                elem_steps_stats[label]['Success'] = {cond: {'Num of overall reaction': 1,
-                                                             'Num of total elem steps': len(elem_rxns),
-                                                             'Num of total reactants': len(reactant_node),
-                                                             'Num of total products': len(product_node),
-                                                             'Num of total byproducts': len(byproduct_node),
-                                                             'Num of total intermediates': len(intermediate_node),
-                                                             'Num of total spectators': len(spectator_node),
-                                                             }}
-            except Exception as e:
-                if str(e) == "Too many reaction nodes.":
-                    if args.verbosity > 0:
-                        logging.info('There are too many steps for the reaction of {}'.format(cond))
-                    elem_steps_stats[label]['Too many reactions']+=1
-                    return elem_steps_stats
-                elif str(e) == "Too many cycles.":
-                    if args.verbosity > 0:
-                        logging.info('There are too catalytic cycles for the reaction of {}'.format(cond))
-                    elem_steps_stats[label]['Too many reactions']+=1
-                    return elem_steps_stats
-                else:
-                    if args.verbosity > 0:
-                        logging.info('Error occured in {}'.format(cond))
-                        logging.info(f'{e}')
-                    elem_steps_stats[label]['Error'] += 1
-                    return elem_steps_stats
+            elem_steps_stats[label][cond]= {'No products': 0,
+                                            'Too many reactions': 0,
+                                            'error': 0,
+                                            'Success': {}}
 
+            if G == "Products are not produced.":
+                elem_steps_stats[label][cond]['No products'] += 1
+                if args.verbosity > 0:
+                    logging.info('Products are not produced for the reaction of {}'.format(cond))
 
-            if args.all_info:
-                elem_dict[cond]={'Reaction graph': nx.node_link_data(G),
-                                 'Elementary steps': elem_rxns}
             else:
-                elem_list.append(elem_rxns)
-        if args.all_info:
+                try:
+                    elem_rxns = elementary_reaction(G, args)
+                    reaction_node, reactant_node, product_node, byproduct_node, intermediate_node, spectator_node=find_chemical_nodes(G)
+                    elem_steps_stats[label][cond]['Success'] = {'Num of overall reaction': 1,
+                                                                 'Num of total elem steps': len(elem_rxns),
+                                                                 'Num of total reactants': len(reactant_node),
+                                                                 'Num of total products': len(product_node),
+                                                                 'Num of total byproducts': len(byproduct_node),
+                                                                 'Num of total intermediates': len(intermediate_node),
+                                                                 'Num of total spectators': len(spectator_node),
+                                                                 }
+
+                    if args.all_info:
+                        elem_dict[cond] = {'Reaction graph': nx.node_link_data(G),
+                                           'Elementary steps': elem_rxns}
+                    else:
+                        elem_list.append(elem_rxns)
+
+                except Exception as e:
+                    if str(e) == "Too many reaction nodes.":
+                        if args.verbosity > 0:
+                            logging.info('There are too many steps for the reaction of {}'.format(cond))
+                        elem_steps_stats[label][cond]['Too many reactions']+=1
+                        # return elem_steps_stats
+                    elif str(e) == "Too many cycles.":
+                        if args.verbosity > 0:
+                            logging.info('There are too catalytic cycles for the reaction of {}'.format(cond))
+                        elem_steps_stats[label][cond]['Too many reactions']+=1
+                        # return elem_steps_stats
+                    else:
+                        if args.verbosity > 0:
+                            logging.info('Error occured in {}'.format(cond))
+                            logging.info(f'{e}')
+                        elem_steps_stats[label][cond]['Error'] += 1
+                        # return elem_steps_stats
+
+        if args.all_info and elem_dict:
             rxn_dict['Mechanism'] = elem_dict
             return rxn_dict, elem_steps_stats
-        else:
+        elif elem_list:
             return flatten_list(elem_list), elem_steps_stats
 
 def merge_dicts(d, u):

@@ -722,10 +722,9 @@ def get_mechanistic_network(rxn, args):
                 logging.info('Products for {} have been found.'.format(rxn_condition))
             G=reaction_network(rxn_flask, tot_network,args)
             G_dict[rxn_condition]=G
-    if G_dict:
-        return G_dict
-    else: 
-        raise ValueError("Products are not produced.")
+        else:
+            G_dict[rxn_condition]="Products are not produced."
+    return G_dict
 
 def flatten_list(lst):
     flattened = []
