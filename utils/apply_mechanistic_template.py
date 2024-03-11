@@ -408,7 +408,7 @@ def run_single_reaction(rxn_flask, single_step, args):
     """
     rxn_templates = single_step['Templates']
     pKas = single_step['pKa']
-    
+    print("TEMPLATES", rxn_templates)
     reaction_network=[]
     reaction_pair=[]
     
@@ -440,8 +440,10 @@ def run_single_reaction(rxn_flask, single_step, args):
     #Define the reactive chemicals
     #rxn_flask may be updated if stoichiometry is on
     rxn_flask, reactive_dict=find_reactants(rxn_flask, rxn_templates, args)
-    
-    for templ in reactive_dict:        
+    print("RXN_FLASK", rxn_flask)
+    print(reactive_dict)
+    for templ in reactive_dict:  
+        print("TEMPL", templ)      
         if args.verbosity > 3:
             logging.info('Template is {}'.format(templ))
         
@@ -454,6 +456,8 @@ def run_single_reaction(rxn_flask, single_step, args):
             reactants=[Chem.MolFromSmiles(rxn_flask[num]['smiles_w_isotope'],sanitize=False)
                                  for num in combination]  
             outcomes = rxn.RunReactants(reactants)
+            print(templ, outcomes)
+            print([rxn_flask[num]['smiles_w_isotope'] for num in combination])
             if not outcomes:
                 continue
                 
@@ -531,12 +535,12 @@ def find_product(example_rxn, rxn_flask):
         if len(pmol.GetSubstructMatches(pat)) > 0:
             pmol=remove_atom_map(pmol)
             real_product_smi_list.append(Chem.MolToSmiles(pmol))
-    # print("Real product SMILES list: ", real_product_smi_list)
-    # print("Reaction flask: ", rxn_flask)
-    # for key, value in rxn_flask.items():
-        # if type(value)==dict: print(value['smiles'])
+    print("Real product SMILES list: ", real_product_smi_list)
+    print("Reaction flask: ", rxn_flask)
+    for key, value in rxn_flask.items():
+        if type(value)==dict: print(value['smiles'])
     matching_keys = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] in real_product_smi_list]
-    # print("Matching keys: ", matching_keys)
+    print("Matching keys: ", matching_keys)
     if matching_keys:
         for key in matching_keys:
             rxn_flask[key]['identity'] = 'product'

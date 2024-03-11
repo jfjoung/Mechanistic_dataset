@@ -189,7 +189,7 @@ class_reaction_templates={
      'Description': 'Neutralization of protonated ester / Addition of alcohol under basic pKa'},    
             }}},
     
-    
+ # TODO: NEED TO KEEP EVEN/ODD of isotope number consistent OR make everything #7
  ('Bromo N-alkylation',
   'Chloro N-alkylation',
   'Iodo N-alkylation'): {'Reaction': {'Reagent': None,
@@ -510,7 +510,7 @@ class_reaction_templates={
      'pKa': [{'A': 15.5}],
      'Description': 'Protonation of alcohol'}}}},
 
-
+# Modified by Jihye
 ('Bromo Suzuki coupling',
   'Chloro Suzuki coupling',
   'Iodo Suzuki coupling',
@@ -1205,15 +1205,14 @@ class_reaction_templates={
      'Description': 'Proton exchange'}}}},
     
 
-    
+  # Modified by Jihye
  ('Bromo Sonogashira coupling',
   'Iodo Sonogashira coupling',
   'Chloro Sonogashira coupling',
   'Triflyloxy Sonogashira coupling',
  'Bromo Stille reaction',
   'Chloro Stille reaction',
-  'Iodo Stille reaction'
-  ): {'Reaction with element Pd': 
+  'Iodo Stille reaction'): {'Reaction with element Pd': 
      {'Reagent': ['[Pd;D0;+0]'],
    'Stages': {
        0: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
