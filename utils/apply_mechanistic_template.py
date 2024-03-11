@@ -5,6 +5,7 @@ import rdkit
 import gzip
 import logging
 import copy
+import numpy as np
 from . import AcidBase_lookup, Reaction_templates
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -166,7 +167,7 @@ def product_dict(prod_mol, reactant_id, reactant_history):
     for a in prod_mol.GetAtoms(): #Remove any mapping
         a.SetAtomMapNum(0)
 
-    prod_smi=Chem.MolToSmiles(Chem.MolFromSmiles(Chem.MolToSmiles(prod_mol))) #Get plain smiles
+    prod_smi=Chem.MolToSmiles(Chem.RenumberAtoms(prod_mol, np.random.shuffle(prod_mol.GetNumAtoms()))) #Get plain smiles
 
     reactant_history = list(set([item for sublist in reactant_history if isinstance(sublist, set) for item in sublist]+\
                         [item for item in reactant_history if isinstance(item, int)]+\
