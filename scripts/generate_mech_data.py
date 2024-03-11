@@ -246,9 +246,10 @@ def generate_mechdata_multiprocess(args):
             if isinstance(result, dict):
                 if args.stat:
                     merge_dicts(statistics, result)
-            else:
+            elif result:
                 elem_reaction, stat = result
                 fout.write('\n'.join(elem_reaction) + '\n')
+                num_generated_rxn+=len(elem_reaction)
                 if args.stat:
                     merge_dicts(statistics, stat)
 
@@ -257,12 +258,6 @@ def generate_mechdata_multiprocess(args):
         stat_file_path = f"{base_file_root}_statistics.json"
         with open(stat_file_path, 'w') as file:
             json.dump(statistics, file, indent=4)
-
-        #
-        # for result in tqdm(p.imap(generate_mechdata_single, iterables), total=len(lines)):
-        #     fout.write(json.dumps(result)+'\n')
-
-
 
 
     logging.info(f'{num_generated_rxn} reactions generated')

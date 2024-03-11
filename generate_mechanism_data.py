@@ -86,7 +86,7 @@ def parse_arguments():
 if __name__ == '__main__':
     '''
     You need a reaction string of 'reaction_smiles NameRXN_name', 
-    generate_mechdata(args)
+    generate_mechdata_multiprocess(args)
     '''
     args = parse_arguments()
     os.makedirs('./logs/', exist_ok=True)
@@ -96,5 +96,4 @@ if __name__ == '__main__':
     logging.info(f'Arguments')
     for key, value in vars(args).items():
         logging.info('{}: {}'.format(key, value))
-    # generate_mechdata(args)
     generate_mechdata_multiprocess(args)
