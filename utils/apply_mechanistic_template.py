@@ -165,7 +165,8 @@ def product_dict(prod_mol, reactant_id, reactant_history):
     prod_smi_map=Chem.MolToSmiles(prod_mol) #Get atom mapped smiles
     for a in prod_mol.GetAtoms(): #Remove any mapping
         a.SetAtomMapNum(0)
-    prod_smi=Chem.MolToSmiles(prod_mol) #Get plain smiles
+
+    prod_smi=Chem.MolToSmiles(Chem.MolFromSmiles(Chem.MolToSmiles(prod_mol))) #Get plain smiles
 
     reactant_history = list(set([item for sublist in reactant_history if isinstance(sublist, set) for item in sublist]+\
                         [item for item in reactant_history if isinstance(item, int)]+\
@@ -526,8 +527,12 @@ def find_product(example_rxn, rxn_flask):
         if len(pmol.GetSubstructMatches(pat)) > 0:
             pmol=remove_atom_map(pmol)
             real_product_smi_list.append(Chem.MolToSmiles(pmol))
-    
+    print("Real product SMILES list: ", real_product_smi_list)
+    print("Reaction flask: ", rxn_flask)
+    for key, value in rxn_flask.items():
+        if type(value)==dict: print(value['smiles'])
     matching_keys = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] in real_product_smi_list]
+    print("Matching keys: ", matching_keys)
     if matching_keys:
         for key in matching_keys:
             rxn_flask[key]['identity'] = 'product'

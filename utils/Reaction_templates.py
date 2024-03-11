@@ -594,7 +594,7 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Reductive elimination'}}}, 
      
-   'Reaction with Pd coordinated with 3 or 4 ligands': {'Reagent': ['[!Cl,!Br,!I,!O][Pd;D3,D4;+0][!Cl,!Br,!I,!O]'],                           
+   'Reaction with Pd coordinated with 3 or 4 ligands': {'Reagent': ['[Pd;D3,D4;$([Pd](-[*])(-[*])-[*]),$([Pd](-[*])(-[*])(-[*])-[*]);!$([Pd]([Cl,Br,I,O])[Cl,Br,I,O]);+0]'],                           
    'Stages': {0: {'Templates': ['[Pd;D3;+0:1](-[*:6])(-[*:5])-[*:8]>>[Pd;+0:1].[*:6].[*:5].[*:8]',
                                 '[Pd;D4;+0:1](-[*:6])(-[*:4])(-[*:5])-[*:8]>>[Pd;+0:1].[*:6].[*:5].[*:4].[*:8]',
                               ],
@@ -1212,17 +1212,18 @@ class_reaction_templates={
   'Triflyloxy Sonogashira coupling',
  'Bromo Stille reaction',
   'Chloro Stille reaction',
-  'Iodo Stille reaction'): {'Reaction with element Pd': 
+  'Iodo Stille reaction'
+  ): {'Reaction with element Pd': 
      {'Reagent': ['[Pd;D0;+0]'],
    'Stages': {
        0: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
-     'pKa': [None],
+     'pKa': [None], #TODO: NEEDS BASE FOR THIS STEP, need to add pKa
      'Description': 'Copper activation'},       
        1: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd;D0;+0:6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
      'pKa': [None],
      'Description': 'Oxidative addition'},
     2: {'Templates': ['[F,Cl,Br,I:5]-[Pd:1]-[#6:6].[Cu:2]-[#6:3]#[#6:4]>>[F,Cl,Br,I:5]-[Cu:2].[#6:6]-[Pd:1]-[#6:3]#[#6:4]',
-                     '[Cl,Br,I:7]-[Pd:6]-[#6;+0:5].[Sn:1]-[*:2]>>[*:2]-[Pd:6]-[#6;+0:5].[Sn:1]-[Cl,Br,I:7]'],
+                     '[Cl,Br,I:7]-[Pd:6]-[#6;+0:5].[Sn:1]-[#6;$([#6]=,:[#6]):2]>>[#6:2]-[Pd:6]-[#6;+0:5].[Sn:1]-[Cl,Br,I:7]'],
      'pKa': [None, None],
      'Description': 'Transmetalation'},
     3: {'Templates': ['[#6:6]-[Pd:1]-[#6:3]>>[Pd:1].[#6:6]-[#6:3]'],
@@ -1230,8 +1231,8 @@ class_reaction_templates={
      'Description': 'Reductive elimination'}}}, 
                             
    'Reaction with PdCl2': {'Reagent': ['[Cl,Br,I,O][Pd;+0][Cl,Br,I,O]', '[P]'],                           
-   'Stages': {0: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P:4].[P:5]>>[Cl,Br,I,O:2]-[Pd;+0:1](-[P:4])(-[P:5])-[Cl,Br,I,O:3]',
-                              '[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].([P:4].[P:5])>>[Cl,Br,I,O:2]-[Pd;+0:1](-[P:4])(-[P:5])-[Cl,Br,I,O:3]'],
+   'Stages': {0: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P:4].[P:5]>>[Cl,Br,I,O:2]-[Pd;+0:1](-[P:4])(-[P:5])-[Cl,Br,I,O:3]'],
+                              #'[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].([P:4].[P:5])>>[Cl,Br,I,O:2]-[Pd;+0:1](-[P:4])(-[P:5])-[Cl,Br,I,O:3]'], # TODO: problem constructing reaction from smarts
      'pKa': [None],
      'Description': 'Palladium-ligand formation'},       
              1: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1](-[P:4])(-[P:5])-[Cl,Br,I,O:3]>>[Cl,Br,I,O;-1:2].[Pd;+0:1]-[P:4].[P;+1:5]-[Cl,Br,I,O:3]'],
@@ -1250,20 +1251,24 @@ class_reaction_templates={
     5: {'Templates': ['[#6:6]-[Pd:1]-[#6:3]>>[Pd:1].[#6:6]-[#6:3]'],
      'pKa': [None],
      'Description': 'Reductive elimination'}}},  
-     
-   'Reaction with Pd coordinated with 3 or 4 ligands': {'Reagent': ['[!Cl,!Br,!I,!O][Pd;D3,D4;+0][!Cl,!Br,!I,!O]'],                           
-   'Stages': {0: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
+
+   'Reaction with Pd coordinated with 3 or 4 ligands': {'Reagent': ['[Pd;D3,D4;$([Pd](-[*])(-[*])-[*]),$([Pd](-[*])(-[*])(-[*])-[*]);!$([Pd]([Cl,Br,I,O])[Cl,Br,I,O]);+0]'],                           
+   'Stages': {0: {'Templates': ['[Pd;D3;+0:1](-[*:6])(-[*:5])-[*:8]>>[Pd;+0:1].[*:6].[*:5].[*:8]',
+                                '[Pd;D4;+0:1](-[*:6])(-[*:4])(-[*:5])-[*:8]>>[Pd;+0:1].[*:6].[*:5].[*:4].[*:8]',
+                              ],
+     'pKa': [None, None],
+     'Description': 'Ligand leaving'},
+            1: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
      'pKa': [None],
      'Description': 'Copper activation'},             
-             1: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd;D3;+0:6]-[*;8]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5].[*;8]',
-                              '[Cl,Br,I:7]-[#6;+0:5].[Pd;D4;+0:6](-[*;9])-[*;8]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5].[*;8].[*;9]'],
-     'pKa': [None, None],
+             2: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd;D0;+0:6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
+     'pKa': [None],
      'Description': 'Oxidative addition'},
-    2:{'Templates': ['[F,Cl,Br,I:5]-[Pd:1]-[#6:6].[Cu:2]-[#6:3]#[#6:4]>>[F,Cl,Br,I:5]-[Cu:2].[#6:6]-[Pd:1]-[#6:3]#[#6:4]',
+    3:{'Templates': ['[F,Cl,Br,I:5]-[Pd:1]-[#6:6].[Cu:2]-[#6:3]#[#6:4]>>[F,Cl,Br,I:5]-[Cu:2].[#6:6]-[Pd:1]-[#6:3]#[#6:4]',
                      '[Cl,Br,I:7]-[Pd:6]-[#6;+0:5].[Sn:1]-[*:2]>>[*:2]-[Pd:6]-[#6;+0:5].[Sn:1]-[Cl,Br,I:7]'],
      'pKa': [None, None],
      'Description': 'Transmetalation'},
-    3: {'Templates': ['[#6:6]-[Pd:1]-[#6:3]>>[Pd:1].[#6:6]-[#6:3]'],
+    4: {'Templates': ['[#6:6]-[Pd:1]-[#6:3]>>[Pd:1].[#6:6]-[#6:3]'],
      'pKa': [None],
      'Description': 'Reductive elimination'}}},                                    
      
