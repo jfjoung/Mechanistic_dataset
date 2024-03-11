@@ -167,8 +167,12 @@ def product_dict(prod_mol, reactant_id, reactant_history):
     for a in prod_mol.GetAtoms(): #Remove any mapping
         a.SetAtomMapNum(0)
 
-    prod_smi=Chem.MolToSmiles(Chem.RenumberAtoms(prod_mol, np.random.shuffle(prod_mol.GetNumAtoms()))) #Get plain smiles
-
+    # Get plain smiles
+    try:
+        prod_smi = Chem.MolToSmiles(Chem.MolFromSmiles(Chem.MolToSmiles(prod_mol)))
+    except:
+        prod_smi = Chem.MolToSmiles(prod_mol)
+        
     reactant_history = list(set([item for sublist in reactant_history if isinstance(sublist, set) for item in sublist]+\
                         [item for item in reactant_history if isinstance(item, int)]+\
                         [item for sublist in reactant_history if isinstance(sublist, list) for item in sublist]))
@@ -217,8 +221,8 @@ def proton_balanced_template(rxn_flask, pKas, rxn_templates):
             r, p = templ.split('>>')
             new_r = '.'.join([r, acid_base[0]])
             new_p = '.'.join([p, acid_base[1]])
-            templ='>>'.join([new_r,new_p])
-            proton_balanced_rxn_templates.append(templ)
+            new_templ='>>'.join([new_r,new_p])
+            proton_balanced_rxn_templates.append(new_templ)
 
     return proton_balanced_rxn_templates
 
@@ -244,7 +248,6 @@ def find_acid_base(rxn_flask, filtered_list, ab_condition):
             reactant=acid_base['Acid']
             product=acid_base['Base']        
         elif ab_condition=='B':
-            
             reactant=acid_base['Base']
             product=acid_base['Acid']        
         
@@ -528,12 +531,12 @@ def find_product(example_rxn, rxn_flask):
         if len(pmol.GetSubstructMatches(pat)) > 0:
             pmol=remove_atom_map(pmol)
             real_product_smi_list.append(Chem.MolToSmiles(pmol))
-    print("Real product SMILES list: ", real_product_smi_list)
-    print("Reaction flask: ", rxn_flask)
-    for key, value in rxn_flask.items():
-        if type(value)==dict: print(value['smiles'])
+    # print("Real product SMILES list: ", real_product_smi_list)
+    # print("Reaction flask: ", rxn_flask)
+    # for key, value in rxn_flask.items():
+        # if type(value)==dict: print(value['smiles'])
     matching_keys = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] in real_product_smi_list]
-    print("Matching keys: ", matching_keys)
+    # print("Matching keys: ", matching_keys)
     if matching_keys:
         for key in matching_keys:
             rxn_flask[key]['identity'] = 'product'
