@@ -172,7 +172,7 @@ def product_dict(prod_mol, reactant_id, reactant_history):
         prod_smi = Chem.MolToSmiles(Chem.MolFromSmiles(Chem.MolToSmiles(prod_mol)))
     except:
         prod_smi = Chem.MolToSmiles(prod_mol)
-        
+
     reactant_history = list(set([item for sublist in reactant_history if isinstance(sublist, set) for item in sublist]+\
                         [item for item in reactant_history if isinstance(item, int)]+\
                         [item for sublist in reactant_history if isinstance(sublist, list) for item in sublist]))
