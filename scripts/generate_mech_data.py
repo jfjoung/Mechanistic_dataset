@@ -100,6 +100,8 @@ def generate_mechdata_single(input):
             return rxn_dict, elem_steps_stats
         elif elem_list:
             return flatten_list(elem_list), elem_steps_stats
+        else:
+            return elem_steps_stats
 
 def merge_dicts(d, u):
     for k, v in u.items():
