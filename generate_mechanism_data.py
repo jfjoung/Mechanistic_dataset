@@ -2,7 +2,7 @@ import os
 import argparse
 import logging
 from datetime import datetime
-from scripts.generate_mech_data import generate_mechdata
+from scripts.generate_mech_data import generate_mechdata, generate_mechdata_multiprocess
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -63,18 +63,21 @@ def parse_arguments():
                        type=str2bool, default=False)
     parser.add_argument("--reagent", help="Locate reagents at middle of the reaction (reactants>reagents>products) instead of both sides of reactants and products.",
                        type=str2bool, default=False)
-
+    parser.add_argument("--remapping", help="Re-atom-mapping for each elementary reaction to start with 1.",
+                       type=str2bool, default=False)
     # Arguments for data loading and saving
     parser.add_argument('--data', help='Path to the reaction data',
                         type=str, default='./data/test_data.txt')
     parser.add_argument('--save', help='Path to the saving data',
-                        type=str, default='./results/elementary_reaction.txt')
+                        type=str, default='./results/test.txt')
     parser.add_argument("--all_info", help="Save all the information you can get, or you can get only elementary steps if not",
                         type=str2bool, default=False)
     parser.add_argument("--stat", help="Save the statistics dictionary",
                         type=str2bool, default=True)
     parser.add_argument("--rxn_class", help="Specify the reaction class to work on. If not specified, it will work on all classes.",
                         type=str, default='')
+    parser.add_argument("--process", help="The number of worker processes",
+                        type=int, default=10)
     parser.add_argument("--verbosity", help="control the verbosity; 0: silent, 1: prints the critical errors, 2: prints some details (do not recommend more than 10 reactions), 3: prints the process, 4: prints all",
                        type=int, default=0)
 
@@ -93,4 +96,5 @@ if __name__ == '__main__':
     logging.info(f'Arguments')
     for key, value in vars(args).items():
         logging.info('{}: {}'.format(key, value))
-    generate_mechdata(args)
+    # generate_mechdata(args)
+    generate_mechdata_multiprocess(args)
