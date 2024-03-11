@@ -50,7 +50,7 @@ def generate_mechdata_single(input):
         for cond, G in G_dict.items():
             elem_steps_stats[label][cond]= {'No products': 0,
                                             'Too many reactions': 0,
-                                            'error': 0,
+                                            'Error': 0,
                                             'Success': {}}
 
             if G == "Products are not produced.":
