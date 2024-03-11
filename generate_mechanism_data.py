@@ -2,7 +2,7 @@ import os
 import argparse
 import logging
 from datetime import datetime
-from scripts.generate_mech_data import generate_mechdata, generate_mechdata_multiprocess
+from scripts.generate_mech_data import generate_mechdata_multiprocess
 
 def str2bool(v):
     if isinstance(v, bool):
