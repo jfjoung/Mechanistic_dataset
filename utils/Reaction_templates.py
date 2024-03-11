@@ -907,7 +907,7 @@ class_reaction_templates={
      'pKa': [{'B': -6}, None],
      'Description': 'Proton exchange'}}}},
 
- ('Bromination',): {'Bromination on benzene': {'Reagent': ['O=C-[O;D1]','BrBr', '[c;H1]'],
+ ('Bromination',): {'Bromination on benzene': {'Reagent': ['O=C-[O;D1]','BrBr'],
    'Stages': {0: {'Templates': ['[Br:1][Br:2].[O:3]=[C:4]-[O;H1;+0:5]>>[Br;H1;+0:1].[O:3]=[C:4]-[O;H0;+0:5][Br;H0:2]',
       '[Br:1][Br:2].[O:3]=[C:4]-[O;H0;+0:5]-[Li,Na,K;+0:6]>>[Br;-1:1].[O:3]=[C:4]-[O;H0;+0:5][Br;H0:2].[Li,Na,K;+1:6]'],
      'pKa': [None, None],
