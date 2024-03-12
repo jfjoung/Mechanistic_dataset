@@ -1713,7 +1713,6 @@ class_reaction_templates={
     2: {'Templates': ['[C:1](-[O;H1;+0:2])([Cl;+0:5])-[O:3]-[P:4]-[Cl:5]>>[C:1](=[O;H0;+0:2])([Cl;+0:5]).[O:3]=[P:4].[Cl;H1:5]'],
      'pKa': [None],
      'Description': 'Leaving Group Removal + Deprotonation'}}},
-  # TODO: INCLUDE DMF?
   'Oxalyl chloride + DMF': {'Reagent': ['O=C(C(Cl)=O)Cl', 'CN(C)C=O'],
    'Stages': {0: {'Templates': ['[Cl:1][C:2](=[O:3])[C:4](=[O;H0;+0:5])[Cl:6].[O:7]=[C:8][N;H0;+0:9]>>[Cl:1][C:2](=[O:3])[C:4](-[O;H0;-:5])([Cl:6])-[O:7]-[C:8]=[N;H0;+1:9]'],
      'pKa': [None],
@@ -1727,7 +1726,6 @@ class_reaction_templates={
     3: {'Templates': ['[Cl;+0:1][C;+0:2](=[O;+0:3])[C:4](=[O:5])-[O:6]-[C:7]([Cl:8])-[N;H0;+0:9]>>[Cl;-:1].[C;-:2]#[O;+:3].[C:4](=[O:5])=[O:6].[C:7]([Cl:8])=[N;H0;+1:9]'],
         'pKa': [None], 
         'Description': 'Activated chloride species forms'}, 
-        # TODO: add pKa for base
     4: {'Templates': ['[C:1](=[O:2])[O;H1;+0:3]>>[C:1](=[O:2])[O;H0;-:3]'],
         'pKa': [{'B':4.74}], 
         'Description': 'Carboxylic acid deprotonation'},
