@@ -1750,5 +1750,18 @@ class_reaction_templates={
      'Description': 'Addition of carbonate'},
     2: {'Templates': ['[C:1](=[O:2])[O;H0;+0:3][C;+0:4](=[O:6])[C;+0:7](=[O;+0:8])[Cl:9].[Cl;-:5]>>[C:1](=[O:2])[Cl;+0:5].[O;H0;+0:3]=[C;+0:4](=[O:6]).[C;-:7]#[O;+:8].[Cl;-:9].[Cl;-:5]'],
         'pKa': [None], 
-        'Description': 'Nucleophilic substitution'}}}}
+        'Description': 'Nucleophilic substitution'}}}},
+
+  ('O-TBS protection',
+   'O-TMS protection', 
+   'O-TIPS protection', 
+   'O-TES protection'): {'Reaction': {'Reagent': ['[Si;D4]([C])([C])([C])[Cl,Br,I]'],
+   'Stages': {0: {'Templates': ['[O;H1;+0:1].[Si;H0;+0:2][Cl,Br,I;+0:3]>>[O;H1;+1:1]-[Si:2].[Cl,Br,I;-:3]'],
+     'pKa': [None],
+     'Description': 'Nucleophilic substitution'},                       
+    1: {'Templates': ['[C:1][O;H1;+1:2]-[Si:3]>>[C:1][O;H0;+0:2]-[Si:3]',
+                      '[c:1][O;H1;+1:2]-[Si:3]>>[c:1][O;H0;+0:2]-[Si:3]',],
+     'pKa': [{'B': -3.8}, {'B': -6.2}],
+     'Description': 'Deprotonation'}}}}
+
 }
