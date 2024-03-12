@@ -112,6 +112,7 @@ def prepare_reactants(reaction_dict):
     reactant_dict=dict()
     _smiles_list=[]
     for num, mol in enumerate(rmol):
+        mol = remove_atom_map(mol)
         start_idx=idx
         for atom in mol.GetAtoms():
             atom.SetIsotope(idx) 
