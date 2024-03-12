@@ -1740,15 +1740,15 @@ class_reaction_templates={
         'Description': 'Nucleophilic attack on carbonyl'},
     8: {'Templates': ['[C:1](-[O;-:2])([Cl:5])[O;H0;+0:3]-[C:4]=[N;H0;+1:6]>>[C:1](=[O;+0:2])([Cl:5]).[O;H0;+0:3]=[C:4]-[N;H0;+0:6]'],
         'pKa': [None], 
-        'Description': 'Leaving group leaves'}}}}                         
-                        
-  #  'Stages': {0: {'Templates': ['[C:1](=[O:2])[O;H1;+0:3]>>[C:1](=[O:2])[O;H0;-1:3]'],
-  #    'pKa': [{'B': 15.5}],
-  #    'Description': 'Deprotonation of carboxylic acid'},
-  #   1: {'Templates': ['[C:1](=[O:2])[O;H0;-1:3].[C;+0:4]-[Cl;+0:5]>>[C:1](=[O:2])[O;H0;+0:3][C;+0:4].[Cl;-:5]'],
-  #    'pKa': [None],
-  #    'Description': 'Addition of carbonate'},
-  #   2: {'Templates': ['[C:1](=[O:2])[O;H0;+0:3][C;+0:4](=[O:6])[C;+0:7](=[O;+0:8])[Cl:9].[Cl;-:5]>>[C:1](=[O:2])[Cl;+0:5].[O;H0;+0:3]=[C;+0:4](=[O:6]).[C;-:7]#[O;+:8].[Cl;-:9].[Cl;-:5]'],
-  #       'pKa': [None], 
-  #       'Description': 'Nucleophilic substitution'}}}}
+        'Description': 'Leaving group leaves'}}},                       
+  'Oxalyl chloride': {'Reagent': ['O=C(C(Cl)=O)Cl'],                      
+   'Stages': {0: {'Templates': ['[C:1](=[O:2])[O;H1;+0:3]>>[C:1](=[O:2])[O;H0;-1:3]'],
+     'pKa': [{'B': 4.74}],
+     'Description': 'Deprotonation of carboxylic acid'},
+    1: {'Templates': ['[C:1](=[O:2])[O;H0;-1:3].[C;+0:4]-[Cl;+0:5]>>[C:1](=[O:2])[O;H0;+0:3][C;+0:4].[Cl;-:5]'],
+     'pKa': [None],
+     'Description': 'Addition of carbonate'},
+    2: {'Templates': ['[C:1](=[O:2])[O;H0;+0:3][C;+0:4](=[O:6])[C;+0:7](=[O;+0:8])[Cl:9].[Cl;-:5]>>[C:1](=[O:2])[Cl;+0:5].[O;H0;+0:3]=[C;+0:4](=[O:6]).[C;-:7]#[O;+:8].[Cl;-:9].[Cl;-:5]'],
+        'pKa': [None], 
+        'Description': 'Nucleophilic substitution'}}}}
 }
