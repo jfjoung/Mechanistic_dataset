@@ -112,6 +112,7 @@ def prepare_reactants(reaction_dict):
     reactant_dict=dict()
     _smiles_list=[]
     for num, mol in enumerate(rmol):
+        mol = Chem.MolFromSmiles(Chem.MolToSmiles(mol))
         mol = remove_atom_map(mol)
         start_idx=idx
         for atom in mol.GetAtoms():
@@ -261,11 +262,10 @@ def find_acid_base(rxn_flask, filtered_list, ab_condition):
 
 def find_reactants(rxn_flask, rxn_templates, args):
     reactive_dict = dict()
-    mol_dict = {reactant: Chem.MolFromSmiles(rxn_flask[reactant]['smiles']) for reactant in rxn_flask if type(reactant) is int}
-    
+    mol_dict = {reactant: Chem.MolFromSmarts(rxn_flask[reactant]['smiles_w_mapping']) for reactant in rxn_flask if type(reactant) is int}
+
     for num_temp, templ in enumerate(rxn_templates):
         reactant_dict=dict()
-        
         rxn = AllChem.ReactionFromSmarts(templ)
         r = [rmol for rmol in rxn.GetReactants()]
         num_reactants=rxn.GetNumReactantTemplates()
@@ -274,6 +274,11 @@ def find_reactants(rxn_flask, rxn_templates, args):
         # Find reactive chemical species
         for mol_key in mol_dict:        
             mol = mol_dict[mol_key]
+            mol.UpdatePropertyCache(strict=False)
+            Chem.SanitizeMol(mol,
+                             Chem.SanitizeFlags.SANITIZE_FINDRADICALS | Chem.SanitizeFlags.SANITIZE_SETAROMATICITY | Chem.SanitizeFlags.SANITIZE_SETCONJUGATION | Chem.SanitizeFlags.SANITIZE_SETHYBRIDIZATION | Chem.SanitizeFlags.SANITIZE_SYMMRINGS,
+                             catchErrors=True)
+
             for temp_key in templ_dict:
                 patterns = templ_dict[temp_key]
                 for pat in patterns:
@@ -460,7 +465,6 @@ def run_single_reaction(rxn_flask, single_step, args):
             outcomes = rxn.RunReactants(reactants)
             # print([rxn_flask[num]['smiles_w_isotope'] for num in combination])
             # print([Chem.MolToSmiles(mol) for mol in reactants])
-            # print(templ, outcomes)
 
             # for a in reactants[1].GetAtoms():
             #     print(a.GetIsotope(), a.GetIsAromatic(), a.GetAtomMapNum())

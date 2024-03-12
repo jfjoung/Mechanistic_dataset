@@ -908,7 +908,7 @@ class_reaction_templates={
      'pKa': [{'B': -6}, None],
      'Description': 'Proton exchange'}}}},
 
- ('Bromination',): {'Bromination on benzene': {'Reagent': ['O=C-[O;D1]','BrBr', '[c;H1]'],
+ ('Bromination',): {'Bromination on benzene': {'Reagent': ['O=C-[O;H1+0,H0-]','BrBr', '[c;H1]'],
    'Stages': {0: {'Templates': ['[Br:1][Br:2].[O:3]=[C:4]-[O;H1;+0:5]>>[Br;H1;+0:1].[O:3]=[C:4]-[O;H0;+0:5][Br;H0:2]',
       '[Br:1][Br:2].[O:3]=[C:4]-[O;H0;+0:5]-[Li,Na,K;+0:6]>>[Br;-1:1].[O:3]=[C:4]-[O;H0;+0:5][Br;H0:2].[Li,Na,K;+1:6]'],
      'pKa': [None, None],
@@ -958,7 +958,7 @@ class_reaction_templates={
     'Stages': {0: {'Templates': ['[Br,Cl,I:1][N:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+0:7]:[c;H1;+0:8]>>[N;-1;H0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+1:7]:[c;H1;+0:8]-[Br,Cl,I;H0:1]'],
      'pKa': [None],
      'Description': 'Halogenation of aromatic ring'},
-    1: {'Templates': ['[N;-1;H0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+1:7]:[c;H1;+0:8]-[Br,Cl,I;H0:1]>>[N;H1;+0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+0:7]:[c;H0;+0:8]-[Br,Cl,I;H0:1]'],
+    1: {'Templates': ['[N;-1;H0:2].[*;a;+1:7][c;H1;+0:8]-[Br,Cl,I;H0:1]>>[N;H1;+0:2].[*;a;+0:7]:[c;H0;+0:8]-[Br,Cl,I;H0:1]'],
      'pKa': [None],
      'Description': 'Proton exchange'}}},},
     
