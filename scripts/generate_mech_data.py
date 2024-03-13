@@ -26,10 +26,13 @@ def generate_mechdata_single(input):
     elem_steps_stats = {label: {'No templates': 0,
                                 'Error': 0,}}  # To get statistics
 
+    if args.debug:
+        line = ';'.join([rxn, label.replace("\n", "")])
+
     rxn_dict = reagent_matching_for_single_reaction(rxn_dict, label)
     if not rxn_dict['conditions']:
         elem_steps_stats[label]['No templates']+=1
-        return elem_steps_stats
+        return False, 'No templates', line, elem_steps_stats
     else:
         if args.verbosity > 0:
             logging.info('Generating mechanism for: ' + rxn_dict['reaction_smiles'])
@@ -40,13 +43,15 @@ def generate_mechdata_single(input):
             if args.verbosity > 0:
                 logging.info('Error occured in {}'.format(rxn))
                 logging.info(f'{e}')
-            return elem_steps_stats  # 0
+            return False, f'{e}', line, elem_steps_stats  # 0
 
         if args.all_info:
             elem_dict = dict()
         else:
             elem_list = list()
 
+
+            failed_products=[]
         for cond, G in G_dict.items():
             elem_steps_stats[label][cond]= {'No products': 0,
                                             'Too many reactions': 0,
@@ -55,6 +60,8 @@ def generate_mechdata_single(input):
 
             if G == "Products are not produced.":
                 elem_steps_stats[label][cond]['No products'] += 1
+                if args.debug:
+                    failed_products.append([ line, cond, 'No products',])
                 if args.verbosity > 0:
                     logging.info('Products are not produced for the reaction of {}'.format(cond))
 
@@ -82,26 +89,39 @@ def generate_mechdata_single(input):
                         if args.verbosity > 0:
                             logging.info('There are too many steps for the reaction of {}'.format(cond))
                         elem_steps_stats[label][cond]['Too many reactions']+=1
-                        # return elem_steps_stats
+                        if args.debug:
+                            failed_products.append([line, cond, 'Too many reactions'])
                     elif str(e) == "Too many cycles.":
                         if args.verbosity > 0:
                             logging.info('There are too catalytic cycles for the reaction of {}'.format(cond))
                         elem_steps_stats[label][cond]['Too many reactions']+=1
-                        # return elem_steps_stats
+                        if args.debug:
+                            failed_products.append([line, cond, 'Too many cycles' ])
                     else:
                         if args.verbosity > 0:
                             logging.info('Error occured in {}'.format(cond))
                             logging.info(f'{e}')
                         elem_steps_stats[label][cond]['Error'] += 1
-                        # return elem_steps_stats
+                        if args.debug:
+                            failed_products.append([line, cond, f'{e}'])
 
         if args.all_info and elem_dict:
             rxn_dict['Mechanism'] = elem_dict
-            return rxn_dict, elem_steps_stats
+            if args.debug:
+                return True, rxn_dict, elem_steps_stats, failed_products
+            else:
+                return True, rxn_dict, elem_steps_stats
         elif elem_list:
-            return flatten_list(elem_list), elem_steps_stats
+            if args.debug:
+                return True, flatten_list(elem_list), elem_steps_stats, failed_products
+            else:
+                return True, flatten_list(elem_list), elem_steps_stats
         else:
-            return elem_steps_stats
+            if args.debug:
+                return True, [], elem_steps_stats, failed_products
+            else:
+                return True, [] ,elem_steps_stats
+
 
 def merge_dicts(d, u):
     for k, v in u.items():
@@ -129,25 +149,42 @@ def generate_mechdata_multiprocess(args):
     if args.stat:
         statistics = {}
 
+    if args.debug:
+        failed_reaction = []
+
     with open(args.save, 'w') as fout:
         iterables = [(line, args) for line in lines]
         for result in tqdm(p.imap(generate_mechdata_single, iterables), total=len(lines)):
-            if isinstance(result, dict):
-                if args.stat:
-                    merge_dicts(statistics, result)
-            elif result:
-                elem_reaction, stat = result
+            if result[0]:
+                if args.debug:
+                    _, elem_reaction, stat, failed_products = result
+                else:
+                    _, elem_reaction, stat = result
                 fout.write('\n'.join(elem_reaction) + '\n')
-                num_generated_rxn+=len(elem_reaction)
+                num_generated_rxn += len(elem_reaction)
                 if args.stat:
                     merge_dicts(statistics, stat)
+                if args.debug:
+                    for failed in failed_products:
+                        failed_reaction.append(';'.join(failed))
+            else:
+                _, error, line, stat = result
+                if args.stat:
+                    merge_dicts(statistics, stat)
+                if args.debug:
+                    failed_reaction.append(f'{line};No condition;{error}')
+
 
     if args.stat:
         base_file_root, _ = os.path.splitext(args.save)
         stat_file_path = f"{base_file_root}_statistics.json"
         with open(stat_file_path, 'w') as file:
             json.dump(statistics, file, indent=4)
-
+    if args.debug:
+        base_file_root, _ = os.path.splitext(args.save)
+        debug_file_path = f"{base_file_root}_debug.txt"
+        with open(debug_file_path, 'w') as file:
+            file.write('\n'.join(failed_reaction) + '\n')
 
     logging.info(f'{num_generated_rxn} reactions generated')
     logging.info('The generation process has ended')

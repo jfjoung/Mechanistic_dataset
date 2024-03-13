@@ -70,6 +70,8 @@ def parse_arguments():
                         type=str, default='./data/test_data.txt')
     parser.add_argument('--save', help='Path to the saving data',
                         type=str, default='./results/test.txt')
+    parser.add_argument("--debug",help="Collect all the failed reactions",
+                        type=str2bool, default=False)
     parser.add_argument("--all_info", help="Save all the information you can get, or you can get only elementary steps if not",
                         type=str2bool, default=False)
     parser.add_argument("--stat", help="Save the statistics dictionary",

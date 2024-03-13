@@ -426,8 +426,6 @@ def run_single_reaction(rxn_flask, single_step, args):
         # TODO: label acids and bases (e.g. 'acid' instead of just 'reactant' when labelling), add isAcid, isBase
         rxn_templates=proton_balanced_template(rxn_flask, pKas, rxn_templates)
         num_proton_temp=len(rxn_templates)
-        # if num_proton_temp > num_combination:
-        #     raise ValueError(f"{num_proton_temp} templates are generated, which is too many.")
         if args.verbosity > 2:
             logging.info('New proton balanced {} templates are generated'.format(max(num_proton_temp-num_original_temp, 0)))
             num_original_temp=len(rxn_templates)
