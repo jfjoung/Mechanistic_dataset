@@ -142,6 +142,7 @@ def generate_mechdata_multiprocess(args):
 
     p = Pool(args.process)
     num_generated_rxn=0
+    num_used_rxn = 0
 
     with open(args.data, 'r') as file:
         lines = file.readlines()
@@ -161,6 +162,7 @@ def generate_mechdata_multiprocess(args):
                     _, elem_reaction, stat, failed_products = result
                 else:
                     _, elem_reaction, stat = result
+                num_used_rxn+=1
                 fout.write('\n'.join(elem_reaction) + '\n')
                 num_generated_rxn += len(elem_reaction)
                 if args.stat:
@@ -186,6 +188,6 @@ def generate_mechdata_multiprocess(args):
         debug_file_path = f"{base_file_root}_debug.txt"
         with open(debug_file_path, 'w') as file:
             file.write('\n'.join(failed_reaction) + '\n')
-
-    logging.info(f'{num_generated_rxn} reactions generated')
+    logging.info(f'{num_used_rxn} reactions was successfully used to make elementary steps')
+    logging.info(f'{num_generated_rxn} elementary steps generated')
     logging.info('The generation process has ended')

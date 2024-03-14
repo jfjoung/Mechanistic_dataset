@@ -558,16 +558,31 @@ class_reaction_templates={
 #        0: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3;H0:4].[P;D3;H0:5]>>[Cl,Br,I,O:2]-[Pd;+0:1](-[P;H0:4])(-[P;H0:5])-[Cl,Br,I,O:3]'],
 #      'pKa': [None],
 #      'Description': 'Palladium-ligand formation'},
-       0: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3;H0:4]>>[Cl,Br,I,O:2]-[Pd;+0:1](-[P;H0:4])-[Cl,Br,I,O:3]'],
+       0: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3:4]>>[Cl,Br,I,O:2]-[Pd;-1:1](-[P;H0;+1:4])-[Cl,Br,I,O:3]'],
      'pKa': [None],
      'Description': 'Palladium-ligand formation'},
-       1: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1](-[P;H0:4])-[Cl,Br,I,O:3].[P;D3;H0:5]>>[Cl,Br,I,O:2]-[Pd;+0:1](-[P;H0:4])(-[P;H0:5])-[Cl,Br,I,O:3]'],
+       1: {'Templates': ['[Cl,Br,I,O:2]-[Pd;-1:1](-[P;H0;+1:4])-[Cl,Br,I,O:3].[P;H0;D3:5]>>[Cl,Br,I,O:2]-[Pd;-2:1](-[P;H0;+1:4])(-[P;H0;+1:5])-[Cl,Br,I,O:3]'],
      'pKa': [None],
      'Description': 'Palladium-ligand formation'},
-             2: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1](-[P;H0:4])(-[P;H0:5])-[Cl,Br,I,O:3]>>[Cl,Br,I,O;-1:2].[Pd;+0:1].[P;H0:4].[P;H0;+1:5]-[Cl,Br,I,O:3]'],
+       # 0: {'Templates': [
+       #     '[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3:4]>>[Cl,Br,I,O:2]-[Pd;-1:1](-[P;H0;+1:4])-[Cl,Br,I,O:3]'],
+       #     'pKa': [None],
+       #     'Description': 'Palladium-ligand formation1'},
+       # 1: {'Templates': [
+       #     '[Cl,Br,I,O:2]-[Pd;-1:1](-[P;H0;+1:4])-[Cl,Br,I:3]>>[Cl,Br,I,O:2]-[Pd;+0:1].[P;H0;+0:4].[Cl,Br,I;-1:3]',
+       #     '[Cl,Br,I,O:2]-[Pd;-1:1](-[P;H0;+1:4])-[O:3].[OH2;+0:5]>>[Cl,Br,I,O:2]-[Pd;+0:1].[P;H0;+1:4].[OH1;+0:3]',]
+       #     'pKa': [None],
+       #     'Description': 'Palladium reduction 1'},
+
+     # TODO: This reaction does not work for extracting arrow pushing
+     2: {'Templates': ['[Cl,Br,I,O:2]-[Pd;-2:1](-[P;H0;+1:4])(-[P;H0;+1:5])-[Cl,Br,I,O:3]>>[Cl,Br,I,O;+0:2]-[Pd;-1:1]-[P;H0;+1:4].[P;H0;+1:5]-[Cl,Br,I,O:3]'],
      'pKa': [None],
-     'Description': 'Palladium reduction'},           
-       3: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd&!$([Pd]-I)&!$([Pd]-Br)&!$([Pd]-Cl)&!$([Pd]-P):6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
+     'Description': 'Palladium reduction'},
+    # 2: {'Templates': [
+    #    '[Cl,Br,I,O:2]-[Pd;-2:1](-[P;H0;+1:4])(-[P;H0;+1:5])-[Cl,Br,I,O:3]>>[Cl,Br,I,O;-1:2].[Pd;+0:1].[P;H0:4].[P;H0;+1:5]-[Cl,Br,I,O:3]'],
+    #    'pKa': [None],
+    #    'Description': 'Palladium reduction'},
+    3: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd&!$([Pd]-I)&!$([Pd]-Br)&!$([Pd]-Cl)&!$([Pd]-P):6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
      'pKa': [None],
      'Description': 'Oxidative addition'},
     4: {'Templates': ['[#8;H2:8].[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I;H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
@@ -579,7 +594,7 @@ class_reaction_templates={
                      #Suzuki
     5: {'Templates': ['[#5:2]-[#6;+0:4].[#8:8]-[Pd:6]-[#6;+0:5]>>[#6;+0:4]-[Pd:6]-[#6;+0:5].[#5:2]-[#8;+0:8]',
                       #Buchwald-Hartwig amination
-                     '[#7;H3;+0:1].[#8;H1:8]-[Pd:6]-[#6;+0:5]>>[#7;H2;+0:1]-[Pd:6]-[#6;+0:5].[#8;H2;+0:8]', 
+                     '[#7;H3;+0:1].[#8;H1:8]-[Pd:6]-[#6;+0:5]>>[#7;H2;+0:1]-[Pd:6]-[#6;+0:5].[#8;H2;+0:8]',
                       '[#7;H2;+0:1].[#8;H1:8]-[Pd:6]-[#6;+0:5]>>[#7;H1;+0:1]-[Pd:6]-[#6;+0:5].[#8;H2;+0:8]',
                       '[#7;H1;+0:1].[#8;H1:8]-[Pd:6]-[#6;+0:5]>>[#7;H0;+0:1]-[Pd:6]-[#6;+0:5].[#8;H2;+0:8]',
                       '[#7;H3;+0:1].[#8;H0:8]-[Pd:6]-[#6;+0:5]>>[#7;H2;+0:1]-[Pd:6]-[#6;+0:5].[#8;H1;+0:8]',
@@ -593,7 +608,8 @@ class_reaction_templates={
      'Description': 'Transmetalation'},
     6: {'Templates': ['[#5,#6,#7;+0:4]-[Pd:6]-[#6;+0:5]>>[#5,#6,#7;+0:4]-[#6;+0:5].[Pd:6]'],
      'pKa': [None],
-     'Description': 'Reductive elimination'}}}, 
+     'Description': 'Reductive elimination'}
+   }},
      
    'Reaction with Pd coordinated with 3 or 4 ligands': {'Reagent': ['[Pd;D3,D4;$([Pd](-[*])(-[*])-[*]),$([Pd](-[*])(-[*])(-[*])-[*]);!$([Pd]([Cl,Br,I,O])[Cl,Br,I,O]);+0]'],                           
    'Stages': {0: {'Templates': ['[Pd;D3;+0:1](-[*:6])(-[*:5])-[*:8]>>[Pd;+0:1].[*:6].[*:5].[*:8]',
