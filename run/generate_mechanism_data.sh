@@ -1,5 +1,5 @@
 python generate_mechanism_data.py \
-  --data 'data/test_bromination.txt'\
+  --data 'data/uspto_bromination.txt'\
   --save 'results/bromination.txt'\
   --rxn_class 'Bromination'\
   --debug True\
