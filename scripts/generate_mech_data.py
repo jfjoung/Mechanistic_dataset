@@ -150,32 +150,40 @@ def generate_mechdata_multiprocess(args):
     if args.stat:
         statistics = {}
 
-    if args.debug:
-        failed_reaction = []
 
-    with open(args.save, 'w') as fout:
+
+    base_file_root, _ = os.path.splitext(args.save)
+    debug_file_path = f"{base_file_root}_debug.txt"
+
+    with open(args.save, 'w') as fout, open(debug_file_path, 'w') as file_debug:
         iterables = [(line, args) for line in lines]
         for result in tqdm(p.imap(generate_mechdata_single, iterables), total=len(lines)):
+            if args.debug:
+                failed_reaction = []
             if not result: continue
             if result[0]:
                 if args.debug:
                     _, elem_reaction, stat, failed_products = result
                 else:
                     _, elem_reaction, stat = result
-                num_used_rxn+=1
-                fout.write('\n'.join(elem_reaction) + '\n')
+                if elem_reaction:
+                    num_used_rxn += 1
+                    fout.write('\n'.join(elem_reaction) + '\n')
                 num_generated_rxn += len(elem_reaction)
                 if args.stat:
                     merge_dicts(statistics, stat)
                 if args.debug:
                     for failed in failed_products:
-                        failed_reaction.append(';'.join(failed))
+                        failed_reaction.append(';'.join(failed)+ '\n')
             else:
                 _, error, line, stat = result
                 if args.stat:
                     merge_dicts(statistics, stat)
                 if args.debug:
-                    failed_reaction.append(f'{line};No condition;{error}')
+                    failed_reaction.append(f'{line};No condition;{error}'+ '\n')
+            if args.debug:
+                if failed_reaction:
+                    file_debug.write(failed_reaction[0])
 
 
     if args.stat:
@@ -183,11 +191,9 @@ def generate_mechdata_multiprocess(args):
         stat_file_path = f"{base_file_root}_statistics.json"
         with open(stat_file_path, 'w') as file:
             json.dump(statistics, file, indent=4)
-    if args.debug:
-        base_file_root, _ = os.path.splitext(args.save)
-        debug_file_path = f"{base_file_root}_debug.txt"
-        with open(debug_file_path, 'w') as file:
-            file.write('\n'.join(failed_reaction) + '\n')
+    if not args.debug:
+        os.remove(debug_file_path)
+
     logging.info(f'{num_used_rxn} reactions was successfully used to make elementary steps')
     logging.info(f'{num_generated_rxn} elementary steps generated')
     logging.info('The generation process has ended')

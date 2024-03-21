@@ -478,25 +478,30 @@ def run_single_reaction(rxn_flask, single_step, args):
                 if not check_products_validity(outcome): continue
                 product_id=set()
                 if args.verbosity > 3: logging.info('{} products are formed'.format(len(outcome)))
+                complete_reaction = True
                 for prod_mol in outcome:     
                     new_prod=product_dict(prod_mol, reactant_id, history)
 
                     r_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in reactant_id]))
-                    prod_num = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] == new_prod['smiles'] and sorted(value['atom_mapping']) == sorted(new_prod['atom_mapping'])]
+                    # prod_num = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] == new_prod['smiles'] and sorted(value['atom_mapping']) == sorted(new_prod['atom_mapping'])]
+                    prod_num = [key for key, value in rxn_flask.items() if
+                                type(key) is int and value['smiles'] == new_prod['smiles']]
                     p_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in prod_num]))
-                    
-                    if prod_num and r_map.issuperset(p_map): 
+
+                    if prod_num and r_map.issuperset(p_map):
+                        if args.verbosity > 3: logging.info('{} is found'.format(rxn_flask[prod_num[0]]['smiles_w_mapping']))
                         product_id.add(prod_num[0])
                         continue
-                    elif prod_num and not r_map.issuperset(p_map): 
-                        continue
+                    elif prod_num and not r_map.issuperset(p_map):
+                        complete_reaction = False
+                        break
                     else: 
                         num_mols=len(rxn_flask)+1
                         product_id.add(num_mols)
                         rxn_flask[num_mols]= new_prod
-                        if args.verbosity > 3: logging.info('{} is formed'.format(rxn_flask[num_mols]['smiles']))
+                        if args.verbosity > 3: logging.info('{} is formed'.format(rxn_flask[num_mols]['smiles_w_mapping']))
 
-                if [reactant_id,product_id] not in reaction_pair:
+                if complete_reaction and [reactant_id,product_id] not in reaction_pair:
                     reaction_pair.append([reactant_id,product_id])
                     reaction_network.append([reactant_id,templ, product_id])
                 
@@ -525,7 +530,6 @@ def run_full_reaction(rxn_flask, condition, cond_name, args):
                 logging.info('Apply {}th template'.format(i))
             rxn_flask_cond, reaction_network=run_single_reaction(rxn_flask_cond, temp, args)
             tot_net+=reaction_network
-            
         tot_networks.append(tot_net)
         rxn_flasks.append(rxn_flask_cond)
 
@@ -533,7 +537,8 @@ def run_full_reaction(rxn_flask, condition, cond_name, args):
 
 def find_product(example_rxn, rxn_flask):
     reaction_smi = example_rxn['reaction_smiles']
-    react_smi, reagent_smi, product_smi = reaction_smi.split('>')
+    _, _, product_smi = reaction_smi.split('>')
+    product_smi = Chem.MolToSmiles(Chem.MolFromSmiles(product_smi) , isomericSmiles=False)
     
     product_smi_list=product_smi.split('.')
     real_product_smi_list=[]
@@ -571,7 +576,6 @@ def reaction_network(rxn_flask, tot_network, args):
     '''
     simple: find all shortest paths or all simple paths 
     '''
-    
     #Get all the reactants from rxn_flask
     reactant_list=list()
     for key, value in rxn_flask.items():
@@ -618,13 +622,13 @@ def reaction_network(rxn_flask, tot_network, args):
             if args.simple:
                 if nx.all_simple_paths(G, source=rid, target=pid):
                     for path in nx.all_simple_paths(G, source=rid, target=pid):
-                        if len(reaction_nodes_in_path) < 7:
+                        if len(reaction_nodes_in_path) < 13:
                             reaction_path.append(node for node in path if node.startswith('Reaction'))
             else:
                 if nx.all_shortest_paths(G, source=rid, target=pid):
                     for path in nx.all_shortest_paths(G, source=rid, target=pid):
                         reaction_nodes_in_path=[node for node in path if node.startswith('Reaction')]
-                        if len(reaction_nodes_in_path) < 7:
+                        if len(reaction_nodes_in_path) < 13:
                             reaction_path.append([node for node in path if node.startswith('Reaction')])
 
     
