@@ -1,8 +1,9 @@
 python generate_mechanism_data.py \
-  --data 'data/uspto_classified.txt'\
-  --save 'results/uspto2.txt'\
+  --data 'data/test_bromination.txt'\
+  --save 'results/bromination.txt'\
+  --rxn_class 'Bromination'\
   --debug True\
-  --verbosity 0\
-  --process 30
-#  --rxn_class 'Bromo Suzuki coupling'\
+  --verbosity 4\
+  --process 1\
+
   #  --data 'data/uspto_classified.txt'\

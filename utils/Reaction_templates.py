@@ -863,11 +863,11 @@ class_reaction_templates={
     3: {'Templates': ['[O;H0;+0:1]-[B;+0:4].[O;H2;+0:6]>>[O;H0;-1:1].[O;H2;+1:6]-[B;+0:4]',
                       '[O;H0;+0:1]-[B;+0:4].[O;H1;+0:6]-[C:7]>>[O;H0;-1:1].[C:7]-[O;H1;+1:6]-[B;+0:4]'],
      'pKa': [None, None],
-     'Description': 'Addition of water'}},
+     'Description': 'Addition of water'},
     4: {'Templates': ['[O;H0;-1:1].[O;H2;+1:6]-[B;+0:4]>>[O;H1;+0:1].[O;H1;+0:6]-[B;+0:4]',
                       '[O;H0;-1:1].[C:7]-[O;H1;+1:6]-[B;+0:4]>>[O;H1;+0:1].[C:7]-[O;H0;+0:6]-[B;+0:4]'],
      'pKa': [None, None],
-     'Description': 'Proton exchange'}}},
+     'Description': 'Proton exchange'}}}},
 
 
  ('Isocyanate + amine urea coupling',

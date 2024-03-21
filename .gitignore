@@ -41,6 +41,7 @@ Thumbs.db
 data/
 results/
 logs/
+run/
 *.csv
 *.json
 *.jsonl
