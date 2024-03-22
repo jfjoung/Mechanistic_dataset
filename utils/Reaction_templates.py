@@ -91,7 +91,7 @@ class_reaction_templates={
 
   # 'Deprotection with water': {'Reagent': ['[OH2]'],
   #  'Stages': {0: {'Templates': ['[O;+0:3]-[C:2](=[O:1])-[N;+0:8](-[#6:7])>>[O;+0:3]-[C:2](=[O;H0;+0:1])-[N;+0:8](-[#6:7])'],
-  #    'pKa': [{'A': 0}],
+  #    'pKa': [{'A': 0.001}],
   #    'Description': 'Protonation of carbonyl group'},
   #   1: {'Templates': ['[O;+0:3]-[C:2](=[O;H1;+1:1])-[N;+0:8](-[#6:7]).[O;H2;+0:5]>>[O;+0:3]-[C:2](-[O;H1;+0:1])(-[O;H2;+1:5])-[N;+0:8](-[#6:7])'],
   #    'pKa': [None],
