@@ -1,7 +1,7 @@
 python generate_mechanism_data.py \
   --data 'data/uspto_classified.txt'\
-  --save 'results/testing_all.txt'\
-  --rxn_class 'N-Boc deprotection'\
+  --save 'results/testing_all3.txt'\
+  --rxn_class 'Claisen-Schmidt condensation'\
   --proton True\
   --byproduct False\
   --spectator False\

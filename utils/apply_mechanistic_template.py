@@ -257,8 +257,12 @@ def find_acid_base(rxn_flask, filtered_list, ab_condition):
             product=acid_base['Acid']        
         
         patt = Chem.MolFromSmarts(reactant)
-        mols = [Chem.MolFromSmiles(rxn_flask[x]['smiles']) for x in rxn_flask  if type(x) is int]
+        mols = [Chem.MolFromSmiles(rxn_flask[x]['smiles'], sanitize=False) for x in rxn_flask  if type(x) is int]
         for mol in mols:
+            mol.UpdatePropertyCache(strict=False)
+            Chem.SanitizeMol(mol,
+                             Chem.SanitizeFlags.SANITIZE_FINDRADICALS | Chem.SanitizeFlags.SANITIZE_SETAROMATICITY | Chem.SanitizeFlags.SANITIZE_SETCONJUGATION | Chem.SanitizeFlags.SANITIZE_SETHYBRIDIZATION | Chem.SanitizeFlags.SANITIZE_SYMMRINGS,
+                             catchErrors=True)
             if mol and mol.GetSubstructMatch(patt):
                 possible_acid_base.append([reactant, product])
     return possible_acid_base
