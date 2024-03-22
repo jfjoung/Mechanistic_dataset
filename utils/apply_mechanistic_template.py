@@ -194,17 +194,19 @@ def proton_balanced_template(rxn_flask, pKas, rxn_templates):
     rxn_flask: dictionary - key: species index (0~), value: dictionary of species data (smiles, tags, etc)
     pKas: list of pKas for each rxn_template in rxn_templates
     """
-    proton_balanced_rxn_templates=list()
+    proton_balanced_rxn_templates = []
+    original_rxn_templates = []
+
     if pKas == [None]*len(pKas):
 #         for data in rxn_flask.values():
 #             denotes whether a species works as acid or base in each template
 #             data['acid_or_base'] = [None for temp in rxn_templates] 
 #         return rxn_flask, rxn_templates
-        return rxn_templates
+        return rxn_templates, proton_balanced_rxn_templates
 
     for pKa, templ in zip(pKas, rxn_templates):
         if not pKa:
-            proton_balanced_rxn_templates.append(templ)
+            original_rxn_templates.append(templ)
             continue
         A=pKa.get('A')
         B=pKa.get('B')
@@ -226,7 +228,7 @@ def proton_balanced_template(rxn_flask, pKas, rxn_templates):
             new_templ='>>'.join([new_r,new_p])
             proton_balanced_rxn_templates.append(new_templ)
 
-    return proton_balanced_rxn_templates
+    return original_rxn_templates, proton_balanced_rxn_templates
 
 def allow_unimolecular_rxn(rxn_templates):
     new_templates=[]
@@ -234,7 +236,7 @@ def allow_unimolecular_rxn(rxn_templates):
         rxn = AllChem.ReactionFromSmarts(templ)
         num_reactants=rxn.GetNumReactantTemplates()
         
-        new_templates.append(templ)
+        # new_templates.append(templ)
         if num_reactants > 1:
             r, p = templ.split('>>')
             r= '('+r+')'
@@ -424,21 +426,25 @@ def run_single_reaction(rxn_flask, single_step, args):
     
     if args.proton: # Get proton balanced reaction template
         # TODO: label acids and bases (e.g. 'acid' instead of just 'reactant' when labelling), add isAcid, isBase
-        rxn_templates=proton_balanced_template(rxn_flask, pKas, rxn_templates)
-        num_proton_temp=len(rxn_templates)
+        rxn_templates, rxn_proton_templates = proton_balanced_template(rxn_flask, pKas, rxn_templates)
+        num_proton_temp = len(rxn_proton_templates)
         if args.verbosity > 2:
-            logging.info('New proton balanced {} templates are generated'.format(max(num_proton_temp-num_original_temp, 0)))
-            num_original_temp=len(rxn_templates)
+            logging.info('New proton balanced {} templates are generated'.format(max(num_proton_temp, 0)))
         
-    if args.uni_rxn: # Get unimolecular reaction template
-        rxn_templates=allow_unimolecular_rxn(rxn_templates)
-        num_uni_temp = len(rxn_templates)
+    if args.uni_rxn: # Get unimolecular reaction template, Intramolecular proton transfer is not allowed
+        rxn_uni_templates = allow_unimolecular_rxn(rxn_templates)
+        num_uni_temp = len(rxn_uni_templates)
         if args.verbosity > 2:
-            logging.info('New unimolecular {} templates are generated'.format(max(num_uni_temp-num_original_temp,0)))
+            logging.info('New unimolecular {} templates are generated'.format(max(num_uni_temp,0)))
+
+    if args.proton:
+        rxn_templates = rxn_templates + rxn_proton_templates
+    if args.uni_rxn:
+        rxn_templates = rxn_templates + rxn_uni_templates
 
     if len(rxn_templates) > args.max_num_temp:
         if args.verbosity > 2:
-            logging.info('{} templates are generated, skipping it to avoid combinatorial explosion'.format(num_uni_temp))
+                logging.info('{} templates are generated, skipping it to avoid combinatorial explosion'.format(len(rxn_templates)))
         raise ValueError("Too many templates are generated.")
 
     #Define the reactive chemicals
@@ -478,30 +484,28 @@ def run_single_reaction(rxn_flask, single_step, args):
                 if not check_products_validity(outcome): continue
                 product_id=set()
                 if args.verbosity > 3: logging.info('{} products are formed'.format(len(outcome)))
-                complete_reaction = True
-                for prod_mol in outcome:     
+                for i, prod_mol in enumerate(outcome):
                     new_prod=product_dict(prod_mol, reactant_id, history)
 
                     r_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in reactant_id]))
                     # prod_num = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] == new_prod['smiles'] and sorted(value['atom_mapping']) == sorted(new_prod['atom_mapping'])]
-                    prod_num = [key for key, value in rxn_flask.items() if
+                    prod_nums = [key for key, value in rxn_flask.items() if
                                 type(key) is int and value['smiles'] == new_prod['smiles']]
-                    p_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in prod_num]))
-
-                    if prod_num and r_map.issuperset(p_map):
-                        if args.verbosity > 3: logging.info('{} is found'.format(rxn_flask[prod_num[0]]['smiles_w_mapping']))
-                        product_id.add(prod_num[0])
-                        continue
-                    elif prod_num and not r_map.issuperset(p_map):
-                        complete_reaction = False
-                        break
-                    else: 
+                    found = False
+                    for prod_num in prod_nums:
+                        p_map = set(flatten_list([rxn_flask[prod_num]['atom_mapping']]))
+                        if prod_num and r_map.issuperset(p_map):
+                            found = True
+                            if args.verbosity > 3: logging.info('{} is found'.format(rxn_flask[prod_num]['smiles_w_mapping']))
+                            product_id.add(prod_num)
+                            break
+                    if not found:
                         num_mols=len(rxn_flask)+1
                         product_id.add(num_mols)
                         rxn_flask[num_mols]= new_prod
                         if args.verbosity > 3: logging.info('{} is formed'.format(rxn_flask[num_mols]['smiles_w_mapping']))
 
-                if complete_reaction and [reactant_id,product_id] not in reaction_pair:
+                if [reactant_id,product_id] not in reaction_pair:
                     reaction_pair.append([reactant_id,product_id])
                     reaction_network.append([reactant_id,templ, product_id])
                 
@@ -937,7 +941,7 @@ def elementary_reaction(G, args):
                 else:
                     p_smiles=p_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in produced_byproduct_nodes if x not in final_products])
             if args.spectator:
-                if args.eagent:
+                if args.reagent:
                     reagent_smiles=reagent_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in spectator_nodes+not_used_reactant])
                 else:
                     r_smiles=r_smiles+sorted([G.nodes[x]['molecule'][smiles] for x in spectator_nodes+not_used_reactant])
