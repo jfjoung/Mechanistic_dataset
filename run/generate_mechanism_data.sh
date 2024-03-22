@@ -1,6 +1,7 @@
 python generate_mechanism_data.py \
   --data 'data/uspto_classified.txt'\
-  --save 'results/uspto3.txt'\
+  --save 'results/testing_all.txt'\
+  --rxn_class 'N-Boc deprotection'\
   --proton True\
   --byproduct False\
   --spectator False\
@@ -10,4 +11,4 @@ python generate_mechanism_data.py \
   --process 30\
 
   #  --data 'data/uspto_classified.txt'\
-#  --rxn_class 'Bromination'\
+#  --rxn_class 'N-Boc deprotection'\

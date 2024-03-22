@@ -210,6 +210,7 @@ def proton_balanced_template(rxn_flask, pKas, rxn_templates):
             continue
         A=pKa.get('A')
         B=pKa.get('B')
+        possible_acid_base=[]
         if A:
             filtered_data = [d for d in AcidBase_lookup.Acid_base if 'A' in d['role'] and d['pKa'] <= A]
             sorted_data = sorted(filtered_data, key=lambda x: x['pKa'])
