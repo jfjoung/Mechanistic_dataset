@@ -17,13 +17,15 @@ def parse_arguments():
 
     # Arguments for applying reaction templates to get every elementary reactions
     parser.add_argument("--num_combination", help="The number of possible reactions to be considered, it prevents combinatorial explosions",
-                        type=int, default=20)
+                        type=int, default=30)
     parser.add_argument("--uni_rxn", help="Allow the unimolecular reactions",
                         type=str2bool, default=True)
     parser.add_argument("--proton", help="Allow the proton-balanced reactions",
                         type=str2bool, default=True)
+    parser.add_argument("--multi_rxn", help="Allow one reaction condition to react multiple times",
+                        type=str2bool, default=True)
     parser.add_argument("--max_num_temp", help="The maximum number of templates allowed to consider. If uni_rxn or proton is true, the combinatorial explosion could occur",
-                        type=int, default=40)
+                        type=int, default=50)
     parser.add_argument("--stoichiometry", help="Duplicate the reactants when needed",
                         type=str2bool, default=True)
 
@@ -37,7 +39,7 @@ def parse_arguments():
     parser.add_argument("--num_cycles", help="The maximum number of cycles allowed in the reaction graph",
                        type=int, default=9)
     parser.add_argument("--num_reaction_node", help="The maximum number of reaction nodes allowed in the reaction graph",
-                       type=int, default=40)
+                       type=int, default=50)
 
     # Arguments for extracting reaction SMARTS from the reaction network
     '''

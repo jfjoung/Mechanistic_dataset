@@ -534,15 +534,40 @@ def run_full_reaction(rxn_flask, condition, cond_name, args):
             logging.info('Start reaction under the condition of {}'.format(cname))
         tot_net = list()
         rxn_flask_cond = copy.deepcopy(rxn_flask)
-        for i, temp in enumerate(cond['Stages'].values()):
-            if args.verbosity > 1:
-                logging.info('Apply {}th template'.format(i))
-            rxn_flask_cond, reaction_network=run_single_reaction(rxn_flask_cond, temp, args)
-            tot_net+=reaction_network
+
+        num_rxn = 1
+        # if args.multi_rxn and 'Reactive_site' in cond.keys():
+        #     num_rxn = find_reactive_moeity(rxn_flask_cond, cond['Reactive_site'])
+        #     if args.verbosity > 0:
+        #         logging.info('The set of templates will be applied {} times'.format(num_rxn))
+
+        for num in range(num_rxn):
+            for i, temp in enumerate(cond['Stages'].values()):
+                if args.verbosity > 1:
+                    logging.info('Apply {}th template'.format(i))
+                rxn_flask_cond, reaction_network=run_single_reaction(rxn_flask_cond, temp, args)
+                tot_net+=reaction_network
         tot_networks.append(tot_net)
         rxn_flasks.append(rxn_flask_cond)
 
     return rxn_flasks, tot_networks
+
+def find_reactive_moeity(rxn_flask, reactive_moeity):
+    mol_dict = {reactant: Chem.MolFromSmarts(rxn_flask[reactant]['smiles_w_mapping']) for reactant in rxn_flask if
+                type(reactant) is int}
+    num_rxn = 1
+    pat = Chem.MolFromSmarts(reactive_moeity)
+    for mol_key in mol_dict:
+        mol = mol_dict[mol_key]
+        mol.UpdatePropertyCache(strict=False)
+        Chem.SanitizeMol(mol,
+                         Chem.SanitizeFlags.SANITIZE_FINDRADICALS | Chem.SanitizeFlags.SANITIZE_SETAROMATICITY | Chem.SanitizeFlags.SANITIZE_SETCONJUGATION | Chem.SanitizeFlags.SANITIZE_SETHYBRIDIZATION | Chem.SanitizeFlags.SANITIZE_SYMMRINGS,
+                         catchErrors=True)
+
+        if mol and mol.GetSubstructMatch(pat):
+            num_rxn = max(len(mol.GetSubstructMatch(pat)), num_rxn)
+
+    return num_rxn
 
 def find_product(example_rxn, rxn_flask):
     reaction_smi = example_rxn['reaction_smiles']
