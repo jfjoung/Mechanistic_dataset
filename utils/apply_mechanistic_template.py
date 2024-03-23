@@ -125,8 +125,8 @@ def prepare_reactants(reaction_dict):
         
         reactant_dict[num] = {'smiles_w_isotope':Chem.MolToSmiles(mol),   # Using isotope as atom mapping for reaction
                             'atom_mapping':[i for i in range(start_idx,idx)],  #Checking for atom-mapping collision
-                            'smiles':Chem.MolToSmiles(remove_atom_map(mol), isomericSmiles=False),  #Plain SMILES string
-                           'smiles_w_mapping': Chem.MolToSmiles(isotope_to_atommap(mol), isomericSmiles=False), # Output for generating elementary reaction graph
+                            'smiles':Chem.MolToSmiles(remove_atom_map(mol)),  #Plain SMILES string
+                           'smiles_w_mapping': Chem.MolToSmiles(isotope_to_atommap(mol)), # Output for generating elementary reaction graph
                            'rxn_history': list(),
                             'identity': 'reactant'
                              }
@@ -171,9 +171,9 @@ def product_dict(prod_mol, reactant_id, reactant_history):
 
     # Get plain smiles
     try:
-        prod_smi = Chem.MolToSmiles(Chem.MolFromSmiles(Chem.MolToSmiles(prod_mol)))
+        prod_smi = Chem.MolToSmiles(Chem.MolFromSmiles(Chem.MolToSmiles(prod_mol)), isomericSmiles=False)
     except:
-        prod_smi = Chem.MolToSmiles(prod_mol)
+        prod_smi = Chem.MolToSmiles(prod_mol, isomericSmiles=False)
 
     reactant_history = list(set([item for sublist in reactant_history if isinstance(sublist, set) for item in sublist]+\
                         [item for item in reactant_history if isinstance(item, int)]+\
@@ -263,7 +263,7 @@ def find_acid_base(rxn_flask, filtered_list, ab_condition):
             Chem.SanitizeMol(mol,
                              Chem.SanitizeFlags.SANITIZE_FINDRADICALS | Chem.SanitizeFlags.SANITIZE_SETAROMATICITY | Chem.SanitizeFlags.SANITIZE_SETCONJUGATION | Chem.SanitizeFlags.SANITIZE_SETHYBRIDIZATION | Chem.SanitizeFlags.SANITIZE_SYMMRINGS,
                              catchErrors=True)
-            if mol and mol.GetSubstructMatch(patt):
+            if mol and mol.GetSubstructMatch(patt) and [reactant, product] not in possible_acid_base:
                 possible_acid_base.append([reactant, product])
     return possible_acid_base
 
@@ -334,7 +334,6 @@ def find_reactants(rxn_flask, rxn_templates, args):
         if args.stoichiometry and duplicated_combi and not reactive_dict:
             idx = rxn_flask['last_mapping_number']+1
             new_combination_list=list()
-            
             for combination in duplicated_combi:
                 new_combination=list()
                 for mol_num in combination:
@@ -357,9 +356,7 @@ def find_reactants(rxn_flask, rxn_templates, args):
                 new_combination_list.append(new_combination)
                         
             rxn_flask['last_mapping_number']=idx-1
-
             for combination in new_combination_list:
-                reactant_history_per_com=list()
                 if num_reactants>1: 
                     reactant_atommap=[set(i) for i in [rxn_flask[mol_num]['atom_mapping'] for mol_num in combination]]
                     # Check if there is the same atom in two reactants
@@ -367,6 +364,8 @@ def find_reactants(rxn_flask, rxn_templates, args):
                         continue
                 reactant_history=[i for i in [rxn_flask[mol_num]['rxn_history'] for mol_num in combination]]
                 reactant_history.extend(combination)
+                reactant_history = flatten_list(reactant_history)
+
                 # Check if at least one species came from the same reactant
                 if has_duplicates(reactant_history):
                     continue
@@ -376,10 +375,9 @@ def find_reactants(rxn_flask, rxn_templates, args):
                 if num_reactants>1:
                     reactive_combination.append(list(reversed(combination)))
                     reactant_history_per_com.append(reactant_history)
-
-                reactive_dict[templ] = {'combination': reactive_combination,
-                                        'num_reactants': num_reactants,
-                                        'reactant_history': reactant_history_per_com}
+            reactive_dict[templ] = {'combination': reactive_combination,
+                                    'num_reactants': num_reactants,
+                                    'reactant_history': reactant_history_per_com}
 
     final_reactive_dict=dict()
     for key, value in reactive_dict.items():
@@ -393,7 +391,6 @@ def find_reactants(rxn_flask, rxn_templates, args):
             final_reactive_dict[key]=value
     if args.verbosity > 1 and not final_reactive_dict:
         logging.info('No reactants are found!')
-
     return rxn_flask, final_reactive_dict
 
 def has_duplicates(input_list):
@@ -424,7 +421,6 @@ def run_single_reaction(rxn_flask, single_step, args):
     # print("TEMPLATES", rxn_templates)
     reaction_network=[]
     reaction_pair=[]
-    
     if args.verbosity > 2:
         num_original_temp=len(rxn_templates)
         logging.info('The number of the original templates is {}'.format(num_original_temp))
@@ -465,7 +461,6 @@ def run_single_reaction(rxn_flask, single_step, args):
         combinations=reactive_dict[templ]['combination']
         num_reactants=reactive_dict[templ]['num_reactants']
         reactant_history=reactive_dict[templ]['reactant_history']
-        
         rxn = AllChem.ReactionFromSmarts(templ)
         for combination, history in zip(combinations, reactant_history):                             
             reactants=[Chem.MolFromSmiles(rxn_flask[num]['smiles_w_isotope'],sanitize=False)
@@ -535,39 +530,16 @@ def run_full_reaction(rxn_flask, condition, cond_name, args):
         tot_net = list()
         rxn_flask_cond = copy.deepcopy(rxn_flask)
 
-        num_rxn = 1
-        # if args.multi_rxn and 'Reactive_site' in cond.keys():
-        #     num_rxn = find_reactive_moeity(rxn_flask_cond, cond['Reactive_site'])
-        #     if args.verbosity > 0:
-        #         logging.info('The set of templates will be applied {} times'.format(num_rxn))
-
-        for num in range(num_rxn):
-            for i, temp in enumerate(cond['Stages'].values()):
-                if args.verbosity > 1:
-                    logging.info('Apply {}th template'.format(i))
-                rxn_flask_cond, reaction_network=run_single_reaction(rxn_flask_cond, temp, args)
-                tot_net+=reaction_network
+        for i, temp in enumerate(cond['Stages'].values()):
+            if args.verbosity > 1:
+                logging.info('Apply {}th template'.format(i))
+            rxn_flask_cond, reaction_network=run_single_reaction(rxn_flask_cond, temp, args)
+            tot_net+=reaction_network
         tot_networks.append(tot_net)
         rxn_flasks.append(rxn_flask_cond)
 
     return rxn_flasks, tot_networks
 
-def find_reactive_moeity(rxn_flask, reactive_moeity):
-    mol_dict = {reactant: Chem.MolFromSmarts(rxn_flask[reactant]['smiles_w_mapping']) for reactant in rxn_flask if
-                type(reactant) is int}
-    num_rxn = 1
-    pat = Chem.MolFromSmarts(reactive_moeity)
-    for mol_key in mol_dict:
-        mol = mol_dict[mol_key]
-        mol.UpdatePropertyCache(strict=False)
-        Chem.SanitizeMol(mol,
-                         Chem.SanitizeFlags.SANITIZE_FINDRADICALS | Chem.SanitizeFlags.SANITIZE_SETAROMATICITY | Chem.SanitizeFlags.SANITIZE_SETCONJUGATION | Chem.SanitizeFlags.SANITIZE_SETHYBRIDIZATION | Chem.SanitizeFlags.SANITIZE_SYMMRINGS,
-                         catchErrors=True)
-
-        if mol and mol.GetSubstructMatch(pat):
-            num_rxn = max(len(mol.GetSubstructMatch(pat)), num_rxn)
-
-    return num_rxn
 
 def find_product(example_rxn, rxn_flask):
     reaction_smi = example_rxn['reaction_smiles']

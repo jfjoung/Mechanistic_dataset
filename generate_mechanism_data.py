@@ -22,8 +22,6 @@ def parse_arguments():
                         type=str2bool, default=True)
     parser.add_argument("--proton", help="Allow the proton-balanced reactions",
                         type=str2bool, default=True)
-    parser.add_argument("--multi_rxn", help="Allow one reaction condition to react multiple times",
-                        type=str2bool, default=True)
     parser.add_argument("--max_num_temp", help="The maximum number of templates allowed to consider. If uni_rxn or proton is true, the combinatorial explosion could occur",
                         type=int, default=50)
     parser.add_argument("--stoichiometry", help="Duplicate the reactants when needed",
