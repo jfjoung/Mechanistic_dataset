@@ -668,7 +668,7 @@ def reaction_network(rxn_flask, tot_network, args):
             G_sub.remove_node(nid)
         i += 1
         if i > args.num_reaction_node:
-            break
+            break #TODO: Make it raise error.
 
     # Add spectators
     missing_molecule_nodes = [node_id for node_id in reactant_list if f'Molecule {node_id}' not in G_sub.nodes]

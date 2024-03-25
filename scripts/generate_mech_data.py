@@ -45,10 +45,10 @@ def generate_mechdata_single(input):
                 logging.info(f'{e}')
             return False, f'{e}', line, elem_steps_stats  # 0
 
-        if args.all_info:
-            elem_dict = dict()
-        else:
-            elem_list = list()
+        # if args.all_info:
+        elem_dict = dict()
+        # else:
+        elem_list = list()
 
 
         failed_products=[]
@@ -169,7 +169,9 @@ def generate_mechdata_multiprocess(args):
                 if elem_reaction:
                     num_used_rxn += 1
                     if args.all_info:
-                        json.dump(elem_reaction, fout, indent=4)
+                        fout.write(json.dumps(elem_reaction) + "\n")
+                        # json.dump(elem_reaction, fout, indent=4)
+                        # fout.write("\n")
                     else:
                         fout.write('\n'.join(elem_reaction) + '\n')
                 num_generated_rxn += len(elem_reaction)

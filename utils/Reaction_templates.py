@@ -250,7 +250,7 @@ class_reaction_templates={
     2: {'Templates': ['[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:2])-[N;+0:5]>>[#6:13]-[C;H0;+0:14](=[O;+0:15])-[N;+0:5].[O;-1:2]'],
      'pKa': [None],
      'Description': 'Alkoxide leaving'}}}},
-
+                             #TODO: It gives no product
  ('Carboxy to carbamoyl',): {'Condensation using DCC': {'Reagent': ['[N]=[C]=[N]'],
    'Stages': {0: {'Templates': ['[#7;H4;+1:5]>>[#7;H3;+0:5]',
       '[#7;H3;+1:5]>>[#7;H2;+0:5]',
@@ -376,7 +376,6 @@ class_reaction_templates={
      'pKa': [{'B': -6}, None],
      'Description': 'Proton exchange'}}},
 
-  ## TODO: It gives no products
   'Williamson ether synthesis type': {'Reagent': ['[Cl,Br,I,S&$([S](=O)(-O))]-[C]'],
    'Stages': {0: {'Templates': [# Acidic pKa
                      '[#6:1]-[#8;H1;+0:2].[Cl,Br,I:4]-[C:5]>>[Cl,Br,I;H0;-1:4].[#6:1]-[#8;H1;+1:2]-[C:5]',
@@ -468,7 +467,7 @@ class_reaction_templates={
   'Chloro Buchwald-Hartwig amination',
   'Iodo Buchwald-Hartwig amination',
   'Bromo Miyaura boration',
-  'Chloro Miyaura boration',
+  'Chloro Miyaura boration',  #High error rate
   'Triflyloxy Miyaura boration',
   'Iodo Miyaura boration'):
 
@@ -888,6 +887,7 @@ class_reaction_templates={
      'pKa': [None, None, None, None],
      'Description': 'Hydride transfer'}}}},
 
+ #TODO: High error rate
  ('Sulfanyl to sulfonyl',): {'Reaction using peroxide': {'Reagent': ['[O]-[O]'],
    'Stages': {0: {'Templates': ['[S;D2;H0;+0:1].[O;H1;+0:2]-[O;H0;+0:3]>>[S;H0;+1:1]-[O;H1;+0:2].[O;H0;-1:3]',
       '[S;D2;H0;+0:1].[O;H1;+0:2]-[O;H1;+0:3]>>[S;H0;+1:1]-[O;H1;+0:2].[O;H1;-1:3]',
@@ -961,8 +961,8 @@ class_reaction_templates={
     2: {'Templates': ['[#8;-1:1]>>[#8;H1;+0:1]'],
      'pKa': [{'A': 15.5}],
      'Description': 'Protonation of alkoxide'}}},
-
-                           'Aqueous acidic condition': {'Reagent': ['[OH2]'],
+    # TODO: High error rate
+    'Aqueous acidic condition': {'Reagent': ['[OH2]'],
    'Stages': {0: {'Templates': ['[#8:1]-[Si;+0:2]>>[#8;H1;+1:1]-[Si;+0:2]'],
      'pKa': [{'A': 15.5}],
      'Description': 'Protonation of ether'},
@@ -1086,7 +1086,7 @@ class_reaction_templates={
     1: {'Templates': ['[N;-1;H0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+1:7]:[c;H1;+0:8]-[Br,Cl,I;H0:1]>>[N;H1;+0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+0:7]:[c;H0;+0:8]-[Br,Cl,I;H0:1]'],
      'pKa': [None],
      'Description': 'Proton exchange'}}},
-
+    #TODO: It gives no product
   'Using FeCl3 or AlCl3': {'Reagent': ['Cl[Fe,Al](Cl)Cl'],
    'Stages': {0: {'Templates': ['[Cl:1][Cl:2].[Cl:3][Fe,Al:4]([Cl:5])[Cl:6]>>[Cl:3][Fe,Al;-1:4]([Cl:5])([Cl:6])[Cl;+1:1][Cl:2]'],
                  'pKa': [None],
@@ -1102,7 +1102,7 @@ class_reaction_templates={
 # TODO: Too high error rate
  ('Hydroxy to chloro'): {'SOCl2 or POCl3': {'Reagent': ['O=[S,P](-[Cl])-[Cl]'],
    'Stages': {0: {'Templates': ['[O;H1;+0:1]>>[O;H0;-1:1]'],
-     'pKa': [{'B': 15.5}],
+     'pKa': [{'B': 14}],
      'Description': 'Deprotonation of alcohol'},
     1: {'Templates': ['[O;H0;-1:1].[O;+0:2]=[S,P;+0:3]-[Cl;+0:4]>>[O;H0;+0:1]-[S,P;+0:3](-[O;-1:2])-[Cl;+0:4]'],
      'pKa': [None],
@@ -1116,7 +1116,7 @@ class_reaction_templates={
      'Description': 'Nucleophilic substitution'}}},
   'PCl5': {'Reagent': ['ClP(Cl)(Cl)(Cl)Cl'],
    'Stages': {0: {'Templates': ['[O;H1;+0:1]>>[O;H0;-1:1]'],
-     'pKa': [{'B': 15.5}],
+     'pKa': [{'B': 14}],
      'Description': 'Deprotonation of alcohol'},
     1: {'Templates': ['[#6:5]-[O;H0;-1:1].[P;+0:2]-[Cl;+0:3]>>[#6:5]-[O;H0;+0:1]-[P;+0:2].[Cl;-1:3]'],
      'pKa': [None],
@@ -1126,7 +1126,7 @@ class_reaction_templates={
      'Description': 'Nucleophilic substitution'}}},
   'Oxalyl chloride': {'Reagent': ['O=C(C(Cl)=O)Cl'],
    'Stages': {0: {'Templates': ['[O;H1;+0:1]>>[O;H0;-1:1]'],
-     'pKa': [{'B': 15.5}],
+     'pKa': [{'B': 14}],
      'Description': 'Deprotonation of alcohol'},
     1: {'Templates': ['[O;H0;-1:1].[C;+0:2]-[Cl;+0:3]>>[O;H0;+0:1]-[C;+0:2].[Cl;-1:3]'],
      'pKa': [None],
@@ -1155,84 +1155,6 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Proton exchange'}}}},
 
-
-###################################################
-
-#  ('Bechamp reduction',): {'Reaction': {'Reagent': ['[Fe;D0;+0:1]'],
-#    'Stages': {0: {'Templates': ['[Fe;D0;+0:1].[N;+1:2](=[O;+0:3])-[O;H0;-1:4]>>[Fe;D0;+2:1].[N;+0:2](-[O;-1:3])-[O;H0;-1:4]'],
-#      'pKa': [None],
-#      'Description': 'Oxidation of nitro group'},
-#     1: {'Templates': ['[N;+0:2](-[O;-1:3])-[O;H0;-1:4]>>[N;+0:2](-[O;-1:3])-[O;H1;+0:4]'],
-#      'pKa': [None],
-#      'Description': ''},
-#     2: {'Templates': ['[N;+0:2](-[O;-1:3])-[O;H1;+0:4]>>[N;+0:2](-[O;-1:3])-[O;H2;+1:4]'],
-#      'pKa': [None],
-#      'Description': ''},
-#     3: {'Templates': ['[N;+0:2](-[O;-1:3])-[O;H2;+1:4]>>[N;+0:2](=[O;+0:3]).[O;H2;+0:4]'],
-#      'pKa': [None],
-#      'Description': ''},
-#     4: {'Templates': ['[N;+0:2]=[O;+0:3]>>[N;H1;+0:2]-[O;H1;+0:3]'],
-#      'pKa': [None],
-#      'Description': ''},
-#     5: {'Templates': ['[N;H1;+0:2]-[O;H1;+0:3]>>[N;H1;+0:2]-[O;H2;+1:3]'],
-#      'pKa': [None],
-#      'Description': ''},
-#     6: {'Templates': ['[Fe;D0;+0:1].[N;H1;+0:2]-[O;H2;+1:3]>>[Fe;+2:1].[N;H1;-1:2].[O;H2;+0:3]'],
-#      'pKa': [None],
-#      'Description': ''},
-#     7: {'Templates': ['[N;H1;-1:2]>>[N;H2;+0:2]'],
-#      'pKa': [None],
-#      'Description': ''}}}},
-
-
-#  ('Amide to amine reduction',): {'Reaction': {'Reagent': ['[Al,B;!H0]'],
-#    'Stages': {0: {'Templates': ['[Li,Na:1][Al,B;H1,H2,H3,H4;+0:2]>>[Li,Na;+1:1].[Al,B;H1,H2,H3,H4;-1:2]'],
-#      'pKa': [None],
-#      'Description': 'Preparation of Borohydride or Alumanuide'},
-
-#     1: {'Templates': ['[Al,B;H4;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[Al,B;H3;+0:2].[#7:6]-[#6;H1;+0:4](-[O;H0;-1:5])',
-#       '[Al,B;H3;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[Al,B;H2;+0:2].[#7:6]-[#6;H1;+0:4](-[O;H0;-1:5])',
-#       '[Al,B;H2;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[Al,B;H1;+0:2].[#7:6]-[#6;H1;+0:4](-[O;H0;-1:5])',
-#       '[Al,B;H1;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[Al,B;H0;+0:2].[#7:6]-[#6;H1;+0:4](-[O;H0;-1:5])'],
-#      'pKa': [None, None, None, None],
-#      'Description': 'Hydride transfer'},
-#     2: {'Templates': ['[#6;H1;+0:4](-[O;H0;-1:5]).[Li,Na,K;+1:1]>>[#6;H1;+0:4]-[O;H0;+0:5]-[Li,Na,K;+0:1]'],
-#      'pKa': [None],
-#      'Description': 'Salt formation'},
-#     3: {'Templates': ['[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Li,Na,K;+0:1].[Al,B;v3;+0:2]>>[#7;+1:6]=[#6;H1;+0:4].[Li,Na,K;+0:1]-[O;H0;+0:5]-[Al,B;-1:2]'],
-#      'pKa': [None],
-#      'Description': 'Boronic acid formation'},
-#     4: {'Templates': ['[Al,B;H4;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[Al,B;H3;+0:2].[#7;+0:6]-[#6;H2;+0:4]',
-#       '[Al,B;H3;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[Al,B;H2;+0:2].[#7;+0:6]-[#6;H2;+0:4]',
-#       '[Al,B;H2;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[Al,B;H1;+0:2].[#7;+0:6]-[#6;H2;+0:4]',
-#       '[Al,B;H1;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[Al,B;H0;+0:2].[#7;+0:6]-[#6;H2;+0:4]'],
-#      'pKa': [None, None, None, None],
-#      'Description': 'Additional hydride transfer '}}}},
-
-
-#  ('Amide to amine reduction',): {'Reaction': {'Reagent': ['[Al,B;!H0]'],
-#    'Stages': {0: {'Templates': ['[Li,Na:1][Al,B;H1,H2,H3,H4;+0:2]>>[Li,Na;+1:1].[Al,B;H1,H2,H3,H4;-1:2]'],
-#      'pKa': [None],
-#      'Description': 'Preparation of Borohydride or Alumanuide'},
-
-#     1: {'Templates': ['[Al,B;H4;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[Al,B;H3;+0:2].[#7:6]-[#6;H1;+0:4](-[O;H0;-1:5])',
-#       '[Al,B;H3;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[Al,B;H2;+0:2].[#7:6]-[#6;H1;+0:4](-[O;H0;-1:5])',
-#       '[Al,B;H2;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[Al,B;H1;+0:2].[#7:6]-[#6;H1;+0:4](-[O;H0;-1:5])',
-#       '[Al,B;H1;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[Al,B;H0;+0:2].[#7:6]-[#6;H1;+0:4](-[O;H0;-1:5])'],
-#      'pKa': [None, None, None, None],
-#      'Description': 'Hydride transfer'},
-#     2: {'Templates': ['[#6;H1;+0:4](-[O;H0;-1:5]).[Li,Na,K;+1:1]>>[#6;H1;+0:4]-[O;H0;+0:5]-[Li,Na,K;+0:1]'],
-#      'pKa': [None],
-#      'Description': 'Salt formation'},
-#     3: {'Templates': ['[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Li,Na,K;+0:1]>>[#7;+1:6]=[#6;H1;+0:4].[Li,Na,K;+0:1]-[O;H0;-1:5]'],
-#      'pKa': [None],
-#      'Description': 'Boronic acid formation'},
-#     4: {'Templates': ['[Al,B;H4;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[Al,B;H3;+0:2].[#7;+0:6]-[#6;H2;+0:4]',
-#       '[Al,B;H3;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[Al,B;H2;+0:2].[#7;+0:6]-[#6;H2;+0:4]',
-#       '[Al,B;H2;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[Al,B;H1;+0:2].[#7;+0:6]-[#6;H2;+0:4]',
-#       '[Al,B;H1;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[Al,B;H0;+0:2].[#7;+0:6]-[#6;H2;+0:4]'],
-#      'pKa': [None, None, None, None],
-#      'Description': 'Additional hydride transfer '}}}},
 
      ('Amide to amine reduction',): {'Reaction': {'Reagent': ['[Al,B;!H0]'],
    'Stages': {0: {'Templates': ['[Li,Na:1][Al,B;H1,H2,H3,H4;+0:2]>>[Li,Na;+1:1].[Al,B;H1,H2,H3,H4;-1:2]'],
@@ -1327,7 +1249,7 @@ class_reaction_templates={
  ('Bromo Sonogashira coupling',
   'Iodo Sonogashira coupling',
   'Chloro Sonogashira coupling',
-  'Triflyloxy Sonogashira coupling',
+  'Triflyloxy Sonogashira coupling', #TODO: It gives no product
  'Bromo Stille reaction',
   'Chloro Stille reaction',
   'Iodo Stille reaction'): {'Reaction with element Pd':
@@ -1561,7 +1483,7 @@ class_reaction_templates={
       '[#7:1]#[#6:2]-[#6;H1;+0:3]-[#6:4]-[#8;H1;+0:5]>>[#7:1]#[#6:2]-[#6;H0;+0:3]=[#6:4].[#8;H1;-1:5]'],
      'pKa': [{'B': 14},{'B': 6},{'B': 14},{'B': 6}, {'B': 14}],
      'Description': 'Condensation'}}},
-
+    #TODO: High error rate
     'Acidic condition': {'Reagent': None,
    'Stages': {0: {'Templates': ['[#8;+0;H0:1]=[#6:2]>>[#8;H1;+1:1]=[#6:2]'],
      'pKa': [{'A': 0.001}],
@@ -1767,7 +1689,7 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Cyclo-reversion'}}}},
 
-
+    #TODO: It gives no product
  ('Darzens chlorination',
   'Darzens bromination'): {'Reaction': {'Reagent': None,
    'Stages': {0: {'Templates': ['[#6X4][#8;H1:1]>>[#8;H0;-1:1]'],
@@ -2007,7 +1929,7 @@ class_reaction_templates={
     2: {'Templates': ['[C:1](=[O:2])[O;H0;+0:3][C;+0:4](=[O:6])[C;+0:7](=[O;+0:8])[Cl:9].[Cl;-:5]>>[C:1](=[O:2])[Cl;+0:5].[O;H0;+0:3]=[C;+0:4](=[O:6]).[C;-:7]#[O;+:8].[Cl;-:9].[Cl;-:5]'],
         'pKa': [None],
         'Description': 'Nucleophilic substitution'}}}},
-
+    #TODO: High error rate
   ('O-TBS protection',
    'O-TMS protection',
    'O-TIPS protection',

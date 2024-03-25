@@ -1,15 +1,14 @@
 python generate_mechanism_data.py \
-  --data 'data/testing.txt'\
-  --save 'results/testing.txt'\
-  --rxn_class 'Fischer-Speier esterification'\
+  --data 'data/uspto_classified.txt'\
+  --save 'results/uspto_all.jsonl'\
   --proton True\
   --byproduct False\
   --spectator False\
   --end False\
   --debug True\
-  --verbosity 4\
-  --process 1\
-  #--all_info True\
+  --verbosity 0\
+  --process 30\
+  --all_info True\
   #--do_not_pruning True
   #  --data 'data/uspto_classified.txt'\
 #  --rxn_class '"CO2H-Et deprotection":'\
