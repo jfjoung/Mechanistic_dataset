@@ -95,7 +95,7 @@ def drawing_fig(distribution, args, file_name='MW'):
     # Initialize figure and axes for the bar graph
     fig, ax = plt.subplots(figsize=(12, 8))
     # Assign a unique color to each chemical species
-    colors = ['tab:blue', 'magenta', 'tab:red', 'tab:cyan', 'tab:purple']
+    colors = ['blue', 'orange', 'green', 'red', 'purple']
 
     # Collect all unique keys (MW ranges) from all categories to create a comprehensive set of x-axis labels
     all_keys = set(key for dist in distribution.values() for key in dist)
