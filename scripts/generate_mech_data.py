@@ -51,7 +51,7 @@ def generate_mechdata_single(input):
             elem_list = list()
 
 
-            failed_products=[]
+        failed_products=[]
         for cond, G in G_dict.items():
             elem_steps_stats[label][cond]= {'No products': 0,
                                             'Too many reactions': 0,
@@ -168,7 +168,10 @@ def generate_mechdata_multiprocess(args):
                     _, elem_reaction, stat = result
                 if elem_reaction:
                     num_used_rxn += 1
-                    fout.write('\n'.join(elem_reaction) + '\n')
+                    if args.all_info:
+                        json.dump(elem_reaction, fout, indent=4)
+                    else:
+                        fout.write('\n'.join(elem_reaction) + '\n')
                 num_generated_rxn += len(elem_reaction)
                 if args.stat:
                     merge_dicts(statistics, stat)

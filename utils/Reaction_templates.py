@@ -41,7 +41,7 @@ class_reaction_templates={
     1: {'Templates': ['[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H3;+1:5]>>[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H2;+0:5]',
       '[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H2;+1:5]>>[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H1;+0:5]',
       '[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H1;+1:5]>>[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H0;+0:5]'],
-     'pKa': [{'B': 9}, {'B': 9}, {'B': 9}], #TODO: check the format
+     'pKa': [{'B': 9}, {'B': 9}, {'B': 9}],
      'Description': 'Deprotonation of amine'},
 
     2: {'Templates': ['[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:2])-[N;+0:5]>>[#6:13]-[C;H0;+0:14](=[O;+0:15])-[N;+0:5].[O;-1:2]'],
@@ -306,7 +306,7 @@ class_reaction_templates={
       '[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H2;+1:5]>>[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H1;+0:5]',
       '[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H1;+1:5]>>[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;H0;+0:5]',
       '[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;!H0;+1:5]>>[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;+0:5]'],
-     'pKa': [{'B': 9}, {'B': 9}, {'B': 9}, {'B': 9}], #TODO: check the format
+     'pKa': [{'B': 9}, {'B': 9}, {'B': 9}, {'B': 9}],
      'Description': 'Deprotonation of amine'},
 
     3: {'Templates': ['[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:2])-[N;+0:5]>>[#6:13]-[C;H0;+0:14](=[O;+0:15])-[N;+0:5].[O;-1:2]'],
@@ -376,8 +376,8 @@ class_reaction_templates={
      'pKa': [{'B': -6}, None],
      'Description': 'Proton exchange'}}},
 
-
-  'Williamson ether synthesis type': {'Reagent': None,
+  ## TODO: It gives no products
+  'Williamson ether synthesis type': {'Reagent': ['[Cl,Br,I,S&$([S](=O)(-O))]-[C]'],
    'Stages': {0: {'Templates': [# Acidic pKa
                      '[#6:1]-[#8;H1;+0:2].[Cl,Br,I:4]-[C:5]>>[Cl,Br,I;H0;-1:4].[#6:1]-[#8;H1;+1:2]-[C:5]',
                      '[#6:1]-[#8;H1;+0:2].[O:3]=[S:4]([O:5]-[C:6])=[O:7]>>[O:3]=[S:4]([O;H0;-1:5])=[O:7].[#6:1]-[#8;H1;+1:2]-[C:6]',
@@ -386,7 +386,7 @@ class_reaction_templates={
                      '[#6:1]-[#8;H1;+0:2]>>[#6:1]-[#8;H0;-1:2]',
                     ],
      'pKa': [None, None, None, {'B': 15.5}],
-     'Description': 'Addition of alcohol under acidic condition / deprotonation of alcohol'},
+     'Description': 'Addition of alcohol under the acidic conditions / deprotonation of alcohol'},
         1: {'Templates': [# Acidic pKa
                      '[#6:1]-[#8;H1;+1:2]-[C:5]>>[#6:1]-[#8;H0;+0:2]-[C:5]',
                      # Neutral
@@ -394,7 +394,7 @@ class_reaction_templates={
                      '[#6:1]-[#8;H0;-1:2].[O:3]=[S:4]([O:5]-[C:6])=[O:7]>>[O:3]=[S:4]([O;H0;-1:5])=[O:7].[#6:1]-[#8;H0;+0:2]-[C:6]',
                     ],
      'pKa': [{'B': -2}, None, None],
-     'Description': 'Neutralization of protonated ester / Addition of alcohol under baisic pKa'}}}},
+     'Description': 'Neutralization of protonated ester / Addition of alcohol under the basic conditions'}}}},
 
 
  ('Methoxy to hydroxy',):
@@ -1099,7 +1099,7 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Proton exchange'}}}},
 
-
+# TODO: Too high error rate
  ('Hydroxy to chloro'): {'SOCl2 or POCl3': {'Reagent': ['O=[S,P](-[Cl])-[Cl]'],
    'Stages': {0: {'Templates': ['[O;H1;+0:1]>>[O;H0;-1:1]'],
      'pKa': [{'B': 15.5}],
@@ -1347,29 +1347,158 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Reductive elimination'}}},
 
-   'Reaction with PdCl2': {'Reagent': ['[Cl,Br,I,O][Pd;+0][Cl,Br,I,O]', '[P]'],
-   'Stages': {0: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P:4].[P:5]>>[Cl,Br,I,O:2]-[Pd;+0:1](-[P:4])(-[P:5])-[Cl,Br,I,O:3]'],
-                              #'[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].([P:4].[P:5])>>[Cl,Br,I,O:2]-[Pd;+0:1](-[P:4])(-[P:5])-[Cl,Br,I,O:3]'], # TODO: problem constructing reaction from smarts
+   'Reaction with PdX2, PPh3, and water': {'Reagent': ['[Cl,Br,I,O][Pd;+0][Cl,Br,I,O]', '[P]', '[O;H1,H2]'],
+    'Stages': {
+        0: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1](-[Cl,Br,I,O:3])-[P;D4;+0:4]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3;+0:4]',
+                          '[Cl,Br,I,O:2]-[Pd;+0:1](-[Cl,Br,I,O:3])(-[P;D4;+0:4])(-[P;D4;+0:5])>>[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3;+0:4].[P;D3;+0:5]',],
+     'pKa': [None],
+     'Description': 'Palladium-ligand dissociation'},
+       1: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3:4]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+1:4].[Cl,Br,I,O;-1:3]'],
      'pKa': [None],
      'Description': 'Palladium-ligand formation'},
-             1: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1](-[P:4])(-[P:5])-[Cl,Br,I,O:3]>>[Cl,Br,I,O;-1:2].[Pd;+0:1]-[P:4].[P;+1:5]-[Cl,Br,I,O:3]'],
+      2: {'Templates': ['[OH2:1]>>[OH1;-1:1]'],
+     'pKa': [{'B': 14}],
+     'Description': 'Hydroxide ion preparation'},
+       3: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+1:4].[OH1;-1:5]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH1;+0:5]',
+                         '[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+1:4].[OH2;+0:5]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH2;+1:5]'],
+     'pKa': [None, None],
+     'Description': 'Hydroxide-Phosphine reaction'},
+    4: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH2;+1:5]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH1;+0:5]'],
+     'pKa': [{'B': -1.7}],
+     'Description': 'Deprotonation'},
+
+     5: {'Templates': ['[Cl,Br,I,O:2]-[Pd;H0;+0:1]-[P;H0;+0:4]-[OH1;+0:5]>>[Cl,Br,I,O:2]-[Pd;H1;+0:1].[P;H0;+0:4]=[OH0;+0:5]'],
      'pKa': [None],
      'Description': 'Palladium reduction'},
-             2: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
+    6: {'Templates': ['[Cl,Br,I,O:2]-[Pd;H1;+0:1]>>[Cl,Br,I,O;H1:2].[Pd;H0;+0:1]'],
+       'pKa': [None],
+       'Description': 'Ligand dissociation - reductive elimination type'},
+
+     7: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
      'pKa': [None],
      'Description': 'Copper activation'},
-       3: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd;+0:6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
+      8: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd;+0:6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
      'pKa': [None],
      'Description': 'Oxidative addition'},
-    4: {'Templates': ['[F,Cl,Br,I:5]-[Pd:1]-[#6:6].[Cu:2]-[#6:3]#[#6:4]>>[F,Cl,Br,I:5]-[Cu:2].[#6:6]-[Pd:1]-[#6:3]#[#6:4]',
+    9: {'Templates': ['[F,Cl,Br,I:5]-[Pd:1]-[#6:6].[Cu:2]-[#6:3]#[#6:4]>>[F,Cl,Br,I:5]-[Cu:2].[#6:6]-[Pd:1]-[#6:3]#[#6:4]',
                      '[Cl,Br,I:7]-[Pd:6]-[#6;+0:5].[Sn:1]-[#6;$([#6]=,:[#6]):2]>>[#6:2]-[Pd:6]-[#6;+0:5].[Sn:1]-[Cl,Br,I:7]'],
      'pKa': [None, None],
      'Description': 'Transmetalation'},
-    5: {'Templates': ['[#6:6]-[Pd:1]-[#6:3]>>[Pd:1].[#6:6]-[#6:3]'],
+    10: {'Templates': ['[#6:6]-[Pd:1]-[#6:3]>>[Pd:1].[#6:6]-[#6:3]'],
      'pKa': [None],
      'Description': 'Reductive elimination'}}},
 
-   'Reaction with Pd coordinated with 3 or 4 ligands': {'Reagent': ['[Pd;D3,D4;$([Pd](-[*])(-[*])-[*]),$([Pd](-[*])(-[*])(-[*])-[*]);!$([Pd]([Cl,Br,I,O])[Cl,Br,I,O]);+0]'],
+'Reaction with Pd2+': {'Reagent': ['[Pd;+2]','[Cl,Br,I,O,-1]', '[P]', '[O;H1,H2]'],
+   'Stages': {
+    0: {'Templates': ['[Cl,Br,I,O;-1:2].[Pd;+2:1]>>[Cl,Br,I,O;+0:2]-[Pd;+1:1]'],
+     'pKa': [None],
+     'Description': 'PdX+ formation'},
+     1: {'Templates': ['[Cl,Br,I,O;+0:2]-[Pd;+1:1].[Cl,Br,I,O;-1:3]>>[Cl,Br,I,O;+0:2]-[Pd;+0:1]-[Cl,Br,I,O;+0:3]'],
+     'pKa': [None],
+     'Description': 'PdX2 formation'},
+     2: {'Templates': ['[OH2:1]>>[OH1;-1:1]'],
+     'pKa': [{'B': 14}],
+     'Description': 'Hydroxide ion preparation'},
+     3: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+1:4].[OH1;-1:5]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH1;+0:5]',
+                         '[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+1:4].[OH2;+0:5]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH2;+1:5]'],
+     'pKa': [None, None],
+     'Description': 'Hydroxide-Phosphine reaction'},
+     4: {'Templates': [
+           '[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH2;+1:5]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH1;+0:5]'],
+           'pKa': [{'B': -1.7}],
+           'Description': 'Deprotonation'},
+
+       5: {'Templates': [
+           '[Cl,Br,I,O:2]-[Pd;H0;+0:1]-[P;H0;+0:4]-[OH1;+0:5]>>[Cl,Br,I,O:2]-[Pd;H1;+0:1].[P;H0;+0:4]=[OH0;+0:5]'],
+           'pKa': [None],
+           'Description': 'Palladium reduction'},
+     6: {'Templates': ['[Cl,Br,I,O:2]-[Pd;H1;+1:1]>>[Cl,Br,I,O;H1:2].[Pd;H0;+0:1]'],
+       'pKa': [None],
+       'Description': 'Ligand dissociation - reductive elimination type'},
+       7: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
+           'pKa': [None],
+           'Description': 'Copper activation'},
+       8: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd;+0:6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
+           'pKa': [None],
+           'Description': 'Oxidative addition'},
+       9: {'Templates': [
+           '[F,Cl,Br,I:5]-[Pd:1]-[#6:6].[Cu:2]-[#6:3]#[#6:4]>>[F,Cl,Br,I:5]-[Cu:2].[#6:6]-[Pd:1]-[#6:3]#[#6:4]',
+           '[Cl,Br,I:7]-[Pd:6]-[#6;+0:5].[Sn:1]-[#6;$([#6]=,:[#6]):2]>>[#6:2]-[Pd:6]-[#6;+0:5].[Sn:1]-[Cl,Br,I:7]'],
+           'pKa': [None, None],
+           'Description': 'Transmetalation'},
+       10: {'Templates': ['[#6:6]-[Pd:1]-[#6:3]>>[Pd:1].[#6:6]-[#6:3]'],
+            'pKa': [None],
+            'Description': 'Reductive elimination'}}},
+    # Based on the mechanism described in https://doi.org/10.1021/ol101106z .
+    'Reaction with PdX2 and 1,5-cyclooctadiene': {
+                'Reagent': ['[Cl,Br,I,O][Pd;+0][Cl,Br,I,O]', 'C1=CCCC=CCC1'],
+    'Stages': {
+        0: {'Templates': [
+            '[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[CH1:4]1=[CH1:5][CH2:6][CH2:7][CH1:8]=[CH1:9][CH2:10][CH2:11]1>>[Cl,Br,I,O:2][Pd;+0:1]123([C@@H:4]4[C@H:5]1[CH2:6][CH2:7][C@H:8]2[C@H:9]3[CH2:10][CH2:11]4)[Cl,Br,I,O:3]'],
+            'pKa': [None],
+            'Description': 'Palladium-ligand formation'},
+        1: {'Templates': ['[OH2:1]>>[OH1;-1:1]',
+                          '[OH1:1][C;!$(C=O):2]>>[OH0;-1:1][C;!$(C=O):2]'],
+            'pKa': [{'B': 14}, {'B': 14}],
+            'Description': 'Hydroxide ion preparation'},
+        2: {'Templates': [
+            '[Cl,Br,I,O:2][Pd;+0:1]123([C@@H:4]4[C@H:5]1[CH2:6][CH2:7][C@H:8]2[C@H:9]3[CH2:10][CH2:11]4)[Cl,Br,I,O:3].[O;-1:12]>>[Cl,Br,I,O:2][Pd;+0:1]12([CH20:4]3[C@H:5]1[CH2:6][CH2:7][C@H:8]2[CH:9]([O;+0:12])[CH2:10][CH2:11]3)[Cl,Br,I,O:3]', ],
+            'pKa': [None],
+            'Description': 'Hydroxide-cyclooctadiene reaction'},
+
+        3: {'Templates': [
+            '[Cl,Br,I,O:2][Pd;+0:1]12([CH20:4]3[C@H:5]1[CH2:6][CH2:7][C@H:8]2[CH:9]([O;+0:12])[CH2:10][CH2:11]3)[Cl,Br,I,O:3]>>[Cl,Br,I,O:2]-[Pd;H1;+1:1].[Cl,Br,I,O;-1:3].[CH1:4]1=[CH1:5][CH2:6][CH2:7][CH1:8]=[CH1:9]([O;+0:12])[CH2:10][CH2:11]1', ],
+            'pKa': [None, ],
+            'Description': 'Beta-H elimination'},
+        4: {'Templates': ['[Cl,Br,I,O:2]-[Pd;H1;+1:1]>>[Cl,Br,I,O;H1:2].[Pd;H0;+0:1]'],
+            'pKa': [None],
+            'Description': 'Ligand dissociation - reductive elimination type'},
+       5: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
+           'pKa': [None],
+           'Description': 'Copper activation'},
+       6: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd;+0:6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
+           'pKa': [None],
+           'Description': 'Oxidative addition'},
+       7: {'Templates': [
+           '[F,Cl,Br,I:5]-[Pd:1]-[#6:6].[Cu:2]-[#6:3]#[#6:4]>>[F,Cl,Br,I:5]-[Cu:2].[#6:6]-[Pd:1]-[#6:3]#[#6:4]',
+           '[Cl,Br,I:7]-[Pd:6]-[#6;+0:5].[Sn:1]-[#6;$([#6]=,:[#6]):2]>>[#6:2]-[Pd:6]-[#6;+0:5].[Sn:1]-[Cl,Br,I:7]'],
+           'pKa': [None, None],
+           'Description': 'Transmetalation'},
+        9: {'Templates': ['[#6:6]-[Pd:1]-[#6:3]>>[Pd:1].[#6:6]-[#6:3]'],
+            'pKa': [None],
+            'Description': 'Reductive elimination'}}},
+# Based on the mechanism described in https://chem.libretexts.org/Bookshelves/Inorganic_Chemistry/Supplemental_Modules_and_Websites_(Inorganic_Chemistry)/Catalysis/Catalyst_Examples/Heck_Reaction. ##
+'Reaction with Pd(OR)2 and amine agent': {'Reagent': ['[O][Pd;+0][O]', '[N;+0]-[C;!H0]'],
+'Stages': {0: {'Templates': [
+  '[O:2]-[Pd;+0:1]-[O:3].[N;+0:4]-[C;!H0:5]>>[O:2]-[Pd;+0:1]-[N;+1:4]-[C;!H0:5].[O;-1:3]'],
+             'pKa': [None],
+             'Description': 'Amine coordination'},
+         1: {'Templates': [
+             '[O:2]-[Pd;+0:1]-[N;+1:4]-[C;H3:5]>>[O:2]-[Pd;H1;+0:1].[N;+0:4]=[C;H2:5]',
+             '[O:2]-[Pd;+0:1]-[N;+1:4]-[C;H2:5]>>[O:2]-[Pd;H1;+0:1].[N;+0:4]=[C;H1:5]',
+             '[O:2]-[Pd;+0:1]-[N;+1:4]-[C;H1:5]>>[O:2]-[Pd;H1;+0:1].[N;+0:4]=[C;H0:5]', ],
+             'pKa': [None, None, None],
+             'Description': 'Imine formation'},
+         2: {'Templates': [
+             '[O:2]-[Pd;H1;+0:1]>>[O;H1:2].[Pd;H0;+0:1]', ],
+             'pKa': [None],
+             'Description': 'Reductive elimination'},
+        3: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
+           'pKa': [None],
+           'Description': 'Copper activation'},
+       4: {'Templates': ['[Cl,Br,I:7]-[#6;+0:5].[Pd;+0:6]>>[Cl,Br,I:7]-[Pd:6]-[#6;+0:5]'],
+           'pKa': [None],
+           'Description': 'Oxidative addition'},
+       5: {'Templates': [
+           '[F,Cl,Br,I:5]-[Pd:1]-[#6:6].[Cu:2]-[#6:3]#[#6:4]>>[F,Cl,Br,I:5]-[Cu:2].[#6:6]-[Pd:1]-[#6:3]#[#6:4]',
+           '[Cl,Br,I:7]-[Pd:6]-[#6;+0:5].[Sn:1]-[#6;$([#6]=,:[#6]):2]>>[#6:2]-[Pd:6]-[#6;+0:5].[Sn:1]-[Cl,Br,I:7]'],
+           'pKa': [None, None],
+           'Description': 'Transmetalation'},
+       6: {'Templates': ['[#6:6]-[Pd:1]-[#6:3]>>[Pd:1].[#6:6]-[#6:3]'],
+            'pKa': [None],
+            'Description': 'Reductive elimination'}}},
+
+'Reaction with Pd coordinated with 3 or 4 ligands': {'Reagent': ['[Pd;D3,D4;$([Pd](-[*])(-[*])-[*]),$([Pd](-[*])(-[*])(-[*])-[*]);!$([Pd]([Cl,Br,I,O])[Cl,Br,I,O]);+0]'],
    'Stages': {0: {'Templates': ['[Pd;D3;+0:1](-[*:6])(-[*:5])-[*:8]>>[Pd;+0:1].[*:6].[*:5].[*:8]',
                                 '[Pd;D4;+0:1](-[*:6])(-[*:4])(-[*:5])-[*:8]>>[Pd;+0:1].[*:6].[*:5].[*:4].[*:8]',
                               ],
@@ -1459,6 +1588,7 @@ class_reaction_templates={
      'pKa': [{'B': -3}, {'B': -3}],
      'Description': 'Condensation'}}}},
 
+#### TODO: It gives errors only
  ('Wohl-Ziegler bromination',): {'Reaction with radical': {'Reagent': ['[#7,#8;D2]-,=[#7,#8;D2]'],
    'Stages': {0: {'Templates': ['[#6:1]-[C:2](=[O:3])-[O:4]-[O:5]-[C:6](=[O:7])-[#6:8]>>[#6;H0;+0:1].[#6;H0;+0:8].[O:4]=[C:2]=[O:3].[O:5]=[C:6]=[O:7]',
       '[*:1]-[N:2]=[N:3]-[*:4]>>[*;H0;+0:1].[*;H0;+0:4].[N:3]#[N:4]'],
@@ -1595,6 +1725,8 @@ class_reaction_templates={
       None,
       None],
      'Description': 'Termination'}}}},
+
+    #TODO: Bromo Grignard + ester reaction gives no product
  ('Bromo Grignard reaction',
   'Bromo Grignard + ester reaction',
   'Chloro Grignard reaction',

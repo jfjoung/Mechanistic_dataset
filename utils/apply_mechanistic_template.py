@@ -647,43 +647,31 @@ def reaction_network(rxn_flask, tot_network, args):
         neighbor_node=[n for n in nx.all_neighbors(G, reaction_node)]
         for nn in neighbor_node:
             path_node.append(nn)
-            
+
     # TODO: Check if byproducts react further
     if args.do_not_pruning:
         return G
-    
     # Make subgraph of a true path
     G_sub = nx.DiGraph(G.subgraph(path_node))
-    
-    #Check if there is not-connected intermediates.
-    not_connected_inter_nodes=list()
-    for nid, attrs in G_sub.nodes.data():
-        if nid.startswith('Molecule') and attrs['molecule']['identity']== 'intermediate':
-            parents=[node for node in G_sub.predecessors(nid)]
-            child=[node for node in G_sub.successors(nid)]
-            if not parents or not child:
-                not_connected_inter_nodes.append(nid)
-    if not_connected_inter_nodes:
-        for rid, pid in permutations(not_connected_inter_nodes, 2):
-            try:
-                shortest_paths = list(nx.all_shortest_paths(G, source=rid, target=pid))
-                if shortest_paths:
-                    for path in shortest_paths:
-                        reaction_path.append([node for node in path if node.startswith('Reaction')])
-                    reaction_path=flatten_list(reaction_path)
-                    for reaction_node in reaction_path:
-                        path_node.append(reaction_node)
-                        neighbor_node=[n for n in nx.all_neighbors(G, reaction_node)]
-                        for nn in neighbor_node:
-                            path_node.append(nn)
-                    path_node=list(set(path_node))
-                        
-                    G_sub = nx.DiGraph(G.subgraph(path_node))
-            except nx.NetworkXNoPath: continue
-                
-    
+
+    not_connected_inter_nodes = True
+    i = 0
+    while not_connected_inter_nodes:
+        not_connected_inter_nodes = []
+        for nid, attrs in G_sub.nodes.data():
+            if nid.startswith('Molecule') and attrs['molecule']['identity'] == 'intermediate':
+                child = [node for node in G_sub.successors(nid)]
+                if not child:
+                    not_connected_inter_nodes.append(nid)
+        for nid in not_connected_inter_nodes:
+            G_sub.remove_nodes_from([n for n in G_sub.predecessors(nid)])
+            G_sub.remove_node(nid)
+        i += 1
+        if i > args.num_reaction_node:
+            break
+
     # Add spectators
-    missing_molecule_nodes = [node_id for node_id in reactant_list if f'Molecule {node_id}' not in G.nodes]
+    missing_molecule_nodes = [node_id for node_id in reactant_list if f'Molecule {node_id}' not in G_sub.nodes]
     
     for node_id in missing_molecule_nodes:
         chemical_node=f"Molecule {node_id}"
