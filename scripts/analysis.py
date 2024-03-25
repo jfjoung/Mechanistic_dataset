@@ -80,7 +80,7 @@ def analysis_single(input):
                              'Product': dict(sorted(product_MW_dict.items())),
                              'Intermediate': dict(sorted(inter_MW_dict.items())),
                              'Byproduct': dict(sorted(by_MW_dict.items())),
-                             'Spectator': dict(sorted(spec_Atom_dict.items())),
+                             'Spectator': dict(sorted(spec_MW_dict.items())),
                              }
     heavy_atom_dict = {'Reactant': dict(sorted(reactant_Atom_dict.items())),
                        'Product': dict(sorted(product_Atom_dict.items())),
@@ -95,7 +95,7 @@ def drawing_fig(distribution, args, file_name='MW'):
     # Initialize figure and axes for the bar graph
     fig, ax = plt.subplots(figsize=(12, 8))
     # Assign a unique color to each chemical species
-    colors = ['blue', 'orange', 'green', 'red', 'purple']
+    colors = ['tab:blue', 'magenta', 'tab:red', 'tab:cyan', 'tab:purple']
 
     # Collect all unique keys (MW ranges) from all categories to create a comprehensive set of x-axis labels
     all_keys = set(key for dist in distribution.values() for key in dist)
@@ -113,7 +113,11 @@ def drawing_fig(distribution, args, file_name='MW'):
 
     # Setting the x-axis ticks to show the correct MW range
     ax.set_xticks(range(len(sorted_keys)))
-    ax.set_xticklabels([f"{k}-{k + 99}" for k in sorted_keys], rotation=45)
+
+    if file_name == 'MW':
+        ax.set_xticklabels([f"{k}-{k + args.weight_bin - 1}" for k in sorted_keys], rotation=45)
+    elif file_name == 'Atom':
+        ax.set_xticklabels([f"{k}-{k + args.atom_bin - 1}" for k in sorted_keys], rotation=45)
 
     # Adding labels and title
     ax.set_xlabel(f'{file_name} Range')
@@ -151,7 +155,7 @@ def analysis(args):
     print(f'The number of heavy atom distribution = {heavy_atom_dict}')
 
     drawing_fig(molecular_weight_dict, args, file_name='MW')
-    drawing_fig(molecular_weight_dict, args, file_name='Atom')
+    drawing_fig(heavy_atom_dict, args, file_name='Atom')
 
 
 
