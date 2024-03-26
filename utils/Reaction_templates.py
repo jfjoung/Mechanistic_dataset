@@ -140,8 +140,6 @@ class_reaction_templates={
      'Description': 'Neutralization of protonated ester / Addition of alcohol under basic pKa'},
             }}},
 
- # TODO: NEED TO KEEP EVEN/ODD of isotope number consistent OR make everything
- # TODO:R1-X.R2-NH3+>>R1-NH-R2 type reaction also exists in pistachio
  ('Bromo N-alkylation',
   'Chloro N-alkylation',
   'Iodo N-alkylation'): {'Reaction': {'Reagent': None, 'Exclude_reagent': None,
@@ -370,8 +368,8 @@ class_reaction_templates={
                      ],
      'pKa': [{'B': -6}, None],
      'Description': 'Proton exchange'}}},
-
-  'Williamson ether synthesis type': {'Reagent': ['[Cl,Br,I,S&$([S](=O)(-O))]-[C]'], 'Exclude_reagent': None,
+    #TODO: It gives no product
+  'Williamson ether synthesis type': {'Reagent': ['[Cl,Br,I,S&$([S](=O)(-O))]-[C]'], 'Exclude_reagent': ['[N]=[C]=[N]'],
    'Stages': {0: {'Templates': [# Acidic pKa
                      '[#6:1]-[#8;H1;+0:2].[Cl,Br,I:4]-[C:5]>>[Cl,Br,I;H0;-1:4].[#6:1]-[#8;H1;+1:2]-[C:5]',
                      '[#6:1]-[#8;H1;+0:2].[O:3]=[S:4]([O:5]-[C:6])=[O:7]>>[O:3]=[S:4]([O;H0;-1:5])=[O:7].[#6:1]-[#8;H1;+1:2]-[C:6]',
@@ -463,7 +461,7 @@ class_reaction_templates={
   'Iodo Buchwald-Hartwig amination',
   'Bromo Miyaura boration',
   'Chloro Miyaura boration',  #High error rate
-  'Triflyloxy Miyaura boration',
+  'Triflyloxy Miyaura boration', #TODO: It gives no product
   'Iodo Miyaura boration'):
 
     {'Reaction with element Pd':
@@ -1120,6 +1118,7 @@ class_reaction_templates={
     2: {'Templates': ['[#6:5]-[O;H0;+0:1]-[P;+0:2]-[Cl;+0:3].[Cl;-1:4]>>[#6:5]-[Cl;+0:4].[O;H0;+0:1]=[P;+0:2].[Cl;-1:3]'],
      'pKa': [None],
      'Description': 'Nucleophilic substitution'}}},
+    #TODO: It gives no products
   'Oxalyl chloride': {'Reagent': ['O=C(C(Cl)=O)Cl'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[O;H1;+0:1]>>[O;H0;-1:1]'],
      'pKa': [{'B': 14}],
@@ -1225,7 +1224,7 @@ class_reaction_templates={
                      '[#7;H1;+1:4]-[*:5]>>[#7;H0;+0:4]-[*:5]',],
      'pKa': [{'B': 9.25},{'B': 9.25},{'B': 9.25}],
      'Description': 'Deprotonation of protonated amine'}}}},
-
+#TODO: It gives no products
  ('Friedel-Crafts acylation',): {'Reaction': {'Reagent': ['Cl[Al](Cl)Cl'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[Al:1](-[Cl:2])(-[Cl:3])-[Cl:4].[Cl:5]-[C:6]=[O:7]>>[O:7]=[C:6]-[Cl;+1:5]-[Al;-1:1](-[Cl:2])(-[Cl:3])-[Cl:4]'],
                  'pKa': [None],
@@ -1645,11 +1644,11 @@ class_reaction_templates={
       None],
      'Description': 'Termination'}}}},
 
-    #TODO: Bromo Grignard + ester reaction gives no product
+
  ('Bromo Grignard reaction',
-  'Bromo Grignard + ester reaction',
+  'Bromo Grignard + ester reaction', #TODO: Bromo Grignard + ester reaction gives no product
   'Chloro Grignard reaction',
-  'Chloro Grignard + ester reaction',
+  'Chloro Grignard + ester reaction', #TODO: It gives no product
   'Grignard ester substitution',
   'Iodo Grignard reaction',
   'Grignard + acid chloride ketone synthesis'): {'Reaction': {'Reagent': None, 'Exclude_reagent': None,
@@ -1663,7 +1662,7 @@ class_reaction_templates={
      'Description': 'Leaving or workup'}}}},
 
 
- ('Bromo Grignard preparation',
+ ('Bromo Grignard preparation', #TODO: It gives no product
   'Iodo Grignard preparation',
   'Chloro Grignard preparation'): {'Reaction': {'Reagent': None, 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#6;H2:1]-[F,Cl,Br,I:2].[Mg;+0:3]>>[#6;H2;+0:1].[Mg;+0:3][F,Cl,Br,I;H0:2]',
@@ -1719,7 +1718,7 @@ class_reaction_templates={
      'pKa': [{'B': -0.4}, {'B': -0.4}, {'B': -0.4}],
      'Description': 'Deprotonation of amide'}}}},
 
-
+#TODO: It gives no product
  ('Weinreb ketone synthesis',): {'Reaction': {'Reagent': None, 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[*:1]-[#6:2](=[#8:3])-[#7;H0:4]-[#8:5].[*:6]-[Li,Mg;+0:7]>>[*:1]-[#6:2](-[*:6])(-[#8:3]-[Li,Mg;+0:7])-[#8;+1:5]-[#7;H0:4]'],
      'pKa': [None],
