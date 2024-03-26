@@ -884,7 +884,6 @@ class_reaction_templates={
      'pKa': [None, None, None, None],
      'Description': 'Hydride transfer'}}}},
 
- #TODO: High error rate
  ('Sulfanyl to sulfonyl',): {'Reaction using peroxide': {'Reagent': ['[O]-[O]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[S;D2;H0;+0:1].[O;H1;+0:2]-[O;H0;+0:3]>>[S;H0;+1:1]-[O;H1;+0:2].[O;H0;-1:3]',
       '[S;D2;H0;+0:1].[O;H1;+0:2]-[O;H1;+0:3]>>[S;H0;+1:1]-[O;H1;+0:2].[O;H1;-1:3]',

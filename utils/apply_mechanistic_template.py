@@ -76,13 +76,18 @@ def reagent_matching_for_single_reaction(reaction, class_key):
 
                 matched_reagents = []
                 exclude = False
-                for mol in mols:
-                    if [mol.GetSubstructMatch(ex_patt) for ex_patt in exclude_cond_mols if mol.GetSubstructMatch(ex_patt)]:
-                        exclude = True
-                        break
-                    if [mol.GetSubstructMatch(patt) for patt in cond_mols if mol.GetSubstructMatch(patt)]:
-                        matched_reagents.append(mol)
-                        break
+
+                for patt in cond_mols:
+                    for mol in mols:
+                        if mol.GetSubstructMatch(patt):
+                            matched_reagents.append(mol)
+                            break
+                for patt in exclude_cond_mols:
+                    for mol in mols:
+                        if mol.GetSubstructMatch(patt):
+                            exclude = True
+                            break
+                    if exclude: break
                 if not exclude and len(cond_mols) == len(matched_reagents):
                     reaction['conditions'].append(cond_name)
             else:
@@ -302,7 +307,6 @@ def find_reactants(rxn_flask, rxn_templates, args):
                         if Chem.MolToSmarts(pat) not in reactant_dict:
                             reactant_dict[Chem.MolToSmarts(pat)] = []
                         reactant_dict[Chem.MolToSmarts(pat)].append(mol_key)
-
         combinations = [list(combination) for combination in itertools.product(*reactant_dict.values()) if len(combination)==num_reactants]
         # Check the atom map collision
         reactive_combination = list()
@@ -310,12 +314,12 @@ def find_reactants(rxn_flask, rxn_templates, args):
         if args.stoichiometry:
             # To save every combination
             duplicated_combi=list()
-            
-        for combination in combinations:            
-            if num_reactants>1: 
+        for combination in combinations:
+            if num_reactants>1:
                 reactant_atommap=[set(i) for i in [rxn_flask[mol_num]['atom_mapping'] for mol_num in combination]]
                 # Check if there is the same atom in two reactants
-                if reactant_atommap[0]&reactant_atommap[1]: 
+                if reactant_atommap[0]&reactant_atommap[1]:
+                    duplicated_combi.append(combination)
                     continue
             reactant_history=[i for i in [rxn_flask[mol_num]['rxn_history'] for mol_num in combination]]
             reactant_history.extend(combination)
@@ -336,17 +340,17 @@ def find_reactants(rxn_flask, rxn_templates, args):
             reactive_dict[templ]={'combination': reactive_combination,
                               'num_reactants': num_reactants,
                               'reactant_history': reactant_history_per_com}
-
         '''
         Hereafter, it is a code for matching the stoichiometric details
         '''
         if args.stoichiometry and duplicated_combi and not reactive_dict:
             idx = rxn_flask['last_mapping_number']+1
-            new_combination_list=list()
+            new_molecule_dict = {}
+            new_combination_list = []
             for combination in duplicated_combi:
-                new_combination=list()
+                new_combination = []
                 for mol_num in combination:
-                    if rxn_flask[mol_num]['identity']=='reactant':
+                    if rxn_flask[mol_num]['identity']=='reactant' and mol_num not in new_molecule_dict.keys():
                         start_idx=idx
                         new_mol = Chem.MolFromSmiles(rxn_flask[mol_num]['smiles'])
                         for atom in new_mol.GetAtoms():
@@ -360,7 +364,10 @@ def find_reactants(rxn_flask, rxn_templates, args):
                            'rxn_history': list(),
                             'identity': 'reactant'
                              }
+                        new_molecule_dict[mol_num] = len(rxn_flask)
                         new_combination.append(len(rxn_flask))
+                    elif mol_num in new_molecule_dict.keys():
+                        new_combination.append(new_molecule_dict[mol_num])
                     else: new_combination.append(mol_num)
                 new_combination_list.append(new_combination)
                         
@@ -400,6 +407,7 @@ def find_reactants(rxn_flask, rxn_templates, args):
             final_reactive_dict[key]=value
     if args.verbosity > 1 and not final_reactive_dict:
         logging.info('No reactants are found!')
+
     return rxn_flask, final_reactive_dict
 
 def has_duplicates(input_list):
@@ -662,6 +670,33 @@ def reaction_network(rxn_flask, tot_network, args):
         return G
     # Make subgraph of a true path
     G_sub = nx.DiGraph(G.subgraph(path_node))
+
+    #Check if there is not-connected intermediates.
+    not_connected_inter_nodes=list()
+    for nid, attrs in G_sub.nodes.data():
+        if nid.startswith('Molecule') and attrs['molecule']['identity']== 'intermediate':
+            parents=[node for node in G_sub.predecessors(nid)]
+            child=[node for node in G_sub.successors(nid)]
+            if not parents or not child:
+                not_connected_inter_nodes.append(nid)
+    if not_connected_inter_nodes:
+        for rid, pid in permutations(not_connected_inter_nodes, 2):
+            try:
+                shortest_paths = list(nx.all_shortest_paths(G, source=rid, target=pid))
+                if shortest_paths:
+                    for path in shortest_paths:
+                        reaction_path.append([node for node in path if node.startswith('Reaction')])
+                    reaction_path=flatten_list(reaction_path)
+                    for reaction_node in reaction_path:
+                        path_node.append(reaction_node)
+                        neighbor_node=[n for n in nx.all_neighbors(G, reaction_node)]
+                        for nn in neighbor_node:
+                            path_node.append(nn)
+                    path_node=list(set(path_node))
+
+                    G_sub = nx.DiGraph(G.subgraph(path_node))
+            except nx.NetworkXNoPath: continue
+
 
     not_connected_inter_nodes = True
     i = 0
