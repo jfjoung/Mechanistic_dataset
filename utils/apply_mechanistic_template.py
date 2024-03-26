@@ -77,10 +77,10 @@ def reagent_matching_for_single_reaction(reaction, class_key):
                 matched_reagents = []
                 exclude = False
                 for mol in mols:
-                    if [mol.GetSubstructMatch(ex_patt) for ex_patt in exclude_cond_mols]:
+                    if [mol.GetSubstructMatch(ex_patt) for ex_patt in exclude_cond_mols if mol.GetSubstructMatch(ex_patt)]:
                         exclude = True
                         break
-                    if [mol.GetSubstructMatch(patt) for patt in cond_mols]:
+                    if [mol.GetSubstructMatch(patt) for patt in cond_mols if mol.GetSubstructMatch(patt)]:
                         matched_reagents.append(mol)
                         break
                 if not exclude and len(cond_mols) == len(matched_reagents):
