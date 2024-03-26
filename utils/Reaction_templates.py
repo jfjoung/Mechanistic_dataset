@@ -340,7 +340,7 @@ class_reaction_templates={
    'Stages': {0: {'Templates': ['[O;H0;+0:1]=[C;H0;+0:2]>>[O;H1;+1:1]=[C;H0;+0:2]',
                                #Basic condition
                                '[O;H1;+0:1]-[C;H0;+0:2]>>[O;H0;-1:1]-[C;H0;+0:2]'],
-     'pKa': [{'A': -6}, {'B': 15.5}],
+     'pKa': [{'A': -6}, {'B': 14}],
      'Description': 'Protonation of carbonyl or deprotonation of alcohol'},
 
                      #Acidic condition
@@ -355,7 +355,7 @@ class_reaction_templates={
                        #Basic condition
                      '[O;H0;-1:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H0;+0:4]-[#6;+0:5]>>[O;H1;+0:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H0;+0:4]-[#6;+0:5]',
                      ],
-     'pKa': [None, {'A': 15.5}],
+     'pKa': [None, {'A': 14}],
      'Description': 'Protonation or deprotonation of complex'},
 
     3: {'Templates': ['[O;H1;+0:1]-[C;H0;+0:2](-[O;H2;+1:3])-[O;H0;+0:4]-[#6;+0:5]>>[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[O;H2;+0:3]',
@@ -368,7 +368,6 @@ class_reaction_templates={
                      ],
      'pKa': [{'B': -6}, None],
      'Description': 'Proton exchange'}}},
-    #TODO: It gives no product
   'Williamson ether synthesis type': {'Reagent': ['[Cl,Br,I,S&$([S](=O)(-O))]-[C]'], 'Exclude_reagent': ['[N]=[C]=[N]'],
    'Stages': {0: {'Templates': [# Acidic pKa
                      '[#6:1]-[#8;H1;+0:2].[Cl,Br,I:4]-[C:5]>>[Cl,Br,I;H0;-1:4].[#6:1]-[#8;H1;+1:2]-[C:5]',

@@ -1,6 +1,7 @@
 python generate_mechanism_data.py \
   --data 'data/uspto_classified.txt'\
-  --save 'results/uspto8.txt'\
+  --save 'results/testing_all.txt'\
+  --rxn_class 'Steglich esterification'\
   --proton True\
   --byproduct False\
   --spectator False\
