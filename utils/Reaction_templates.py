@@ -954,10 +954,10 @@ class_reaction_templates={
     2: {'Templates': ['[#8;-1:1]>>[#8;H1;+0:1]'],
      'pKa': [{'A': 15.5}],
      'Description': 'Protonation of alkoxide'}}},
-    # TODO: High error rate
+
     'Aqueous acidic condition': {'Reagent': ['[OH2]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#8:1]-[Si;+0:2]>>[#8;H1;+1:1]-[Si;+0:2]'],
-     'pKa': [{'A': 15.5}],
+     'pKa': [{'A': 13}],
      'Description': 'Protonation of ether'},
     1: {'Templates': ['[#8;H1;+1:1]-[Si;+0:2].[#8;H2;+0:3]>>[#8;H1;+0:1].[Si;+0:2]-[#8;H2;+1:3]'],
      'pKa': [None],
@@ -965,7 +965,6 @@ class_reaction_templates={
     2: {'Templates': ['[Si;+0:2]-[#8;H2;+1:3]>>[Si;+0:2]-[#8;H1;+0:3]'],
      'pKa': [{'B': -1.7}],
      'Description': 'Deprotonation of protonated alcohol'},
-
             }}},
 
 
@@ -1886,6 +1885,7 @@ class_reaction_templates={
     2: {'Templates': ['[C:1](-[O;H1;+0:2])([Cl;+0:5])-[O:3]-[P:4]-[Cl:5]>>[C:1](=[O;H0;+0:2])([Cl;+0:5]).[O:3]=[P:4].[Cl;H1:5]'],
      'pKa': [None],
      'Description': 'Leaving Group Removal + Deprotonation'}}},
+    #TODO: It gives no product
   'Oxalyl chloride + DMF': {'Reagent': ['O=C(C(Cl)=O)Cl', 'CN(C)C=O'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[Cl:1][C:2](=[O:3])[C:4](=[O;H0;+0:5])[Cl:6].[O:7]=[C:8][N;H0;+0:9]>>[Cl:1][C:2](=[O:3])[C:4](-[O;H0;-:5])([Cl:6])-[O:7]-[C:8]=[N;H0;+1:9]'],
      'pKa': [None],

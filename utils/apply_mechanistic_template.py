@@ -637,7 +637,7 @@ def reaction_network(rxn_flask, tot_network, args):
                 attrs['molecule']['identity'] = 'byproduct'
             elif attrs['molecule']['identity']=='product':
                 product_ids.append(nid)
-    #print(nx.node_link_data(G))
+    # print(nx.node_link_data(G))
     # Find all the routes connecting the reactants and products
     reaction_path=list()
     for rid in reactant_ids:
@@ -681,7 +681,7 @@ def reaction_network(rxn_flask, tot_network, args):
             child=[node for node in G_sub.successors(nid)]
             if not parents or not child:
                 not_connected_inter_nodes.append(nid)
-    if not_connected_inter_nodes:
+    if len(not_connected_inter_nodes) > 1:
         for rid, pid in permutations(not_connected_inter_nodes, 2):
             try:
                 shortest_paths = list(nx.all_shortest_paths(G, source=rid, target=pid))
@@ -696,9 +696,38 @@ def reaction_network(rxn_flask, tot_network, args):
                             path_node.append(nn)
                     path_node=list(set(path_node))
 
-                    G_sub = nx.DiGraph(G.subgraph(path_node))
-            except nx.NetworkXNoPath: continue
 
+            except nx.NetworkXNoPath: pass
+            try:
+                child_rxn_node = set([node for node in G.successors(rid)])
+                child_rxn_node2 = set([node for node in G.successors(pid)])
+                shared_rxn_node = list(child_rxn_node&child_rxn_node2)
+                for rxn_id in shared_rxn_node:
+                    child = [node for node in G.successors(rxn_id)]
+                    byprode_child = [node for node in G.successors(rxn_id) if G.nodes[node]['molecule']['identity'] == 'byproduct']
+
+                    if set(child) == set(byprode_child) and rxn_id not in path_node:
+                        child.append(rid)
+                        child.append(pid)
+                        child.append(rxn_id)
+                        for nn in child:
+                            path_node.append(nn)
+            except: continue
+    elif len(not_connected_inter_nodes) == 1:
+        int_id = not_connected_inter_nodes[0]
+        rxn_node = set([node for node in G.successors(int_id)])
+        for rxn_id in rxn_node:
+            child = [node for node in G.successors(rxn_id)]
+            byprode_child = [node for node in G.successors(rxn_id) if G.nodes[node]['molecule']['identity'] == 'byproduct']
+            if set(child) == set(byprode_child) and rxn_id not in path_node:
+                child.append(rxn_id)
+                child.append(int_id)
+                for nn in child:
+                    path_node.append(nn)
+
+    G_sub = nx.DiGraph(G.subgraph(path_node))
+
+    # print(nx.node_link_data(G_sub))
 
     not_connected_inter_nodes = True
     i = 0
@@ -963,7 +992,7 @@ def elementary_reaction(G, args):
                         
             final_reaction_node = [node for node in G.predecessors(product_nodes[0])][0]
             if args.byproduct:
-                final_products=[node for node in G.successors(final_reaction_node)]
+                final_products=[node for node in G.successors(final_reaction_node) if G.nodes[node]['molecule']['identity'] == 'product']
             else: final_products = product_nodes
             
             r_smiles=sorted([G.nodes[x]['molecule'][smiles] for x in usable_reactant_nodes])
@@ -1032,7 +1061,7 @@ def elementary_reaction(G, args):
 
             if args.byproduct:
                 produced_byproduct_nodes=list()
-                for by_node in byproduct_nodes:
+                for by_node in byproduct_nodes+product_nodes:
                     reaction_node_for_byproduct=[node for node in G.predecessors(by_node)][0]
                     for precursor in precursor_nodes:
                         is_produced=False

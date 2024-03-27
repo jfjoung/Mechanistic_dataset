@@ -1,14 +1,16 @@
 python generate_mechanism_data.py \
-  --data 'data/uspto_classified.txt'\
-  --save 'results/uspto9.txt'\
+  --data 'data/testing.txt'\
+  --save 'results/testing.txt'\
+  --rxn_class 'O-TBS deprotection'\
   --proton True\
-  --byproduct False\
-  --spectator False\
-  --reagent False\
+  --byproduct True\
+  --spectator True\
+  --reagent True\
   --full False\
+  --end True\
   --debug True\
   --verbosity 0\
-  --process 20\
+  --process 1\
   #--all_info False\
   #--do_not_pruning True
   #  --data 'data/uspto_classified.txt'\
