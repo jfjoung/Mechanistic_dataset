@@ -1,7 +1,6 @@
 python generate_mechanism_data.py \
   --data 'data/uspto_classified.txt'\
-  --save 'results/testing_all.txt'\
-  --rxn_class 'Steglich esterification'\
+  --save 'results/uspto9.txt'\
   --proton True\
   --byproduct False\
   --spectator False\
@@ -9,7 +8,7 @@ python generate_mechanism_data.py \
   --full False\
   --debug True\
   --verbosity 0\
-  --process 30\
+  --process 20\
   #--all_info False\
   #--do_not_pruning True
   #  --data 'data/uspto_classified.txt'\

@@ -636,23 +636,25 @@ def reaction_network(rxn_flask, tot_network, args):
             elif not [n for n in G.neighbors(nid)] and attrs['molecule']['identity']!='product':
                 attrs['molecule']['identity'] = 'byproduct'
             elif attrs['molecule']['identity']=='product':
-                product_ids.append(nid)       
-            
+                product_ids.append(nid)
+    #print(nx.node_link_data(G))
     # Find all the routes connecting the reactants and products
     reaction_path=list()
     for rid in reactant_ids:
         for pid in product_ids:
-            if args.simple:
-                if nx.all_simple_paths(G, source=rid, target=pid):
-                    for path in nx.all_simple_paths(G, source=rid, target=pid):
-                        if len(reaction_nodes_in_path) < 13:
-                            reaction_path.append(node for node in path if node.startswith('Reaction'))
-            else:
-                if nx.all_shortest_paths(G, source=rid, target=pid):
-                    for path in nx.all_shortest_paths(G, source=rid, target=pid):
-                        reaction_nodes_in_path=[node for node in path if node.startswith('Reaction')]
-                        if len(reaction_nodes_in_path) < 13:
-                            reaction_path.append([node for node in path if node.startswith('Reaction')])
+            try:
+                if args.simple:
+                    if nx.all_simple_paths(G, source=rid, target=pid):
+                        for path in nx.all_simple_paths(G, source=rid, target=pid):
+                            if len(reaction_nodes_in_path) < 13:
+                                reaction_path.append(node for node in path if node.startswith('Reaction'))
+                else:
+                    if nx.all_shortest_paths(G, source=rid, target=pid):
+                        for path in nx.all_shortest_paths(G, source=rid, target=pid):
+                            reaction_nodes_in_path=[node for node in path if node.startswith('Reaction')]
+                            if len(reaction_nodes_in_path) < 13:
+                                reaction_path.append([node for node in path if node.startswith('Reaction')])
+            except: continue
 
     
     reaction_path = [element for sublist in reaction_path for element in sublist]
@@ -723,7 +725,7 @@ def reaction_network(rxn_flask, tot_network, args):
                 
         molecule['identity']='spectator'
         G_sub.add_node(chemical_node, molecule=molecule)
-    
+    # print(nx.node_link_data(G_sub))
     return G_sub
 
 def draw_reaction_graph(G, size=[5,5], labels = True):
