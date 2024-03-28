@@ -1,16 +1,15 @@
 python generate_mechanism_data.py \
-  --data 'data/testing.txt'\
-  --save 'results/testing.txt'\
-  --rxn_class 'Chlorination'\
+  --data 'data/uspto_classified.txt'\
+  --save 'results/uspto2.txt'\
   --proton True\
   --byproduct False\
   --spectator False\
-  --reagent True\
+  --reagent False\
   --full False\
   --end False\
   --debug True\
-  --verbosity 4\
-  --process 1\
+  --verbosity 0\
+  --process 30\
   #--all_info False\
   #--do_not_pruning True
   #  --data 'data/uspto_classified.txt'\

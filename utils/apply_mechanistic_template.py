@@ -137,13 +137,13 @@ def prepare_reactants(reaction_dict):
 
         #Save molecule in a dictionary
 
-        reactant_dict[num] = {'smiles_w_isotope':Chem.MolToSmiles(mol),   # Using isotope as atom mapping for reaction
+        reactant_dict[num] = {'smiles_w_isotope':Chem.MolToSmiles(mol),  # Using isotope as atom mapping for reaction
                             'atom_mapping':[i for i in range(start_idx,idx)],  #Checking for atom-mapping collision
-                            'smiles':Chem.MolToSmiles(remove_atom_map(mol)),  #Plain SMILES string
-                           'smiles_w_mapping': Chem.MolToSmiles(isotope_to_atommap(mol)), # Output for generating elementary reaction graph
+                           'smiles_w_mapping': Chem.MolToSmiles(isotope_to_atommap(mol)),  # Output for generating elementary reaction graph
+                              'smiles': Chem.MolToSmiles(remove_atom_map(mol, isotope=True)),  # Plain SMILES string
                            'rxn_history': list(),
                             'identity': 'reactant'
-                             }
+                              }
 
     reactant_dict['last_mapping_number']=idx-1
     return reactant_dict
@@ -470,6 +470,8 @@ def run_single_reaction(rxn_flask, single_step, args):
     rxn_flask, reactive_dict=find_reactants(rxn_flask, rxn_templates, args)
     # print("RXN_FLASK", rxn_flask)
     # print(reactive_dict)
+
+    prod_smi_list = []
     for templ in reactive_dict:
         # print("TEMPL", templ)
         if args.verbosity > 3:
@@ -479,6 +481,7 @@ def run_single_reaction(rxn_flask, single_step, args):
         num_reactants=reactive_dict[templ]['num_reactants']
         reactant_history=reactive_dict[templ]['reactant_history']
         rxn = AllChem.ReactionFromSmarts(templ)
+
         for combination, history in zip(combinations, reactant_history):
             reactants=[Chem.MolFromSmiles(rxn_flask[num]['smiles_w_isotope'],sanitize=False)
                                  for num in combination]
@@ -501,11 +504,13 @@ def run_single_reaction(rxn_flask, single_step, args):
                 if not check_products_validity(outcome): continue
                 product_id=set()
                 if args.verbosity > 3: logging.info('{} products are formed'.format(len(outcome)))
+
+                prod_smi = []
+                new_prod_num = []
                 for i, prod_mol in enumerate(outcome):
                     new_prod=product_dict(prod_mol, reactant_id, history)
-
                     r_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in reactant_id]))
-                    # prod_num = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] == new_prod['smiles'] and sorted(value['atom_mapping']) == sorted(new_prod['atom_mapping'])]
+                    # prod_nums = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] == new_prod['smiles'] and sorted(value['atom_mapping']) == sorted(new_prod['atom_mapping'])]
                     prod_nums = [key for key, value in rxn_flask.items() if
                                 type(key) is int and value['smiles_w_mapping'] == new_prod['smiles_w_mapping']]
                     found = False
@@ -515,16 +520,25 @@ def run_single_reaction(rxn_flask, single_step, args):
                             found = True
                             if args.verbosity > 3: logging.info('{} is found'.format(rxn_flask[prod_num]['smiles_w_mapping']))
                             product_id.add(prod_num)
+                            prod_smi.append(rxn_flask[prod_num]['smiles'])
                             break
                     if not found:
                         num_mols=len(rxn_flask)+1
                         product_id.add(num_mols)
+                        new_prod_num.append(num_mols)
                         rxn_flask[num_mols]= new_prod
+                        prod_smi.append(rxn_flask[num_mols]['smiles'])
                         if args.verbosity > 3: logging.info('{} is formed'.format(rxn_flask[num_mols]['smiles_w_mapping']))
 
-                if [reactant_id,product_id] not in reaction_pair:
+                prod_smi = set(prod_smi)
+                if [reactant_id,product_id] not in reaction_pair and prod_smi not in prod_smi_list:
                     reaction_pair.append([reactant_id,product_id])
                     reaction_network.append([reactant_id,templ, product_id])
+                    prod_smi_list.append(prod_smi)
+                else:
+                    for num in product_id:
+                        if num in new_prod_num:
+                            del rxn_flask[num]
 
     return rxn_flask, reaction_network
 
@@ -672,6 +686,7 @@ def reaction_network(rxn_flask, tot_network, args):
         return G
     # Make subgraph of a true path
     G_sub = nx.DiGraph(G.subgraph(path_node))
+    # print(nx.node_link_data(G_sub))
 
     #Check if there is not-connected intermediates.
     not_connected_inter_nodes=list()
@@ -717,17 +732,18 @@ def reaction_network(rxn_flask, tot_network, args):
                             path_node.append(nn)
                 path_node = list(set(path_node))
             except: continue
-    elif len(not_connected_inter_nodes) == 1:
-        int_id = not_connected_inter_nodes[0]
-        rxn_node = set([node for node in G.successors(int_id)])
-        for rxn_id in rxn_node:
-            child = [node for node in G.successors(rxn_id)]
-            byprode_child = [node for node in G.successors(rxn_id) if G.nodes[node]['molecule']['identity'] == 'byproduct']
-            if set(child) == set(byprode_child) and rxn_id not in path_node:
-                child.append(rxn_id)
-                child.append(int_id)
-                for nn in child:
-                    path_node.append(nn)
+    if not_connected_inter_nodes:
+        for int_id in not_connected_inter_nodes:
+            rxn_node = set([node for node in G.successors(int_id)])
+            for rxn_id in rxn_node:
+                child = [node for node in G.successors(rxn_id)]
+                byprode_child = [node for node in G.successors(rxn_id) if G.nodes[node]['molecule']['identity'] == 'byproduct']
+                non_byprod_child = [node for node in G.successors(rxn_id) if G.nodes[node]['molecule']['identity'] != 'byproduct' and node in list(G_sub.nodes)]
+                if set(child) == set(byprode_child+non_byprod_child) and rxn_id not in path_node:
+                    child.append(rxn_id)
+                    child.append(int_id)
+                    for nn in child:
+                        path_node.append(nn)
 
     G_sub = nx.DiGraph(G.subgraph(path_node))
 
@@ -1096,7 +1112,7 @@ def elementary_reaction(G, args):
             if args.byproduct:
                 produced_byproduct_nodes=list()
                 reaction_node_for_product = [node for node in G.predecessors(product_nodes[0])][0]
-                for by_node in byproduct_nodes+product_nodes:
+                for by_node in byproduct_nodes + product_nodes:
                     # print('by_node is ', by_node)
                     reaction_node_for_byproduct=[node for node in G.predecessors(by_node)][0]
                     if reaction_node_for_byproduct not in reaction_path:
