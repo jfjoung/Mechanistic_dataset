@@ -1080,7 +1080,7 @@ class_reaction_templates={
     1: {'Templates': ['[N;-1;H0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+1:7]:[c;H1;+0:8]-[Br,Cl,I;H0:1]>>[N;H1;+0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+0:7]:[c;H0;+0:8]-[Br,Cl,I;H0:1]'],
      'pKa': [None],
      'Description': 'Proton exchange'}}},
-    #TODO: It gives no product
+
   'Using FeCl3 or AlCl3': {'Reagent': ['Cl[Fe,Al](Cl)Cl', 'ClCl'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[Cl:1][Cl:2].[Cl:3][Fe,Al:4]([Cl:5])[Cl:6]>>[Cl:3][Fe,Al;-1:4]([Cl:5])([Cl:6])[Cl;+1:1][Cl:2]'],
                  'pKa': [None],
@@ -1089,7 +1089,7 @@ class_reaction_templates={
         'pKa': [None],
         'Description': 'Clorination of aromatic ring'},
 
-    2: {'Templates': ['[Cl;D1:3][Fe;-1:4]([Cl;D1:5])([Cl;D1:6])[Cl;H1;D1;+0:1].[*;a;+1:7]:[c;H1;+0:8]-[Cl;H0:2]>>[Cl:3][Fe;+0:4]([Cl:5])[Cl:6].[Cl;H1;+0:1].[*;a;+0:7]:[c;H0;+0:8]-[Cl;H0:2]'],
+    2: {'Templates': ['[Cl;D1:3][Fe;-1:4]([Cl;D1:5])([Cl;D1:6])[Cl;H0;D1;+0:1].[*;a;+1:7]:[c;H1;+0:8]-[Cl;H0:2]>>[Cl:3][Fe;+0:4]([Cl:5])[Cl:6].[Cl;H1;+0:1].[*;a;+0:7]:[c;H0;+0:8]-[Cl;H0:2]'],
      'pKa': [None],
      'Description': 'Proton exchange'}}}},
 
