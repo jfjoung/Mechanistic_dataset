@@ -469,9 +469,9 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Oxidative addition'},
     1: {'Templates': ['[#8;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
-      '[#6:10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8;H0;+0:8]-[Pd:6]-[#6;+0:5]',
+      '[#6&!$([#6]=O):10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8;H0;+0:8]-[Pd:6]-[#6;+0:5]',
       '[Li,Na,K,Cs:10][#8:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[Li,Na,K,Cs;+1:10].[#8:8]-[Pd:6]-[#6;+0:5]',
-      '[#6:9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
+      '[#6&!$([#6]=O):9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
      'pKa': [None, None, None, None],
      'Description': 'Halide leaving'},
                      #Suzuki
@@ -496,8 +496,9 @@ class_reaction_templates={
 # Based on the mechanism described in https://chem.libretexts.org/Bookshelves/Inorganic_Chemistry/Supplemental_Modules_and_Websites_(Inorganic_Chemistry)/Catalysis/Catalyst_Examples/Heck_Reaction.
 'Reaction with PdX2, PPh3, and water': {'Reagent': ['[Cl,Br,I,O][Pd;+0][Cl,Br,I,O]', '[P]', '[O;H1,H2]'], 'Exclude_reagent': None,
    'Stages': {
-        0: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1](-[Cl,Br,I,O:3])-[P;D4;+0:4]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3;+0:4]',
-                          '[Cl,Br,I,O:2]-[Pd;+0:1](-[Cl,Br,I,O:3])(-[P;D4;+0:4])(-[P;D4;+0:5])>>[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3;+0:4].[P;D3;+0:5]',],
+        0: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1](-[Cl,Br,I,O:3])(-[P;D4;+0:4])(-[P;D4;+0:5])>>[Cl,Br,I,O:2]-[Pd;+0:1](-[Cl,Br,I,O:3])-[P;D3;+0:4].[P;D3;+0:5]',
+                            # '[Cl,Br,I,O:2]-[Pd;+0:1](-[Cl,Br,I,O:3])-[P;D4;+0:4]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3;+0:4]',
+                          ],
      'pKa': [None],
      'Description': 'Palladium-ligand dissociation'},
        1: {'Templates': ['[Cl,Br,I,O:2]-[Pd;+0:1]-[Cl,Br,I,O:3].[P;D3:4]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+1:4].[Cl,Br,I,O;-1:3]'],
@@ -524,9 +525,9 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Oxidative addition'},
     8: {'Templates': ['[#8;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
-      '[#6:10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8:8]-[Pd:6]-[#6;+0:5]',
+      '[#6&!$([#6]=O):10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8:8]-[Pd:6]-[#6;+0:5]',
       '[Li,Na,K,Cs:10][#8:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[Li,Na,K,Cs;+1:10].[#8:8]-[Pd:6]-[#6;+0:5]',
-                     '[#6:9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
+                     '[#6&!$([#6]=O):9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
      'pKa': [None, None, None, None],
      'Description': 'Halide leaving'},
                      #Suzuki
@@ -579,9 +580,9 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Oxidative addition'},
      8: {'Templates': ['[#8;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
-      '[#6:10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8:8]-[Pd:6]-[#6;+0:5]',
+      '[#6&!$([#6]=O):10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8;H0;+0:8]-[Pd:6]-[#6;+0:5]',
       '[Li,Na,K,Cs:10][#8:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[Li,Na,K,Cs;+1:10].[#8:8]-[Pd:6]-[#6;+0:5]',
-                     '[#6:9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
+      '[#6&!$([#6]=O):9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
      'pKa': [None, None, None, None],
      'Description': 'Halide leaving'},
                      #Suzuki
@@ -627,9 +628,9 @@ class_reaction_templates={
          'pKa': [None],
          'Description': 'Oxidative addition'},
         6: {'Templates': ['[#8;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
-          '[#6:10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8:8]-[Pd:6]-[#6;+0:5]',
-          '[Li,Na,K,Cs:10][#8:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[Li,Na,K,Cs;+1:10].[#8:8]-[Pd:6]-[#6;+0:5]',
-                         '[#6:9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
+      '[#6&!$([#6]=O):10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8;H0;+0:8]-[Pd:6]-[#6;+0:5]',
+      '[Li,Na,K,Cs:10][#8:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[Li,Na,K,Cs;+1:10].[#8:8]-[Pd:6]-[#6;+0:5]',
+      '[#6&!$([#6]=O):9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
          'pKa': [None, None, None, None],
          'Description': 'Halide leaving'},
                          #Suzuki
@@ -669,9 +670,9 @@ class_reaction_templates={
                                      'Description': 'Oxidative addition'},
                                  4: {'Templates': [
                                      '[#8;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
-                                     '[#6:10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8:8]-[Pd:6]-[#6;+0:5]',
+                                     '[#6&!$([#6]=O):10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8;H0;+0:8]-[Pd:6]-[#6;+0:5]',
                                      '[Li,Na,K,Cs:10][#8:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[Li,Na,K,Cs;+1:10].[#8:8]-[Pd:6]-[#6;+0:5]',
-                                     '[#6:9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
+                                     '[#6&!$([#6]=O):9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
                                      'pKa': [None, None, None, None],
                                      'Description': 'Halide leaving'},
                                  # Suzuki
@@ -707,11 +708,12 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Oxidative addition'},
     2: {'Templates': ['[#8;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
-                       '[#8;D0;H1;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I;H0,O$([O]-S);-1:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
-      '[#6:10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8:8]-[Pd:6]-[#6;+0:5]',
+        '[#8;D0;H1;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I;H0,O$([O]-S);-1:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
+      '[#6&!$([#6]=O):10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8;H0;+0:8]-[Pd:6]-[#6;+0:5]',
       '[Li,Na,K,Cs:10][#8:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[Li,Na,K,Cs;+1:10].[#8:8]-[Pd:6]-[#6;+0:5]',
-                     '[#6:9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
-     'pKa': [None, None,None, None, None],
+      '[#6&!$([#6]=O):9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
+
+     'pKa': [None,None, None,None, None, None],
      'Description': 'Halide leaving'},
                      #Suzuki
     3: {'Templates': ['[#5:2]-[#6;+0:4].[#8:8]-[Pd:6]-[#6;+0:5]>>[#6;+0:4]-[Pd:6]-[#6;+0:5].[#5:2]-[#8;+0:8]',
@@ -742,10 +744,10 @@ class_reaction_templates={
      'Description': 'Oxidative addition'},
 
     2: {'Templates': ['[#8;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
-                      '[#8;D0;H1;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H0;-1:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
-      '[#6:10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8:8]-[Pd:6]-[#6;+0:5]',
+        '[#8;D0;H1;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I;H0,O$([O]-S);-1:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
+      '[#6&!$([#6]=O):10][#8;H1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#6:10][#8;H0;+0:8]-[Pd:6]-[#6;+0:5]',
       '[Li,Na,K,Cs:10][#8:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[Li,Na,K,Cs;+1:10].[#8:8]-[Pd:6]-[#6;+0:5]',
-                     '[#6:9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
+      '[#6&!$([#6]=O):9]-[#8;-1:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);-1:7].[#6:9]-[#8;+0:8]-[Pd:6]-[#6;+0:5]'],
      'pKa': [None, None, None,None, None],
      'Description': 'Halide leaving'},
                      #Suzuki
@@ -1079,7 +1081,7 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Proton exchange'}}},
     #TODO: It gives no product
-  'Using FeCl3 or AlCl3': {'Reagent': ['Cl[Fe,Al](Cl)Cl'], 'Exclude_reagent': None,
+  'Using FeCl3 or AlCl3': {'Reagent': ['Cl[Fe,Al](Cl)Cl', 'ClCl'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[Cl:1][Cl:2].[Cl:3][Fe,Al:4]([Cl:5])[Cl:6]>>[Cl:3][Fe,Al;-1:4]([Cl:5])([Cl:6])[Cl;+1:1][Cl:2]'],
                  'pKa': [None],
                  'Description': 'Activation of Lewis acid'},
