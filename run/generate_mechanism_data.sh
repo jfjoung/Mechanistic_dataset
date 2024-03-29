@@ -1,7 +1,7 @@
 python generate_mechanism_data.py \
   --data 'data/testing.txt'\
   --save 'results/testing.txt'\
-  --rxn_class 'Darzens bromination'\
+  --rxn_class 'Weinreb ketone synthesis'\
   --proton True\
   --byproduct False\
   --spectator False\
@@ -9,7 +9,7 @@ python generate_mechanism_data.py \
   --full False\
   --end False\
   --debug True\
-  --verbosity 4\
+  --verbosity 0\
   --process 30\
   #--all_info False\
   #--do_not_pruning True

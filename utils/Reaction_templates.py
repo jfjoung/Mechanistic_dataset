@@ -1756,19 +1756,23 @@ class_reaction_templates={
      'pKa': [{'B': -0.4}, {'B': -0.4}, {'B': -0.4}],
      'Description': 'Deprotonation of amide'}}}},
 
-#TODO: It gives no product
+
  ('Weinreb ketone synthesis',): {'Reaction': {'Reagent': None, 'Exclude_reagent': None,
-   'Stages': {0: {'Templates': ['[*:1]-[#6:2](=[#8:3])-[#7;H0:4]-[#8:5].[*:6]-[Li,Mg;+0:7]>>[*:1]-[#6:2](-[*:6])(-[#8:3]-[Li,Mg;+0:7])-[#8;+1:5]-[#7;H0:4]'],
+   'Stages': {0: {'Templates': ['[*:1]-[#6:2](=[#8:3])-[#7;H0:4]-[#8:5].[#6:6]-[Li,Mg;+0:7]>>[*:1]-[#6:2]1(-[*#6:6])-[#8:3]-[Li,Mg;-1:7]-[#8;+1:5]-[#7;H0:4]1'],
      'pKa': [None],
      'Description': 'Nucleophilic addition'},
-    1: {'Templates': ['[*:1]-[#6:2](-[*:6])(-[#8:3]-[Li,Mg;+0:7])-[#8;+1:5]-[#7;H0:4]>>[*:1]-[#6:2](-[*:6])=[#8:3].[Li,Mg;+1:7].[#8;+0:5]-[#7;H0:4]'],
+    1: {'Templates': ['[*:1]-[#6:2]1(-[*#6:6])-[#8:3]-[Li,Mg;-1:7]-[#8;+1:5]-[#7;H0:4]1>>[*:1]-[#6:2](-[*#6:6])(-[#8;H1;+0:3])-[#7;H0:4]-[#8;+0:5].[Li,Mg;+1:7]'],
+     'pKa': [{'A': 10}],
+     'Description': 'Protonation and metal leaving'},
+    2: {'Templates': ['[*:1]-[#6:2](-[*#6:6])(-[#8;H1;+0:3])-[#7;H0:4]-[#8;+0:5]>>[*:1]-[#6:2](-[*#6:6])(-[#8;H1;+0:3])-[#7;H1;+1:4]-[#8;+0:5]'],
+     'pKa': [{'A': 10}],
+     'Description': 'Protonation'},
+    3:{'Templates': ['[*:1]-[#6:2](-[*#6:6])(-[#8;H1;+0:3])-[#7;H1;+1:4]-[#8;+0:5]>>[*:1]-[#6:2](-[*#6:6])(=[#8;H1;+1:3]).[#7;H1;+0:4]-[#8;+0:5]'],
      'pKa': [None],
-     'Description': 'Ketone formation'},
-    2:{'Templates': ['[N;H1;-1:8](-[#6:7])>>[N;H2;+0:8](-[#6:7])',
-      '[N;H0;-1:8](-[#6:7])>>[N;H1;+0:8](-[#6:7])'],
-     'pKa': [{'A': 37}, {'A': 37}],
-     'Description': 'Protonation of amide anion',
-      'Save': True}}}},
+     'Description': 'Amine leaving',},
+    4:{'Templates': ['[#6:2]=[#8;H1;+1:3]>>[#6:2]=[#8;H0;+0:3]'],
+     'pKa': [{'B': -6}],
+     'Description': 'Deprotonation of ketone',},}}},
 
 
 
