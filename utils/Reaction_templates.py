@@ -1967,7 +1967,7 @@ class_reaction_templates={
     2: {'Templates': ['[C:1](=[O:2])[O;H0;+0:3][C;+0:4](=[O:6])[C;+0:7](=[O;+0:8])[Cl:9].[Cl;-:5]>>[C:1](=[O:2])[Cl;+0:5].[O;H0;+0:3]=[C;+0:4](=[O:6]).[C;-:7]#[O;+:8].[Cl;-:9].[Cl;-:5]'],
         'pKa': [None],
         'Description': 'Nucleophilic substitution'}}}},
-    #TODO: High error rate
+
   ('O-TBS protection',
    'O-TMS protection',
    'O-TIPS protection',
