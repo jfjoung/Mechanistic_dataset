@@ -1,7 +1,7 @@
 python generate_mechanism_data.py \
-  --data 'data/uspto_classified.txt'\
-  --save 'results/testing_all.txt'\
-  --rxn_class 'Triflyloxy Sonogashira coupling'\
+  --data 'data/testing.txt'\
+  --save 'results/testing.txt'\
+  --rxn_class 'Darzens bromination'\
   --proton True\
   --byproduct False\
   --spectator False\
@@ -9,7 +9,7 @@ python generate_mechanism_data.py \
   --full False\
   --end False\
   --debug True\
-  --verbosity 0\
+  --verbosity 4\
   --process 30\
   #--all_info False\
   #--do_not_pruning True
