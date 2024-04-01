@@ -1,5 +1,5 @@
 import argparse
-from scripts.analysis import analysis
+from scripts.analysis import analysis, mol_analysis
 
 
 def str2bool(v):
@@ -15,15 +15,16 @@ def parse_arguments():
     parser.add_argument('--data', help='Path to the reaction data to be analyzed, it should be jsonl format',
                         type=str, default='./results/uspto_all.jsonl')
     parser.add_argument('--weight_bin', help='Bins for molecular weight',
-                        type=int, default=100)
+                        type=int, default=1)
     parser.add_argument('--atom_bin', help='Bins for heavy atom',
-                        type=int, default=10)
+                        type=int, default=1)
     parser.add_argument("--process", help="The number of worker processes",
-                        type=int, default=20)
+                        type=int, default=30)
     parser.add_argument("--log_scale", help="Draw figure in log scale",
                         type=str2bool, default=True)
     return parser.parse_args()
 
 if __name__ == '__main__':
     args =  parse_arguments()
-    analysis(args)
+    # analysis(args)
+    mol_analysis(args)
