@@ -1,13 +1,13 @@
 python generate_mechanism_data.py \
-  --data 'data/testing.txt'\
-  --save 'results/testing.jsonl'\
+  --data 'data/uspto_classified.txt'\
+  --save 'results/uspto_all.jsonl'\
   --proton True\
-  --byproduct True\
-  --spectator True\
+  --byproduct False\
+  --spectator False\
   --reagent False\
   --full False\
   --end False\
-  --debug True\
+  --debug False\
   --verbosity 0\
   --process 30\
   --all_info True\

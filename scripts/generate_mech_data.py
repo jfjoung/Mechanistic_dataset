@@ -157,7 +157,7 @@ def generate_mechdata_multiprocess(args):
 
     with open(args.save, 'w') as fout, open(debug_file_path, 'w') as file_debug:
         iterables = [(line, args) for line in lines]
-        for result in tqdm(p.imap(generate_mechdata_single, iterables), total=len(lines)):
+        for result in tqdm(p.imap_unordered(generate_mechdata_single, iterables), total=len(lines)):
             if args.debug:
                 failed_reaction = []
             if not result: continue
