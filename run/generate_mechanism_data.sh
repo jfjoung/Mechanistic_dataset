@@ -8,9 +8,10 @@ python generate_mechanism_data.py \
   --full False\
   --end False\
   --debug True\
-  --verbosity 0\
+  --verbosity 4\
   --process 30\
-  --all_info True\
+  --all_info False\
+  --explicit_H False\
   --do_not_pruning True
   #  --data 'data/uspto_classified.txt'\
 #  --rxn_class '"CO2H-Et deprotection":'\

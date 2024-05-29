@@ -61,6 +61,8 @@ def parse_arguments():
                        type=str2bool, default=False)
     parser.add_argument("--plain", help="Get reaction SMARTS without atom-mapping",
                        type=str2bool, default=False)
+    parser.add_argument("--explicit_H", help="SMILES with Explicit H",
+                        type=str2bool, default=False)
     parser.add_argument("--reagent", help="Locate reagents at middle of the reaction (reactants>reagents>products) instead of both sides of reactants and products.",
                        type=str2bool, default=False)
     parser.add_argument("--remapping", help="Re-atom-mapping for each elementary reaction to start with 1.",

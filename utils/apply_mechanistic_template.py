@@ -108,7 +108,7 @@ def calling_rxn_template(reaction_dict):
 
     return conditions
 
-def prepare_reactants(reaction_dict):
+def prepare_reactants(reaction_dict, args):
     """
     Preprocessing to make reactants with isotope labeling
     reaction_dict: one reaction in reactions_with_conditions
@@ -122,12 +122,21 @@ def prepare_reactants(reaction_dict):
     rmol=reactants+agents
 
     idx=1
-    reactant_pool=list()
     reactant_dict=dict()
     _smiles_list=[]
+
+    if args.explicit_H:
+        ps = Chem.SmilesParserParams()
+        ps.removeHs = False
+    else:
+        ps = Chem.SmilesParserParams()
+
+
     for num, mol in enumerate(rmol):
-        mol = Chem.MolFromSmiles(Chem.MolToSmiles(mol))
+        mol = Chem.MolFromSmiles(Chem.MolToSmiles(mol), ps)
         mol = remove_atom_map(mol)
+        if args.explicit_H:
+            mol = Chem.AddHs(mol, explicitOnly=False)
         start_idx=idx
         for atom in mol.GetAtoms():
             atom.SetIsotope(idx)
@@ -165,15 +174,21 @@ def check_products_validity(outcome):
         return True
     else: return False
 
-def remove_isotope(prod_mol):
-    prod_istope_smi=Chem.MolToSmiles(prod_mol)
-    for a in prod_mol.GetAtoms():
-        a.SetIsotope(0)
-    return Chem.MolFromSmiles(prod_istope_smi), Chem.MolToSmiles(prod_mol)
+# def remove_isotope(prod_mol):
+#     prod_istope_smi=Chem.MolToSmiles(prod_mol)
+#     for a in prod_mol.GetAtoms():
+#         a.SetIsotope(0)
+#     return Chem.MolFromSmiles(prod_istope_smi), Chem.MolToSmiles(prod_mol)
 
-def product_dict(prod_mol, reactant_id, reactant_history):
+def product_dict(prod_mol, reactant_id, reactant_history, args):
     prod_smi_isotope = Chem.MolToSmiles(prod_mol) # Get isotompe-mapped smiles
     atom_mapping=list()
+
+    if args.explicit_H:
+        ps = Chem.SmilesParserParams()
+        ps.removeHs = False
+    else:
+        ps = Chem.SmilesParserParams()
 
     for a in prod_mol.GetAtoms(): #Change isotope to atom map
         a.SetAtomMapNum(a.GetIsotope())
@@ -185,7 +200,7 @@ def product_dict(prod_mol, reactant_id, reactant_history):
 
     # Get plain smiles
     try:
-        prod_smi = Chem.MolToSmiles(Chem.MolFromSmiles(Chem.MolToSmiles(prod_mol)), isomericSmiles=False)
+        prod_smi = Chem.MolToSmiles(Chem.MolFromSmiles(Chem.MolToSmiles(prod_mol), ps), isomericSmiles=False)
     except:
         prod_smi = Chem.MolToSmiles(prod_mol, isomericSmiles=False)
 
@@ -202,7 +217,7 @@ def product_dict(prod_mol, reactant_id, reactant_history):
              }
     return new_prod
 
-def proton_balanced_template(rxn_flask, pKas, rxn_templates):
+def proton_balanced_template(rxn_flask, pKas, rxn_templates, args):
 
     """
     rxn_flask: dictionary - key: species index (0~), value: dictionary of species data (smiles, tags, etc)
@@ -228,11 +243,11 @@ def proton_balanced_template(rxn_flask, pKas, rxn_templates):
         if A:
             filtered_data = [d for d in AcidBase_lookup.Acid_base if 'A' in d['role'] and d['pKa'] <= A]
             sorted_data = sorted(filtered_data, key=lambda x: x['pKa'])
-            possible_acid_base=find_acid_base(rxn_flask, sorted_data, 'A')
+            possible_acid_base=find_acid_base(rxn_flask, sorted_data, 'A', args)
         if B:
             filtered_data = [d for d in AcidBase_lookup.Acid_base if 'B' in d['role'] and d['pKa'] >= B]
             sorted_data = sorted(filtered_data, key=lambda x: x['pKa'], reverse=True)
-            possible_acid_base=find_acid_base(rxn_flask, sorted_data, 'B')
+            possible_acid_base=find_acid_base(rxn_flask, sorted_data, 'B', args)
         if not possible_acid_base: continue
 
         for acid_base in possible_acid_base:
@@ -260,8 +275,17 @@ def allow_unimolecular_rxn(rxn_templates):
             new_templates.append(new_temp)
     return new_templates
 
-def find_acid_base(rxn_flask, filtered_list, ab_condition):
+def find_acid_base(rxn_flask, filtered_list, ab_condition, args):
     possible_acid_base=[]
+
+    if args.explicit_H:
+        ps = Chem.SmilesParserParams()
+        ps.removeHs = False
+        ps.sanitize = False
+    else:
+        ps = Chem.SmilesParserParams()
+        ps.sanitize = False
+
     for acid_base in filtered_list:
         if ab_condition=='A':
             reactant=acid_base['Acid']
@@ -271,7 +295,7 @@ def find_acid_base(rxn_flask, filtered_list, ab_condition):
             product=acid_base['Acid']
 
         patt = Chem.MolFromSmarts(reactant)
-        mols = [Chem.MolFromSmiles(rxn_flask[x]['smiles'], sanitize=False) for x in rxn_flask  if type(x) is int]
+        mols = [Chem.MolFromSmiles(rxn_flask[x]['smiles'], ps) for x in rxn_flask  if type(x) is int]
         for mol in mols:
             mol.UpdatePropertyCache(strict=False)
             Chem.SanitizeMol(mol,
@@ -282,6 +306,15 @@ def find_acid_base(rxn_flask, filtered_list, ab_condition):
     return possible_acid_base
 
 def find_reactants(rxn_flask, rxn_templates, args):
+
+    if args.explicit_H:
+        ps = Chem.SmilesParserParams()
+        ps.removeHs = False
+        ps.sanitize = False
+    else:
+        ps = Chem.SmilesParserParams()
+        ps.sanitize = False
+
     reactive_dict = dict()
     mol_dict = {reactant: Chem.MolFromSmarts(rxn_flask[reactant]['smiles_w_mapping']) for reactant in rxn_flask if type(reactant) is int}
 
@@ -352,7 +385,7 @@ def find_reactants(rxn_flask, rxn_templates, args):
                 for mol_num in combination:
                     if rxn_flask[mol_num]['identity']=='reactant' and mol_num not in new_molecule_dict.keys():
                         start_idx=idx
-                        new_mol = Chem.MolFromSmiles(rxn_flask[mol_num]['smiles'])
+                        new_mol = Chem.MolFromSmiles(rxn_flask[mol_num]['smiles'], ps)
                         for atom in new_mol.GetAtoms():
                             atom.SetIsotope(idx)
                             idx+=1
@@ -444,7 +477,7 @@ def run_single_reaction(rxn_flask, single_step, args):
 
     if args.proton: # Get proton balanced reaction template
         # TODO: label acids and bases (e.g. 'acid' instead of just 'reactant' when labelling), add isAcid, isBase
-        rxn_templates, rxn_proton_templates = proton_balanced_template(rxn_flask, pKas, rxn_templates)
+        rxn_templates, rxn_proton_templates = proton_balanced_template(rxn_flask, pKas, rxn_templates, args)
         num_proton_temp = len(rxn_proton_templates)
         if args.verbosity > 2:
             logging.info('New proton balanced {} templates are generated'.format(max(num_proton_temp, 0)))
@@ -455,6 +488,13 @@ def run_single_reaction(rxn_flask, single_step, args):
         if args.verbosity > 2:
             logging.info('New unimolecular {} templates are generated'.format(max(num_uni_temp,0)))
 
+    if args.explicit_H:
+        ps = Chem.SmilesParserParams()
+        ps.removeHs = False
+        ps.sanitize = False
+    else:
+        ps = Chem.SmilesParserParams()
+        ps.sanitize = False
     if args.proton:
         rxn_templates = rxn_templates + rxn_proton_templates
     if args.uni_rxn:
@@ -483,7 +523,7 @@ def run_single_reaction(rxn_flask, single_step, args):
         rxn = AllChem.ReactionFromSmarts(templ)
 
         for combination, history in zip(combinations, reactant_history):
-            reactants=[Chem.MolFromSmiles(rxn_flask[num]['smiles_w_isotope'],sanitize=False)
+            reactants=[Chem.MolFromSmiles(rxn_flask[num]['smiles_w_isotope'],ps)
                                  for num in combination]
 
             outcomes = rxn.RunReactants(reactants)
@@ -508,7 +548,7 @@ def run_single_reaction(rxn_flask, single_step, args):
                 prod_smi = []
                 new_prod_num = []
                 for i, prod_mol in enumerate(outcome):
-                    new_prod=product_dict(prod_mol, reactant_id, history)
+                    new_prod=product_dict(prod_mol, reactant_id, history, args)
                     r_map = set(flatten_list([rxn_flask[rid]['atom_mapping'] for rid in reactant_id]))
                     # prod_nums = [key for key, value in rxn_flask.items() if type(key) is int and value['smiles'] == new_prod['smiles'] and sorted(value['atom_mapping']) == sorted(new_prod['atom_mapping'])]
                     prod_nums = [key for key, value in rxn_flask.items() if
@@ -572,15 +612,23 @@ def run_full_reaction(rxn_flask, condition, cond_name, args):
     return rxn_flasks, tot_networks
 
 
-def find_product(example_rxn, rxn_flask):
+def find_product(example_rxn, rxn_flask, args):
+
+    if args.explicit_H:
+        ps = Chem.SmilesParserParams()
+        ps.removeHs = False
+    else:
+        ps = Chem.SmilesParserParams()
+
+
     reaction_smi = example_rxn['reaction_smiles']
     _, _, product_smi = reaction_smi.split('>')
-    product_smi = Chem.MolToSmiles(Chem.MolFromSmiles(product_smi) , isomericSmiles=False)
+    product_smi = Chem.MolToSmiles(Chem.MolFromSmiles(product_smi, ps), isomericSmiles=False)
 
     product_smi_list=product_smi.split('.')
     real_product_smi_list=[]
     for psmi in product_smi_list:
-        pmol=Chem.MolFromSmiles(psmi)
+        pmol=Chem.MolFromSmiles(psmi, ps)
         pat = Chem.MolFromSmarts("[#6]")
         if len(pmol.GetSubstructMatches(pat)) > 0:
             pmol=remove_atom_map(pmol)
@@ -837,14 +885,14 @@ def get_mechanistic_network(rxn, args):
     condition = calling_rxn_template(rxn)
     if args.verbosity > 2:
         logging.info('{} conditions for this reaction are retrieved'.format(len(condition)))
-    rxn_flask=prepare_reactants(rxn)
+    rxn_flask=prepare_reactants(rxn, args)
     if args.verbosity > 0:
         logging.info('Start applying the templates')
     rxn_flasks, tot_networks=run_full_reaction(rxn_flask, condition, rxn['conditions'], args)
 
     G_dict=dict()
     for rxn_condition, rxn_flask,tot_network in zip(rxn['conditions'], rxn_flasks, tot_networks):
-        rxn_flask=find_product(rxn, rxn_flask)
+        rxn_flask=find_product(rxn, rxn_flask, args)
         if rxn_flask:
             if args.verbosity > 0:
                 logging.info('Products for {} have been found.'.format(rxn_condition))
