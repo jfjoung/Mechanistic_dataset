@@ -481,3 +481,19 @@ def template_analysis(args):
 
     print(f"Covered reaction conditions: {condition}")
     print(f"Unique reaction templates: {len(set(templates))}")
+
+def log_analysis(args):
+    fpath = args.data
+
+    with open(fpath) as f:
+        data = json.load(f)
+
+    filtered_keys = []
+    for key, value in data.items():
+        if set(value.keys()) == {"No templates", "Error"}:
+            filtered_keys.append((key, value["No templates"]))
+
+    sorted_keys = sorted(filtered_keys, key=lambda x: x[1], reverse=True)
+
+    for key, no_templates in sorted_keys[:20]:
+        print(f"{key}: {no_templates}")

@@ -1,5 +1,5 @@
 import argparse
-from scripts.analysis import analysis, mol_analysis, ERS_analysis, template_analysis
+from scripts.analysis import analysis, mol_analysis, ERS_analysis, template_analysis, log_analysis
 
 
 def str2bool(v):
@@ -28,5 +28,6 @@ if __name__ == '__main__':
     args =  parse_arguments()
     # analysis(args)
     # mol_analysis(args)
-    ERS_analysis(args)
+    # ERS_analysis(args)
     # template_analysis(args)
+    log_analysis(args)

@@ -1978,5 +1978,60 @@ class_reaction_templates={
     1: {'Templates': ['[C:1][O;H1;+1:2]-[Si:3]>>[C:1][O;H0;+0:2]-[Si:3]',
                       '[c:1][O;H1;+1:2]-[Si:3]>>[c:1][O;H0;+0:2]-[Si:3]',],
      'pKa': [{'B': -3.8}, {'B': -6.2}],
-     'Description': 'Deprotonation'}}}}
+     'Description': 'Deprotonation'}}}},
+
+    ('Nitration',): {'Sulfuric acid': {'Reagent': ['[N+]([O-])(=[O])[O;H0,H1;+0,-1]', '[S](=[O])(=[O])([OH])[OH]', '[c;H1]'], 'Exclude_reagent': None,
+                                        'Stages': {0: {'Templates': [
+                                            '[N+:1]([O-:2])(=[O:3])[O;H0;-1:4].[S:5](=[O:6])(=[O:7])([OH:8])[OH:9]>>[N+:1]([O-:2])(=[O:3])[OH1;+0:4].[S:5](=[O:6])(=[O:7])([OH:8])[O;H0;-1:9]'],
+                                                       'pKa': [None],
+                                                       'Description': 'Protonation of nitrate'},
+                                            1: {'Templates': [
+                                            '[N+:1]([O-:2])(=[O:3])[OH:4].[S:5](=[O:6])(=[O:7])([OH:8])[OH:9]>>[N+:1]([O-:2])(=[O:3])[OH2;+1:4].[S:5](=[O:6])(=[O:7])([OH:8])[O;H0;-1:9]'],
+                                                       'pKa': [None],
+                                                       'Description': 'Protonation of nitric acid'},
+                                                   2: {'Templates': ['[N+:1]([O-:2])(=[O:3])[OH2;+1:4]>>[N+:1](=[O;+0:2])(=[O:3]).[OH2;+0:4]',],
+                                                       'pKa': [None],
+                                                       'Description': 'Formation of nitronium ion'},
+                                                   3: {'Templates': ['[N+:1](=[O;+0:2])(=[O:3]).[*;a;+0:8]:[c;H1;+0:9]>>[*;a;+1:8]:[c;H1;+0:9]-[N+:1](-[O-:2])(=[O:3])',],
+                                                       'pKa': [None],
+                                                       'Description': 'Electrophile aromatic substitution'},
+                                                   4: {'Templates': [
+                                                        '[*;a;+1:8]:[c;H1;+0:9]-[N+:1](-[O-:2])(=[O:3]).[OH2;+0:4]>>[*;a;+0:8]:[c;H0;+0:9]-[N+:1](-[O-:2])(=[O:3]).[OH3;+1:4]', ],
+                                                        'pKa': [None],
+                                                        'Description': 'Deprotonation'},
+                                        }},
+                     'Acetic anhydride': {'Reagent': ['[N+]([O-])(=[O])[OH]', '[C]([O][C](=[O])[CH3])(=[O])[CH3]', '[c;H1]'], 'Exclude_reagent': None,
+                                        'Stages': {0: {'Templates': [
+                                            '[N+:1]([O-:2])(=[O:3])[OH:4].[C:11]([O:12][C:13](=[O:14])[CH3:15])(=[O:16])[CH3:17]>>[OH:4][N+:1]([O;+0:2][C:11]([CH3:17])=[O:16])=[O:3].[O;-1:12][C:13]([CH3:15])=[O:14]'],
+                                                       'pKa': [None],
+                                                       'Description': 'Formation of nitric acetic anhydride'},
+                                                   1: {'Templates': [
+                                            '[OH:4][N+:1]([O;+0:2][C:11]([CH3:17])=[O:16])=[O:3].[O;-1:12][C:13]([CH3:15])=[O:14]>>[O;H0;-1:4][N+:1]([O;+0:2][C:11]([CH3:17])=[O:16])=[O:3].[O;H1;+0:12][C:13]([CH3:15])=[O:14]'],
+                                                       'pKa': [None],
+                                                       'Description': 'Deprotonation of nitric acetic anhydride'},
+                                                   2: {'Templates': ['[O;H0;-1:4][N+:1]([O;+0:2][C:11]([CH3:17])=[O:16])=[O:3].[*;a;+0:8]:[c;H1;+0:9]>>[*;a;+1:8]:[c;H1;+0:9]-[N+:1](-[O-:4])(=[O:3]).[O;H0;-1:2][C:11]([CH3:17])=[O:16]',],
+                                                       'pKa': [None],
+                                                       'Description': 'Electrophile aromatic substitution'},
+                                                   3: {'Templates': [
+                                                        '[*;a;+1:8]:[c;H1;+0:9]-[N+:1](-[O-:4])(=[O:3]).[O;H0;-1:2][C:11]([CH3:17])=[O:16]>>[*;a;+0:8]:[c;H0;+0:9]-[N+:1](-[O-:4])(=[O:3]).[O;H1;+0:2][C:11]([CH3:17])=[O:16]', ],
+                                                        'pKa': [None],
+                                                        'Description': 'Deprotonation'}}},
+                     'Nitric anhydride': {
+                                        'Reagent': ['[*]O[N+]([O-])=O','[c;H1]'], 'Exclude_reagent': None,
+                                        'Stages': {
+                                            0: {'Templates': [
+                                                '[*:1][O:2][N+:3]([O-:4])=[O:5].[*;a;+0:8]:[c;H1;+0:9]>>[*;a;+1:8]:[c;H1;+0:9]-[N+:3](-[O-:4])(=[O:5]).[*:1][O;H0;-1:2]', ],
+                                                'pKa': [None],
+                                                'Description': 'Electrophile aromatic substitution'},
+                                            1: {'Templates': [
+                                                '[*;a;+1:8]:[c;H1;+0:9]-[N+:3](-[O-:4])(=[O:5]).[*:1][O;H0;-1:2]>>[*;a;+0:8]:[c;H0;+0:9]-[N+:3](-[O-:4])(=[O:5]).[*:1][O;H1;+0:2]', ],
+                                                'pKa': [None],
+                                                'Description': 'Deprotonation'},
+
+                                        }},
+
+
+
+
+                     },
 }

@@ -1,16 +1,16 @@
 python generate_mechanism_data.py \
-  --data 'data/uspto_classified.txt'\
-  --save 'results/uspto_all.jsonl'\
+  --data 'data/iodo.txt'\
+  --save 'results/iodo.jsonl'\
   --proton True\
   --byproduct False\
   --spectator False\
   --reagent False\
   --full False\
   --end False\
-  --debug False\
+  --debug True\
   --verbosity 0\
   --process 30\
   --all_info True\
-  #--do_not_pruning True
+  --do_not_pruning True
   #  --data 'data/uspto_classified.txt'\
 #  --rxn_class '"CO2H-Et deprotection":'\
