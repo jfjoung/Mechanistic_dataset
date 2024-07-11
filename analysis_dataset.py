@@ -13,7 +13,7 @@ def str2bool(v):
 def parse_arguments():
     parser = argparse.ArgumentParser("Set the arguments for analysis of mechanistic dataset")
     parser.add_argument('--data', help='Path to the reaction data to be analyzed, it should be jsonl format',
-                        type=str, default='./results/uspto_all.jsonl')
+                        type=str, default='./results/uspto_all_statistics.json')
     parser.add_argument('--weight_bin', help='Bins for molecular weight',
                         type=int, default=20)
     parser.add_argument('--atom_bin', help='Bins for heavy atom',

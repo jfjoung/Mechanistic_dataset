@@ -6,6 +6,7 @@ from tqdm import tqdm
 import json
 from multiprocessing import Pool
 from utils.apply_mechanistic_template import get_mechanistic_network, elementary_reaction, flatten_list, reagent_matching_for_single_reaction, find_chemical_nodes
+from utils.explicit_H import modify_explicit_H
 
 def generate_mechdata_single(input):
     line, args = input
@@ -111,11 +112,25 @@ def generate_mechdata_single(input):
                 return True, rxn_dict, elem_steps_stats, failed_products
             else:
                 return True, rxn_dict, elem_steps_stats
+
         elif elem_list:
+            output = flatten_list(elem_list)
+            if args.explicit_H:
+                new_output = []
+                for implicit_rxn in output:
+                    try:
+                        H_rxn, _ = modify_explicit_H(implicit_rxn)
+                        new_output.append(H_rxn)
+                    except Exception as e:  #TODO: logging the error
+                        if args.verbosity > 3:
+                            logging.info(f'{e}')
+                        continue
+                output = new_output
+
             if args.debug:
-                return True, flatten_list(elem_list), elem_steps_stats, failed_products
+                return True, output, elem_steps_stats, failed_products
             else:
-                return True, flatten_list(elem_list), elem_steps_stats
+                return True, output, elem_steps_stats
         else:
             if args.debug:
                 return True, [], elem_steps_stats, failed_products

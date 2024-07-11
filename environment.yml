@@ -1,4 +1,4 @@
-name: mechdata
+name: mechdata2
 channels:
   - conda-forge
   - defaults
@@ -11,4 +11,4 @@ dependencies:
   - numpy
   - rdkit=2020.09.5
   - pandas
-  - jsonlines
+#  - jsonlines #It creates problem.
