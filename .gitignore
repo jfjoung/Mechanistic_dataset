@@ -42,6 +42,8 @@ data/
 results/
 logs/
 run/
+ver2/
+results2/
 *.csv
 *.json
 *.jsonl

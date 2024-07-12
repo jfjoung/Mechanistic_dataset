@@ -59,7 +59,6 @@ def remove_atom_mapping(smiles):
         return smiles
 
     
-    
 
 def reaction_classification(rxn_list, reaction_classifier):
     
