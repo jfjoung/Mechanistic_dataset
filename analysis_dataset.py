@@ -28,6 +28,6 @@ if __name__ == '__main__':
     args =  parse_arguments()
     # analysis(args)
     # mol_analysis(args)
-    # ERS_analysis(args)
+    ERS_analysis(args)
     # template_analysis(args)
-    log_analysis(args)
+    # log_analysis(args)

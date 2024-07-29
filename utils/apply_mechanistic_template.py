@@ -783,11 +783,14 @@ def reaction_network(rxn_flask, tot_network, args):
     if not_connected_inter_nodes:
         for int_id in not_connected_inter_nodes:
             rxn_node = set([node for node in G.successors(int_id)])
+            # print(rxn_node)
             for rxn_id in rxn_node:
+                parent = [node for node in G.predecessors(rxn_id)]
+                parent.remove(int_id)
                 child = [node for node in G.successors(rxn_id)]
                 byprode_child = [node for node in G.successors(rxn_id) if G.nodes[node]['molecule']['identity'] == 'byproduct']
                 non_byprod_child = [node for node in G.successors(rxn_id) if G.nodes[node]['molecule']['identity'] != 'byproduct' and node in list(G_sub.nodes)]
-                if set(child) == set(byprode_child+non_byprod_child) and rxn_id not in path_node:
+                if set(child) == set(byprode_child+non_byprod_child) and rxn_id not in path_node and set(parent).intersection(path_node):
                     child.append(rxn_id)
                     child.append(int_id)
                     for nn in child:
