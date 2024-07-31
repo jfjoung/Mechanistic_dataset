@@ -143,7 +143,7 @@ class_reaction_templates={
 
  ('Bromo N-alkylation',
   'Chloro N-alkylation',
-  'Iodo N-alkylation'): {'Reaction': {'Reagent': ['[#7]','[Cl,Br,I-C]'], 'Exclude_reagent': None,
+  'Iodo N-alkylation',): {'Reaction': {'Reagent': ['[#7]','[Cl,Br,I-C]'], 'Exclude_reagent': None,
    'Stages': {0:
              {'Templates': ['[N;H2;+0:1].[Cl,Br,I:2]-[C:3]>>[N;H2;+1:1]-[C:3].[Cl,Br,I;-1:2]',
                             '[N;H1;+0:1].[Cl,Br,I:2]-[C:3]>>[N;H1;+1:1]-[C:3].[Cl,Br,I;-1:2]',
@@ -309,7 +309,7 @@ class_reaction_templates={
 
  ('Esterification',
  'Steglich esterification',
- 'Fischer-Speier esterification'): {'Condensation using DCC': {'Reagent': ['[N]=[C]=[N]','[#8]-[#6]','[#8]-[#6]=[#8]'], 'Exclude_reagent': None,
+ 'Fischer-Speier esterification',): {'Condensation using DCC': {'Reagent': ['[N]=[C]=[N]','[#8]-[#6]','[#8]-[#6]=[#8]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#6:2]-[N;H0;+0:3]=[C;H0;+0:4]=[N;H0;+0:5]-[#6:6].[O;H1;+0:1]-[C;H0;+0:14](-[#6:13])=[O:15]>>[#6:2]-[N;H1;+1:3]=[C;H0;+0:4]=[N;H0;+0:5]-[#6:6].[O;H0;-1:1]-[C;H0;+0:14](-[#6:13])=[O:15]'],
      'pKa': [None],
      'Description': 'Proton exchange'},
@@ -462,7 +462,7 @@ class_reaction_templates={
   'Bromo Miyaura boration',
   'Chloro Miyaura boration',
   'Triflyloxy Miyaura boration',
-  'Iodo Miyaura boration'):
+  'Iodo Miyaura boration',):
 
     {'Reaction with element Pd':
      {'Reagent': ['[Pd;D0;+0]'], 'Exclude_reagent': None,
@@ -773,7 +773,7 @@ class_reaction_templates={
  ('Mitsunobu aryl ether synthesis',
   'Mitsunobu imide reaction',
   'Mitsunobu sulfonamide reaction',
-  'Mitsunobu ester synthesis'): {'Reaction': {'Reagent': ['[#6]-[P](-[#6])-[#6]','[#6]-[N]=[N]-[#6]'], 'Exclude_reagent': None,
+  'Mitsunobu ester synthesis',): {'Reaction': {'Reagent': ['[#6]-[P](-[#6])-[#6]','[#6]-[N]=[N]-[#6]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[P;!D0;+0:1].[N;H0;+0:2]=[N;H0;+0:3]>>[P;+1:1]-[N;H0;+0:2]-[N;H0;-1:3]'],
      'pKa': [None],
      'Description': 'Reaction between phosphine and diethylazodicarboxylate (DEAD)'},
@@ -838,7 +838,7 @@ class_reaction_templates={
 
 
  ('Isocyanate + amine urea coupling',
-  'Isocyanate + alcohol reaction'): {'Reaction': {'Reagent': ['[N]=[C]=[O]'], 'Exclude_reagent': None,
+  'Isocyanate + alcohol reaction',): {'Reaction': {'Reagent': ['[N]=[C]=[O]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[*:5]-[N:1]=[C:2]=[O:3].[N;H3;+0:4]>>[*:5]-[N;-1:1]-[C:2](-[N;H3;+1:4])=[O:3]',
       '[*:5]-[N:1]=[C:2]=[O:3].[N;H2;+0:4]>>[*:5]-[N;-1:1]-[C:2](-[N;H2;+1:4])=[O:3]',
       '[*:5]-[N:1]=[C:2]=[O:3].[N;H1;+0:4]>>[*:5]-[N;-1:1]-[C:2](-[N;H1;+1:4])=[O:3]',
@@ -946,7 +946,7 @@ class_reaction_templates={
 
  ('O-TBS deprotection',
   'O-TBDPS deprotection',
-  'O-TIPS deprotection'): {'Fluoride condition': {'Reagent': ['[F;+0;H1]','[O]-[Si]'], 'Exclude_reagent': None,
+  'O-TIPS deprotection',): {'Fluoride condition': {'Reagent': ['[F;+0;H1]','[O]-[Si]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#8:1]-[Si;+0:2].[F;H1;+0:3]>>[#8;H1;+1:1]-[Si;-1:2]-[F;H0;+0:3]',
       '[#8:1]-[Si;+0:2].[F;H0;-1:3]>>[#8:1]-[Si;-1:2]-[F;H0;+0:3]'],
      'pKa': [None, None],
@@ -1094,7 +1094,7 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Proton exchange'}}}},
 
- ('Hydroxy to chloro'): {'SOCl2 or POCl3': {'Reagent': ['O=[S,P](-[Cl])-[Cl]','[O]'], 'Exclude_reagent': None,
+ ('Hydroxy to chloro',): {'SOCl2 or POCl3': {'Reagent': ['O=[S,P](-[Cl])-[Cl]','[O]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[O;H1;+0:1]>>[O;H0;-1:1]'],
      'pKa': [{'B': 14}],
      'Description': 'Deprotonation of alcohol'},
@@ -1270,7 +1270,7 @@ class_reaction_templates={
   'Triflyloxy Sonogashira coupling',
  'Bromo Stille reaction',
   'Chloro Stille reaction',
-  'Iodo Stille reaction'): {'Reaction with element Pd':
+  'Iodo Stille reaction',): {'Reaction with element Pd':
      {'Reagent': ['[Pd;D0;+0]'], 'Exclude_reagent': None,
    'Stages': {
        0: {'Templates': ['[Cu:1]-[Cl,Br,I;H0:2].[#6;H1:3]#[#6;H0:4]>>[Cu:1]-[#6;H0;+0:3]#[#6:4].[Cl,Br,I;H1;+0:2]'],
@@ -1478,9 +1478,9 @@ class_reaction_templates={
 
  ('Knoevenagel condensation',
  'Claisen-Schmidt condensation',
-  'Aldol condensation'): {'Basic condition': {'Reagent': ['[O]=[C]-[C]','[C]=[O]'], 'Exclude_reagent': None,
+  'Aldol condensation',): {'Basic condition': {'Reagent': ['[O]=[C]-[C]','[C]=[O]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#8:1]=[#6:2]-[#6;H2:3]-[#6:4]=[#8:5]>>[#8:1]=[#6:2]-[#6;H1;-1:3]-[#6:4]=[#8:5]',
-                               '[#8:1]=[#6:2]-[#6;H3:3]>>[#8:1]=[#6:2]-[#6;H2;-1:3]',
+                               '[#8:1]=[#6:2](-[!#8:4])-[#6;H3:3]>>[#8:1]=[#6:2](-[!#8:4])-[#6;H2;-1:3]',
                                '[#8:1]=[#6:2]-[#6;H2:3]>>[#8:1]=[#6:2]-[#6;H1;-1:3]',
                                '[#7:1]#[#6:2]-[#6;H3:3]>>[#7:1]#[#6:2]-[#6;H3;-1:3]',
                                '[#7:1]#[#6:2]-[#6;H2:3]>>[#7:1]#[#6:2]-[#6;H1;-1:3]'],
@@ -1675,7 +1675,7 @@ class_reaction_templates={
   'Chloro Grignard + ester reaction',
   'Grignard ester substitution',
   'Iodo Grignard reaction',
-  'Grignard + acid chloride ketone synthesis'): {'Reaction': {'Reagent':['[C]=[O]'], 'Exclude_reagent': None,
+  'Grignard + acid chloride ketone synthesis',): {'Reaction': {'Reagent':['[C]=[O]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[C:1]=[#8:2].[Cl,Br,I:3]-[Mg:4]-[*:5]>>[#8;-1:2]-[C:1]-[*:5].[Mg;+1:4](-[Cl,Br,I:3])',
       '[c:1]=[#8:2].[Cl,Br,I:3]-[Mg:4]-[*:5]>>[#8;-1:2]-[c:1]-[*:5].[Mg;+1:4](-[Cl,Br,I:3])'],
      'pKa': [None, None],
@@ -1699,7 +1699,7 @@ class_reaction_templates={
 
  ('Bromo Grignard preparation',
   'Iodo Grignard preparation',
-  'Chloro Grignard preparation'): {'Reaction': {'Reagent': ['[#6]-[Cl,Br,I]','[Mg]'], 'Exclude_reagent': None,
+  'Chloro Grignard preparation',): {'Reaction': {'Reagent': ['[#6]-[Cl,Br,I]','[Mg]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#6;H2:1]-[F,Cl,Br,I:2].[Mg;+0:3]>>[#6;H2;+0:1].[Mg;+0:3][F,Cl,Br,I;H0:2]',
       '[#6;H1:1]-[F,Cl,Br,I:2].[Mg;+0:3]>>[#6;H1;+0:1].[Mg;+0:3][F,Cl,Br,I;H0:2]',
       '[#6;H0:1]-[F,Cl,Br,I:2].[Mg;+0:3]>>[#6;H0;+0:1].[Mg;+0:3][F,Cl,Br,I;H0:2]'],
@@ -1722,7 +1722,7 @@ class_reaction_templates={
 
 
  ('Darzens chlorination',
-  'Darzens bromination'): {'Reaction': {'Reagent': ['[#6]-[O]','[Cl,Br]-[S](=[O]-[Cl,Br])'], 'Exclude_reagent': None,
+  'Darzens bromination',): {'Reaction': {'Reagent': ['[#6]-[O]','[Cl,Br]-[S](=[O]-[Cl,Br])'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#6X4][#8;H1:1]>>[#8;H0;-1:1]'],
      'pKa': [{'B': 14}],
      'Description': 'Deprotonation of alcohol'},
@@ -1786,7 +1786,7 @@ class_reaction_templates={
 
 
  ('Aldehyde Dess-Martin oxidation',
-  'Ketone Dess-Martin oxidation'): {'Reaction': {'Reagent': ['[C]-[O]','[#6]-[I](-[O])-[O]'], 'Exclude_reagent': None,
+  'Ketone Dess-Martin oxidation',): {'Reaction': {'Reagent': ['[C]-[O]','[#6]-[I](-[O])-[O]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#8:1]-[#6:2].[#8:3]=[#6:4]1[#6:5][#6:6][I:7]([#8:8][#6:9]([#6:10])=[#8:11])[#8:12]1>>[#8:3]=[#6:4]1[#6:5][#6:6][I:7]([#8;H1;+1:1]-[#6:2])[#8:12]1.[#8;-1:8][#6:9]([#6:10])=[#8:11]'],
      'pKa': [None],
      'Description': 'Substitution'},
@@ -1830,7 +1830,7 @@ class_reaction_templates={
   'Ester Schotten-Baumann',
   'Carbonate Schotten-Baumann',
   'Phosphonamide Schotten-Baumann',
-  'N-Cbz protection'): {'Reaction': {'Reagent': None, 'Exclude_reagent': None,
+  'N-Cbz protection',): {'Reaction': {'Reagent': None, 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#7;H2;+0:1]-[#6:2].[F,Cl,Br,I:3]-[C,S,P;H0;+0:4](=[O:5])>>[F,Cl,Br,I:3]-[C,S,P;H0;+0:4](-[#7;H2;+1:1]-[#6:2])(-[O;-1:5])',
       '[#7;H1;+0:1]-[#6:2].[F,Cl,Br,I:3]-[C,S,P;H0;+0:4](=[O:5])>>[F,Cl,Br,I:3]-[C,S,P;H0;+0:4](-[#7;H1;+1:1]-[#6:2])(-[O;-1:5])',
       '[#8;H1;+0:1]-[#6:2].[F,Cl,Br,I:3]-[C,S,P;H0;+0:4](=[O:5])>>[F,Cl,Br,I:3]-[C,S,P;H0;+0:4](-[#8;H1;+1:1]-[#6:2])(-[O;-1:5])'],
@@ -1878,7 +1878,7 @@ class_reaction_templates={
  ('CO2H-Me deprotection',
   'CO2H-Et deprotection',
   'CO2H-tBu deprotection',
-  'Ester hydrolysis'): {'Deprotection with OH-': {'Reagent': ['[O;H1;-1]','[O]=[C]-[O]-[C]'], 'Exclude_reagent': None,
+  'Ester hydrolysis',): {'Deprotection with OH-': {'Reagent': ['[O;H1;-1]','[O]=[C]-[O]-[C]'], 'Exclude_reagent': None,
                                                   'Reactive_site': '[#6:4]-[#8;H0;+0:1]-[#6;H0;+0:2]=[#8:3]',
    'Stages': {0: {'Templates': ['[#8;H1;-1:5].[#6:4]-[#8;H0;+0:1]-[#6;H0;+0:2]=[#8:3]>>[#6:4]-[#8;H0;+0:1]-[#6;H0;+0:2]([#8;D1;H1;+0:5])-[#8;H0;-1:3]',
       '[Li,Na,K:9][O;H1;+0:5].[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]=[O:3]>>[Li,Na,K;H0;+1:9].[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]([#8;D1;H1;+0:5])-[O;H0;-1:3]'],
@@ -1906,7 +1906,7 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Alkoxide leaves'}}}},
 
-  ('Carboxylic acid to acid chloride'): {'SOCl2 or POCl3': {'Reagent': ['O=[S,P](-[Cl])-[Cl]','[O]=[C]-[O]'], 'Exclude_reagent': None,
+  ('Carboxylic acid to acid chloride',): {'SOCl2 or POCl3': {'Reagent': ['O=[S,P](-[Cl])-[Cl]','[O]=[C]-[O]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[C:1](-[O;H1;+0:2])=[O;D1:3].[S,P:4](=[O;H0;+0:5])-[Cl:6]>>[C:1](=[O;H1;+1:2])-[O:3]-[S,P:4](-[O;-;H0:5])-[Cl:6]'],
      'pKa': [None],
      'Description': 'Nucleophilic attack on chloride source'},
@@ -1974,13 +1974,13 @@ class_reaction_templates={
   ('O-TBS protection',
    'O-TMS protection',
    'O-TIPS protection',
-   'O-TES protection'): {'Reaction': {'Reagent': ['[Si]([C])([C])([C])[Cl,Br,I,O]','[#6]-[O]'], 'Exclude_reagent': None,
+   'O-TES protection',): {'Reaction': {'Reagent': ['[Si]([C])([C])([C])[Cl,Br,I,O]','[#6]-[O]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[O;H1;+0:1].[Si;H0;+0:2][Cl,Br,I,O;+0:3]>>[O;H1;+1:1]-[Si:2].[Cl,Br,I,O;-1:3]'],
      'pKa': [None],
      'Description': 'Nucleophilic substitution'},
     1: {'Templates': ['[C:1][O;H1;+1:2]-[Si:3]>>[C:1][O;H0;+0:2]-[Si:3]',
                       '[c:1][O;H1;+1:2]-[Si:3]>>[c:1][O;H0;+0:2]-[Si:3]',],
-     'pKa': [{'B': -3.8}, {'B': -6.2}],
+     'pKa': [{'B': -6.0}, {'B': -6.0}],
      'Description': 'Deprotonation'}}}},
 
     ('Nitration',): {'Sulfuric acid': {'Reagent': ['[N+]([O-])(=[O])[O;H0,H1;+0,-1]', '[S](=[O])(=[O])([OH])[OH]', '[c;H1]'], 'Exclude_reagent': None,
@@ -2037,7 +2037,7 @@ class_reaction_templates={
    ('Fluoro thioether synthesis',
    'Chloro thioether synthesis',
    'Bromo thioether synthesis',
-   'Iodo thioether synthesis'): {'Alkyl carbon': {'Reagent':['[S]','[F,Cl,Br,I]-[C]'], 'Exclude_reagent': None,
+   'Iodo thioether synthesis',): {'Alkyl carbon': {'Reagent':['[S]','[F,Cl,Br,I]-[C]'], 'Exclude_reagent': None,
      'Stages':{0: {'Templates': ['[S;H1;+0:1].[C:2]-[F,Cl,Br,I:3]>>[S;H0;-1:1].[C:2]-[F,Cl,Br,I:3]'],
       'pKa' : [{'B':10}],
       'Description' : 'Deprotonation'},
@@ -2048,16 +2048,16 @@ class_reaction_templates={
       'Stages':{0:{'Templates':['[S;H1:1]>>[S;H0;-1:1]'],
       'pKa' : [{'B':10}],
       'Description': 'Deprotonation'},
-      1: {'Templates': ['[S;H0;-1:1].[F,Cl,Br,I:3]-[c:2]:[a:4]>>[S;H0;+0:1]-[c:2](-[F,Cl,Br,I:3])-[a;-1:4]'],
+      2: {'Templates': ['[S;H0;-1:1].[F,Cl,Br,I:3]-[c:2]:[a:4]>>[S;H0;+0:1]-[c:2](-[F,Cl,Br,I:3])-[a;-1:4]'],
           'pKa' : [None],
           'Description': 'Nucleophilic Addition'},
-      2: {'Templates': ['[S;H0;+0:1]-[c:2](-[F,Cl,Br,I:3])-[a;-1:4]>>[S;H0;+0:1]-[c:2]:[a;+0:4].[F,Cl,Br,I;-1:3]'],
+      3: {'Templates': ['[S;H0;+0:1]-[c:2](-[F,Cl,Br,I:3])-[a;-1:4]>>[S;H0;+0:1]-[c:2]:[a;+0:4].[F,Cl,Br,I;-1:3]'],
           'pKa':[None],
           'Description': 'Elimination'}
           
       }},
       },
-  ('Transesterification'): {'Acid-catalyzed':{'Reagent':['[O]=[C]-[O]-[#6]','[O]-[#6]'],'Exclude_reagent':None,
+  ('Transesterification',): {'Acid-catalyzed':{'Reagent':['[O]=[C]-[O]-[#6]','[O]-[#6]'],'Exclude_reagent':None,
                             'Stages':{0:{'Templates':['[O:1]=[C:2]-[O:3]-[#6:4]>>[O;H1;+1:1]=[C:2]-[O:3]-[#6:4]'],
                                          'pKa':[{'A':-10}],
                                          'Description':'Protonation'},
@@ -2070,7 +2070,7 @@ class_reaction_templates={
                                       3:{'Templates':['[O;H1;+0:1]-[C:2](-[O;H1;+1:3]-[#6:4])-[O;H0;+0:5]-[#6:6]>>[O;H1;+1:1]-[C:2]-[O;H0;+0:5]-[#6:6].[O;H1;+0:3]-[#6:4]'],
                                          'pKa':[None],
                                          'Description':'Tetrahedral intermediate collapse'},
-                                      4:{'Templates':['[O;H1;+1:1]-[C:2]-[O;H0;+0:5]-[#6:6].[O;H1;+0:3]-[#6:4]>>[O;H0;+0:1]-[C:2]-[O:5]-[#6:6].[O;H1;+0:3]-[#6:4]'],
+                                      4:{'Templates':['[O;H1;+1:1]-[C:2]-[O;H0;+0:5]-[#6:6]>>[O;H0;+0:1]-[C:2]-[O:5]-[#6:6]'],
                                          'pKa':[{'B':-10}],
                                          'Description':'Deprotonation'}}},
   'Neutral':{'Reagent':['[O]=[C]-[O]-[#6]','[O]-[#6]'],'Exclude_reagent':None,
@@ -2085,7 +2085,7 @@ class_reaction_templates={
      'Description':'Tetrahedral intermediate collapse'} 
   }},
   'Base-catalyzed':{'Reagent':['[O]=[C]-[O]-[#6]','[O]-[#6]'],'Exclude_reagent':None,
-                            'Stages':{0:{'Templates':['[O;H1:5]-[#6:6]>>[O:1]=[C:2]-[O:3]-[#6:4].[O;H0;-1:5]-[#6:6]'],
+                            'Stages':{0:{'Templates':['[O;H1:5]-[#6:6]>>[O;H0;-1:5]-[#6:6]'], #>>[O:1]=[C:2]-[O:3]-[#6:4].[O;H0;-1:5]-[#6:6]
                                          'pKa':[{'B':16}], 
                                          'Description':'Deprotonation'},
                                       1:{'Templates':['[O:1]=[C:2]-[O:3]-[#6:4].[O;H0;-1:5]-[#6:6]>>[O;H0;-1:1]-[C:2](-[O:3]-[#6:4])-[O;H0;+0:5]-[#6:6]'],
@@ -2099,7 +2099,7 @@ class_reaction_templates={
                                       'Description':'Protonation'},
                                          }}},
 
-('Azido to amino'):{'Direct Hydrogenation':{'Reagent':['[#6]-[N]=[N;+1]=[N;-1]','[H]-[H]'],'Exclude_reagent':None,
+('Azido to amino',):{'Direct Hydrogenation':{'Reagent':['[#6]-[N]=[N;+1]=[N;-1]','[H]-[H]'],'Exclude_reagent':None,
                     'Stages':{0:{'Templates':['[#6:1]-[N:2]=[N;+1:3]=[N;-1:4].[H]-[H]>>[#6:1]-[N;H1;+0:2]-[N;H1;+1:3]=[N;H0;-1:4]'],
                                  'pKa':[None],
                                  'Description':'Addition of H2'},
@@ -2142,7 +2142,7 @@ class_reaction_templates={
       }},
 
 },
-('Sulfide + amine reaction'):{'Reaction':{'Reagent':['[N]','[S]-[c]'],'Exclude_reagent':None,
+('Sulfide + amine reaction',):{'Reaction':{'Reagent':['[N]','[S]-[c]'],'Exclude_reagent':None,
       'Stages':{0: {'Templates': ['[N;H1:1].[S:3]-[c:2]:[a:4]>>[N;H1;+1:1]-[c:2](-[S:3])-[a;-1:4]',
                                   '[N;H2:1].[S:3]-[c:2]:[a:4]>>[N;H2;+1:1]-[c:2](-[S:3])-[a;-1:4]'],
           'pKa' : [None],
@@ -2158,12 +2158,12 @@ class_reaction_templates={
                                            }
                                            
     }},
-('Nitrogen oxidation'):{'Peroxy acid':{'Reagent':['[n]','[O]=[C]-[O]-[O]'],'Exclude_reagent':None,
+('Nitrogen oxidation',):{'Peroxy acid':{'Reagent':['[n]','[O]=[C]-[O]-[O]'],'Exclude_reagent':None,
       'Stages':{0:{'Templates':['[n:1].[O:2]=[C:3]-[O:4]-[O:5]>>[n;+1:1]-[O;H0;-1:5].[O:4]=[C:3]-[O:2]'],
                    'pKa':[None],
                    'Description':'Butterfly mechanism'}}},
                   },
-('Cyano to carbamoyl'):{'Acid-catalyzed':{'Reagent':['[C]#[N]'],'Exclude_reagent':None,
+('Cyano to carbamoyl',):{'Acid-catalyzed':{'Reagent':['[C]#[N]'],'Exclude_reagent':None,
                         'Stages':{0:{'Templates':['[C:1]#[N:2]>>[C:1]#[N;H1;+1:2]'],
                                      'pKa':[{'A':0}],
                                      'Description':'Protonation'},
@@ -2239,7 +2239,7 @@ class_reaction_templates={
                  'pKa':[{'B':-6}],
                  'Description':'Deprotonation'},
         }}},
-('Epoxide + amine coupling'):{'Neutral':{'Reagent':['[#7]','[C]1-[O]-[C]1'],'Exclude_reagent':None,
+('Epoxide + amine coupling',):{'Neutral':{'Reagent':['[#7]','[C]1-[O]-[C]1'],'Exclude_reagent':None,
     'Stages':{0:{'Templates':['[#7;H1:1].[C:2]1-[O:3]-[C:4]1>>[#7;H1;+1:1]-[C:2]-[C:4]-[O;H0;-1:3]',
                               '[#7;H2:1].[C:2]1-[O:3]-[C:4]1>>[#7;H2;+1:1]-[C:2]-[C:4]-[O;H0;-1:3]'],
                  'pKa':[None,None],
@@ -2265,7 +2265,7 @@ class_reaction_templates={
                               'pKa':[{'A':15},{'A':15},{'A':15}],
                               'Description':'Protonation'},
               }}},
-# ('Appel bromination'):{'Reaction':{'Reagent':['[#6]-[O]','[Br]-[C](-[Br])(-[Br])-[Br]','[c]-[P](-[c])-[c]'],'Exclude_reagent':None,
+# ('Appel bromination',):{'Reaction':{'Reagent':['[#6]-[O]','[Br]-[C](-[Br])(-[Br])-[Br]','[c]-[P](-[c])-[c]'],'Exclude_reagent':None,
 #       'Stages':{0:{'Templates':['[Br:1]-[C:2](-[Br:3])(-[Br:4])-[Br:5].[P:6]>>[Br:1]-[C;H0;-1:2](-[Br:3])-[Br:4].[Br;H0;+0:5]-[P;H0;+1:6]'],
 #                    'pKa':[None],
 #                    'Description':'Nucleophilic attack on CBr4'},
@@ -2280,7 +2280,7 @@ class_reaction_templates={
 #                    'Description':'Formation of TPPO'},
 #                    }}},
 
-# ('Appel chlorination'):{'Reaction':{'Reagent':['[#6]-[O]','[Cl]-[C](-[Cl])(-[Cl])-[Cl]','[c]-[P](-[c])-[c]'],'Exclude_reagent':None,
+# ('Appel chlorination',):{'Reaction':{'Reagent':['[#6]-[O]','[Cl]-[C](-[Cl])(-[Cl])-[Cl]','[c]-[P](-[c])-[c]'],'Exclude_reagent':None,
 #       'Stages':{0:{'Templates':['[Cl:1]-[C:2](-[Cl:3])(-[Cl:4])-[Cl:5].[P:6]>>[Cl:1]-[C;H0;-1:2](-[Cl:3])-[Cl:4].[Cl;H0;+0:5]-[P;H0;+1:6]'],
 #                    'pKa':[None],
 #                    'Description':'Nucleophilic attack on CCl4'},
@@ -2294,7 +2294,7 @@ class_reaction_templates={
 #                    'pKa':[None],
 #                    'Description':'Formation of TPPO'},
 #                    }}},
-('O-Acetylation'):{'Neutral':{'Reagent':['[#6]-[O]','[C]-[C](=[O])-[O]-[C](=[O])-[C]'],'Exclude_reagent':None,
+('O-Acetylation',):{'Neutral':{'Reagent':['[#6]-[O]','[C]-[C](=[O])-[O]-[C](=[O])-[C]'],'Exclude_reagent':None,
           'Stages':{0:{'Templates':['[#6:1]-[O:2].[C:3]-[C:4](=[O:5])-[O:6]-[C:7](=[O:8])-[C:9]>>[#6:1]-[O;H1;+1:2]-[C:4](-[C:3])(-[O;H0;-1:5])-[O:6]-[C:7](=[O:8])'],
                        'pKa':[None],
                        'Description':'Nucleophilic addition'},
@@ -2316,7 +2316,7 @@ class_reaction_templates={
                          'pKa':[None,None],
                          'Description':'Tetrahedral intermediate collapse'},
                          }}},
-('Carboxy ester to carbamoyl'):{'Reaction':{'Reagent':['[N]','[O]=[C]-[O]-[#6]'],'Exclude_reagent':None,
+('Carboxy ester to carbamoyl',):{'Reaction':{'Reagent':['[N]','[O]=[C]-[O]-[#6]'],'Exclude_reagent':None,
             'Stages':{0:{'Templates':['[O:1]=[C:2]-[O:3]-[#6:4].[N:5]>>[N;H3;+1:5]-[C:2](-[O;H0;-1:1])-[O:3]-[#6:4]'],
                          'pKa':[None],
                          'Description':'Nucleophilic addition'},
@@ -2333,7 +2333,7 @@ class_reaction_templates={
 ('Fluoro N-arylation',
 'Chloro N-arylation',
 'Bromo N-arylation',
-'Iodo N-arylation'): {'Reaction': {'Reagent':['[c]-[F,Cl,Br,I]','[#7]'],'Exclude_reagent':None,
+'Iodo N-arylation',): {'Reaction': {'Reagent':['[c]-[F,Cl,Br,I]','[#7]'],'Exclude_reagent':None,
       'Stages':{0:{'Templates': ['[N;H1:1].[F,Cl,Br,I:3]-[c:2]:[a:4]>>[N;H1;+1:1]-[c:2](-[F,Cl,Br,I:3])-[a;-1:4]',
                                  '[N;H2:1].[F,Cl,Br,I:3]-[c:2]:[a:4]>>[N;H2;+1:1]-[c:2](-[F,Cl,Br,I:3])-[a;-1:4]'],
           'pKa' : [None],
@@ -2351,7 +2351,7 @@ class_reaction_templates={
       },
 
       #add OTf,OMs
-('Alcohol elimination'):{'Acid-catalyzed E1':{'Reagent':None,'Exclude_reagent':None,
+('Alcohol elimination',):{'Acid-catalyzed E1':{'Reagent':None,'Exclude_reagent':None,
                                                'Stages':{0:{'Templates':['[O;H1:1]-[C:2]-[C;H1:3]>>[O;H2;+1:1]-[C:2]-[C;H1:3]',
                                                                      '[O;H1:1]-[C:2]-[C;H2:3]>>[O;H2;+1:1]-[C:2]-[C;H2:3]',
                                                                      '[O;H1:1]-[C:2]-[C;H3:3]>>[O;H2;+1:1]-[C:2]-[C;H3:3]'],
@@ -2369,7 +2369,7 @@ class_reaction_templates={
                                                               'Description':'Elimination'}}}}, # not sure why this isn't parsing
 
 
-('Carbamate + amine reaction'):{'Neutral':{'Reagent':['[O]-[C](=[O])-[#7]','[#7]'],'Exclude_reagent':None,
+('Carbamate + amine reaction',):{'Neutral':{'Reagent':['[O]-[C](=[O])-[#7]','[#7]'],'Exclude_reagent':None,
                                                   'Stages':{0:{'Templates':['[O:1]-[C:2](=[O:3])-[#7:4].[#7;H1;+0:5]>>[O:1]-[C:2](-[#7;H1;+1:5])(-[O;H0;-1:3])-[#7:4]',
                                                                             '[O:1]-[C:2](=[O:3])-[#7:4].[#7;H2;+0:5]>>[O:1]-[C:2](-[#7;H2;+1:5])(-[O;H0;-1:3])-[#7:4]',
                                                                             '[O:1]-[C:2](=[O:3])-[#7:4].[#7;H3;+0:5]>>[O:1]-[C:2](-[#7;H3;+1:5])(-[O;H0;-1:3])-[#7:4]'],
@@ -2386,7 +2386,7 @@ class_reaction_templates={
                                                                             'pKa':[None,None,None],
                                                                             'Description':'Deprotonation'}}}},
 
-('O-Ac deprotection'):{'Base-catalyzed':{'Reagent':['[O]-[C](=[O])-[C]'],'Exclude_reagent':None,
+('O-Ac deprotection',):{'Base-catalyzed':{'Reagent':['[O]-[C](=[O])-[C]'],'Exclude_reagent':None,
                                          'Stages':{0:{'Templates':['[O;H1;+0:5]>>[O;H0;-1:5]',
                                                                    '[O;H2;+0:5]>>[O;H1;-1:5]'],
                                                       'pKa':[{'B':15},{'B':15}],
@@ -2404,7 +2404,7 @@ class_reaction_templates={
                                                                   'pKa':[{'B':15},None],
                                                                   'Description':'Protonation'}}}},
 
-('Knorr pyrazole synthesis'):{'Reaction':{'Reagent':['[O]=[C]-[C]-[C]=[O]','[N]-[N]'],'Exclude_reagent':None,
+('Knorr pyrazole synthesis',):{'Reaction':{'Reagent':['[O]=[C]-[C]-[C]=[O]','[N]-[N]'],'Exclude_reagent':None,
                                           'Stages':{0:{'Templates':['[O:1]=[C:2]-[C:3]-[C:4]=[O:5].[N;H2:6]-[N;H2:7]>>[O;H0;-1:1]-[C:2](-[N;H2;+1:6]-[N;H2;+0:7])-[C:3]-[C:4]=[O:5]',
                                                                      '[O:1]=[C:2]-[C:3]-[C:4]=[O:5].[N;H2:6]-[N;H1:7]-[#6:8]>>[O;H0;-1:1]-[C:2](-[N;H2;+1:6]-[N;H1;+0:7]-[#6:8])-[C:3]-[C:4]=[O:5]'],
                                                        'pKa':[None],
@@ -2437,7 +2437,7 @@ class_reaction_templates={
                                                                     '[N;H0;+0:6]1=[C:2]-[C:3]-[C:4]=[N;H0;+1:7]1.[O;H1;-1:5]>>[c:2]1=[n;H0;+0:6]-[n;H0;+0:7](-[#6:8])-[c:4]=[c:3]1.[O;H2;+0:5]'],
                                                        'pKa':[None],
                                                        'Description':'Elimination to form pyrazole'}}}},
-('Krapcho decarboxylation'):{'Methyl ester w/LiCl':{'Reagent':['[O]=[C]-[C]-[C](=[O])-[O]-[CH3]','[Cl;-1]'],'Exclude_reagent':None,
+('Krapcho decarboxylation',):{'Methyl ester w/LiCl':{'Reagent':['[O]=[C]-[C]-[C](=[O])-[O]-[CH3]','[Cl;-1]'],'Exclude_reagent':None,
                                              'Stages':{0:{'Templates':['[O:1]=[C:2]-[C:3]-[C:4](=[O:5])-[O:6]-[C;H3:7].[Cl;-1:8]>>[O;H0;-1:1]-[C:2]=[C:3].[O:5]=[C:4]=[O:6].[C;H3:7]-[Cl;H0;+0:8]'],
                                                           'pKa':[None],
                                                           'Description':'Decarboxylation' },
@@ -2474,7 +2474,7 @@ class_reaction_templates={
                                                    'pKa':[{'A':20}],
                                                    'Description':'Enolate protonation'},                                                                      
                                              }}},
-('Carboxylic acid + amidine condensation'):{'Neutral':{'Reagent':['[#7]=[#6]-[#7]','[O]=[C]-[O]'],'Exclude_reagent':None,
+('Carboxylic acid + amidine condensation',):{'Neutral':{'Reagent':['[#7]=[#6]-[#7]','[O]=[C]-[O]'],'Exclude_reagent':None,
                                                        'Stages':{0:{'Templates':['[#7;H2:1]=[#6:2]-[#7:3].[O:4]=[C:5]-[O;H1:6]>>[O;H0;-1:4]-[C:5](-[O;H1:6])-[#7;H2;+1:1]=[#6:2]-[#7:3]',
                                                                                  '[#7;H2:1]=[#6:2]-[#7:3].[O:4]=[C:5]-[O;H0:6]>>[O;H0;-1:4]-[C:5](-[O;H0:6])-[#7;H2;+1:1]=[#6:2]-[#7:3]',
                                                                                  '[#7;H1:1]=[#6:2]-[#7:3].[O:4]=[C:5]-[O;H1:6]>>[O;H0;-1:4]-[C:5](-[O;H1:6])-[#7;H1;+1:1]=[#6:2]-[#7:3]',
@@ -2506,7 +2506,7 @@ class_reaction_templates={
                                                                    'pKa':[None,None,None,None],
                                                                    'Description':'Tetrahedral intermediate collapse'}}}, 
                                               }, # add HATU/HOBt catalyzed 
-('Carboxylic acid to alcohol reduction'):{'Borane/THF':{'Reagent':['[O]=[C]-[O]','[B]'],'Exclude_reagent':None,
+('Carboxylic acid to alcohol reduction',):{'Borane/THF':{'Reagent':['[O]=[C]-[O]','[B]'],'Exclude_reagent':None,
                                           'Stages':{0:{'Templates':['[O:1]=[C:2]-[O;H1:3].[B;H3:4]>>[O:1]=[C:2]-[O;H0;+0:3]-[B;H2;+0:4]'],
                                                        'pKa':[None],
                                                        'Description':'Formation of acyl borate'},
@@ -2582,7 +2582,7 @@ class_reaction_templates={
                                                           'pKa':[None,{'A':16}],
                                                           'Description':'Protonation'}}}},                                                                                 
 ('Primary ketimine reduction',
-'Secondary ketimine reduction'):{'With acid':{'Reagent':['[C]=[N]'],'Exclude_reagent':None,
+'Secondary ketimine reduction',):{'With acid':{'Reagent':['[C]=[N]'],'Exclude_reagent':None,
                                   'Stages':{0:{'Templates':['[N;H0;+0:1]=[C;H0:2].[B;H4;-1:3]>>[N;H0;-1:1]-[C;H1:2].[B;H3;+0:3]',
                                                             '[N;H0;+0:1]=[C;H1:2].[B;H4;-1:3]>>[N;H0;-1:1]-[C;H2:2].[B;H3;+0:3]',
                                                             '[N;H0;+0:1]=[C;H2:2].[B;H4;-1:3]>>[N;H0;-1:1]-[C;H3:2].[B;H3;+0:3]',
@@ -2611,7 +2611,7 @@ class_reaction_templates={
                                                             '[N;H1;-1:1]-[C;H3:2].[O;H1;+0:4]>>[N;H2;+0:1]-[C;H3:2].[O;H0;-1:4]',],
                                                   'pKa':[None,None,None,None,None,None,None,None,None,None,None,None],
                                                   'Description':'Protonation'}}}},   
-('Carboxylic anhydride + amine reaction'):{'Neutral':{'Reagent':['[O]=[C]-[O]-[C]=[O]','[#7]'],'Exclude_reagent':None,
+('Carboxylic anhydride + amine reaction',):{'Neutral':{'Reagent':['[O]=[C]-[O]-[C]=[O]','[#7]'],'Exclude_reagent':None,
                                             'Stages':{0:{'Templates':['[O:1]=[C:2]-[O:3]-[C:4]=[O:5].[#7;H1;+0:6]>>[O:1]=[C:2]-[O:3]-[C:4](-[O;H0;-1:5])-[#7;H1;+1:6]',
                                                                       '[O:1]=[C:2]-[O:3]-[C:4]=[O:5].[#7;H2;+0:6]>>[O:1]=[C:2]-[O:3]-[C:4](-[O;H0;-1:5])-[#7;H2;+1:6]',
                                                                       '[O:1]=[C:2]-[O:3]-[C:4]=[O:5].[#7;H3;+0:6]>>[O:1]=[C:2]-[O:3]-[C:4](-[O;H0;-1:5])-[#7;H3;+1:6]'],
@@ -2632,7 +2632,7 @@ class_reaction_templates={
                                                                       '[O:1]=[C:2]-[O;H0;-1:3].[C:4](=[O;H1;+1:5])-[#7;H2;+0:6]>>[O:1]=[C:2]-[O;H1;+0:3].[C:4](=[O;H0;+0:5])-[#7;H2;+0:6]'],
                                                           'pKa':[None,None,None],
                                                           'Description':'Proton transfer'}}}},
-('Tetrazole synthesis'):{'Cycloaddition':{'Reagent':['[#6]#[#7]'],'Exclude_reagent':None,
+('Tetrazole synthesis',):{'Cycloaddition':{'Reagent':['[#6]#[#7]'],'Exclude_reagent':None,
                                           'Stages':{0:{'Templates':['[#6:1]#[#7:2].[N;H0;-1:3]=[N;H0;+1:4]=[N;H0;-1:5]>>[#6:1]1=[#7;H0;+0:2]-[#7;H0;-1:5]-[#7;H0;+0:4]=[#7;H0;+0:3]1',
                                                                     '[#6:1]#[#7:2].[N;H0;-1:3]=[N;H0;+1:4]=[N;H0;-1:5]>>[#6:1]1=[#7;H0;+0:2]-[#7;H0;-1:3]-[#7;H0;+0:4]=[#7;H0;+0:5]1'],
                                                        'pKa':[None,None],
@@ -2641,7 +2641,7 @@ class_reaction_templates={
                                                                    '[#6:1]1=[#7;H0;+0:2]-[#7;H0;-1:3]-[#7;H0;+0:4]=[#7;H0;+0:5]1>>[#6:1]1=[#7;H0;+0:2]-[#7;H1;+0:3]-[#7;H0;+0:4]=[#7;H0;+0:5]1'],
                                                       'pKa':[{'A':5},{'A':5}]}}}},      #none of the reactions i saw had an acid added                                                                                                                                                                                                          
 
-('Phillips benzimidazole condensation'):{'Neutral':{'Reagent':['[N]-[c]:[c]-[N]','[O]=[C]-[O]'],'Exclude_reagent':None,
+('Phillips benzimidazole condensation',):{'Neutral':{'Reagent':['[N]-[c]:[c]-[N]','[O]=[C]-[O]'],'Exclude_reagent':None,
                                                      'Stages':{0:{'Templates':['[N;H2:1]-[c:2]:[c:3]-[N;H2:4].[O:5]=[C:6]-[O;H1:7]>>[N;H3;+1:1]-[c:2]:[c:3]-[N;H2:4].[O:5]=[C:6]-[O;H0;-1:7]',
                                                                                '[N;H2:1]-[c:2]:[c:3]-[N;H1:4].[O:5]=[C:6]-[O;H1:7]>>[N;H3;+1:1]-[c:2]:[c:3]-[N;H1:4].[O:5]=[C:6]-[O;H0;-1:7]'],
                                                                   'pKa':[None,None],
@@ -2678,7 +2678,7 @@ class_reaction_templates={
                                                                                '[c:2]1:[c:3]-[N;H0;+0:4]-[C:6]=[N;H0;+1:1]1.[O;H1;-1:7]>>[c:2]1:[c:3]-[N;H0;+0:4]-[C:6]=[N;H0;+0:1]1.[O;H2;+0:7]'],
                                                                   'pKa':[None,None],
                                                                   'Description':'Proton transfer'}}}},
-('Nitrile reduction'):{'LAH':{'Reagent':['[C]#[N]','[Al;+3]'],'Exclude_reagent':None,
+('Nitrile reduction',):{'LAH':{'Reagent':['[C]#[N]','[Al;+3]'],'Exclude_reagent':None,
                               'Stages':{0:{'Templates':['[Al;+3:3].[H;-1:6].[H;-1:7].[H;-1:8].[H;-1:9]>>[Al;H4;-1:3]'],
                                            'pKa':[None],
                                            'Description':'Ionic and covalent interconversion'},                                 
@@ -2695,7 +2695,7 @@ class_reaction_templates={
                                           'pKa':[None],
                                           'Description':'N-Al hydrolysis'}}},},
                         #add borane                                                                  
-('N-Ac deprotection'):{'Base-catalyzed':{'Reagent':['[#7]-[C](=[O])-[C]'],'Exclude_reagent':None,
+('N-Ac deprotection',):{'Base-catalyzed':{'Reagent':['[#7]-[C](=[O])-[C]'],'Exclude_reagent':None,
                                          'Stages':{0:{'Templates':['[O;H1;+0:5]>>[O;H0;-1:5]',
                                                                    '[O;H2;+0:5]>>[O;H1;-1:5]'],
                                                       'pKa':[{'B':15},{'B':15}],
@@ -2718,7 +2718,7 @@ class_reaction_templates={
                                                                   '[#7;H0;-1:1].[O;H1;+0:5]>>[#7;H1;+0:1].[O;H0;-1:5]'],
                                                                   'pKa':[{'B':15},{'B':15},None,None],
                                                                   'Description':'Protonation'}}}},
-('Lumiere-Barbier method'):{'Reaction':{'Reagent':['[C]-[C](=[O])-[O]-[C](=[O])-[C]','[N]'],'Exclude_reagent':None,
+('Lumiere-Barbier method',):{'Reaction':{'Reagent':['[C]-[C](=[O])-[O]-[C](=[O])-[C]','[N]'],'Exclude_reagent':None,
                                         'Stages':{0:{'Templates':['[N;H2:1].[C:2]-[C:3](=[O:4])-[O:5]-[C:6](=[O:7])-[C:8]>>[N;H2;+1:1]-[C:3](-[C:2])(-[O;H0;-1:4])-[O:5]-[C:6](=[O:7])-[C:8]',
                                                                   '[N;H1:1].[C:2]-[C:3](=[O:4])-[O:5]-[C:6](=[O:7])-[C:8]>>[N;H1;+1:1]-[C:3](-[C:2])(-[O;H0;-1:4])-[O:5]-[C:6](=[O:7])-[C:8]'],
                                                      'pKa':[None,None],
@@ -2735,7 +2735,7 @@ class_reaction_templates={
                                                                 '[N;H0;+0:1]-[C:3](-[C:2])=[O;H1;+1:4].[O;H0;-1:5]-[C:6](=[O:7])-[C:8]>>[N;H0;+0:1]-[C:3](-[C:2])=[O;H0;+0:4].[O;H1;+0:5]-[C:6](=[O:7])-[C:8]'],
                                                    'pKa':[None,None],
                                                    'Description':'Proton transfer'}}}},
-('Hydroxy to triflyloxy'):{'Alcohol':{'Reagent':['[O]','[F]-[C](-[F])(-[F])-[S](=[O])(=[O])-[O]-[S](=[O])(=[O])-[C](-[F])(-[F])-[F]'],'Exclude_reagent':None,
+('Hydroxy to triflyloxy',):{'Alcohol':{'Reagent':['[O]','[F]-[C](-[F])(-[F])-[S](=[O])(=[O])-[O]-[S](=[O])(=[O])-[C](-[F])(-[F])-[F]'],'Exclude_reagent':None,
                                       'Stages':{0:{'Templates':['[O;H1:1].[F:2]-[C:3](-[F:4])(-[F:5])-[S:6](=[O:7])(=[O:8])-[O:9]-[S:10](=[O:11])(=[O:12])-[C:13](-[F:14])(-[F:15])-[F:16]>>[O;H1;+1:1]-[S:6](-[O;H0;-1:7])(=[O:8])(-[C:3](-[F:2])(-[F:4])-[F:5])-[O:9]-[S:10](=[O:11])(=[O:12])-[C:13](-[F:14])(-[F:15])-[F:16]'],
                                                    'pKa':[None],
                                                    'Description':'Nucleophilic addition'},
@@ -2745,7 +2745,7 @@ class_reaction_templates={
                                                 2:{'Templates':['[O;H1;+1:1]-[S:6](=[O;H0;+0:7])(=[O:8])(-[C:3](-[F:2])(-[F:4])-[F:5])>>[O;H0;+0:1]-[S:6](=[O;H0;+0:7])(=[O:8])(-[C:3](-[F:2])(-[F:4])-[F:5])'],
                                                    'pKa':[{'B':-5}],
                                                    'Description':'Deprotonation'}}}},
-('Isothiocyanate + amine thiourea coupling'):{'Reaction':{'Reagent':['[S]=[C]=[N]','[N]'],'Exclude_reagent':None,
+('Isothiocyanate + amine thiourea coupling',):{'Reaction':{'Reagent':['[S]=[C]=[N]','[N]'],'Exclude_reagent':None,
                                              'Stages':{0:{'Templates':['[N;H2:1].[S:2]=[C:3]=[N:4]>>[N;H2;+1:1]-[C:3](-[S;H0;-1:2])=[N:4]',
                                                                        '[N;H1:1].[S:2]=[C:3]=[N:4]>>[N;H1;+1:1]-[C:3](-[S;H0;-1:2])=[N:4]'],
                                                           'pKa':[None,None],
@@ -2760,7 +2760,7 @@ class_reaction_templates={
                                                          'Description':'Proton transfer'}}}},
 #add aldehyde to acid, don't see reaction with water though
 ('Aldehyde Swern oxidation',
- 'Ketone Swern oxidation'):{'Reaction':{'Reagent':['[O]','[O]=[S](-[C])-[C]','[Cl]-[C](=[O])-[C](=[O])-[Cl]'],'Exclude_reagent':None,
+ 'Ketone Swern oxidation',):{'Reaction':{'Reagent':['[O]','[O]=[S](-[C])-[C]','[Cl]-[C](=[O])-[C](=[O])-[Cl]'],'Exclude_reagent':None,
                                         'Stages':{0:{'Templates':['[O:1]=[S:2](-[C;H3:3])-[C;H3:4].[Cl:5]-[C:6](=[O:7])-[C:8](=[O:9])-[Cl:10]>>[Cl:5]-[C:6](-[O;H0;+0:1]-[S;H0;+1:2](-[C;H3:3])-[C;H3:4])(-[O;H0;-1:7])-[C:8](=[O:9])-[Cl:10]'],
                                                      'pKa':[None],
                                                      'Description':'Nucleophilic addition'},

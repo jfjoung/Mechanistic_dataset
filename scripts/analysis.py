@@ -295,8 +295,6 @@ def get_elementary_reaction_step(input):
     for key in rxn_dict['Mechanism'].keys():
         rxns = rxn_dict['Mechanism'][key]['Elementary steps']
 
-
-
         for rxn in rxns:
             try:
                 bond_edits, bond_change_type = get_bond_edits(rxn)
@@ -317,7 +315,13 @@ def get_elementary_reaction_step(input):
                 else:
                     rp_dict[rp_count] = 1
 
-            except: continue
+            except Exception as e:
+                # print(rxn_dict)
+                # print(e)
+                # print(rxn)
+                #
+                # raise
+                continue
             positive_count, negative_count = 0, 0
 
             for item in bond_edits:
@@ -355,8 +359,8 @@ def ERS_analysis(args):
     with jsonlines.open(fpath) as f:
         iterables = [(rxn_dict, args) for rxn_dict in f.iter()]
         for result in tqdm(p.imap_unordered(get_elementary_reaction_step, iterables), total=len(iterables)):
-        # for input in iterables:
-        #     out_dict = get_elementary_reaction_step(input)
+        # for input in tqdm(iterables, total=len(iterables)):
+        #     result = get_elementary_reaction_step(input)
             ers, bct, rp = result
             merge_dicts(ers_dict, ers)
             merge_dicts(bond_change_types, bct)
@@ -364,17 +368,13 @@ def ERS_analysis(args):
 
     def sort_key(item):
         key, _ = item
-        # b와 f의 존재 여부를 판단하여 정렬 우선순위 결정
         b_exists = 'b' in key
         f_exists = 'f' in key
         if b_exists and not f_exists:
-            # b만 존재하는 경우
             return (1, key)
         elif not b_exists and f_exists:
-            # f만 존재하는 경우
             return (2, key)
         else:
-            # b와 f 둘 다 존재하는 경우
             return (3, key)
 
     ers_dict = dict(sorted(ers_dict.items(), key=sort_key))
@@ -481,6 +481,7 @@ def template_analysis(args):
 
     print(f"Covered reaction conditions: {condition}")
     print(f"Unique reaction templates: {len(set(templates))}")
+    print(f"Covered acid-base pair: {len(AB)}")
 
 def log_analysis(args):
     fpath = args.data
