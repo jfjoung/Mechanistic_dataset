@@ -58,9 +58,9 @@ def parse_arguments():
     parser.add_argument("--full", help="Get overall reaction instead of elementary steps",
                        type=str2bool, default=False)
     parser.add_argument("--end", help="Get termination reactions (products>>products)",
-                       type=str2bool, default=False)
+                       type=str2bool, default=True)
     parser.add_argument("--plain", help="Get reaction SMARTS without atom-mapping",
-                       type=str2bool, default=False)
+                       type=str2bool, default=True)
     parser.add_argument("--explicit_H", help="SMILES with Explicit H",
                         type=str2bool, default=False)
     parser.add_argument("--reagent", help="Locate reagents at middle of the reaction (reactants>reagents>products) instead of both sides of reactants and products.",
@@ -69,7 +69,7 @@ def parse_arguments():
                        type=str2bool, default=False)
     # Arguments for data loading and saving
     parser.add_argument('--data', help='Path to the reaction data',
-                        type=str, default='./data/test_data.txt')
+                        type=str, default='./data/uspto_classified.txt')
     parser.add_argument('--save', help='Path to the saving data',
                         type=str, default='./results/test.txt')
     parser.add_argument("--debug",help="Collect all the failed reactions",

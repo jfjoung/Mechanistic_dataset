@@ -1,4 +1,5 @@
 python generate_mechanism_data.py \
+<<<<<<< Updated upstream
   --data 'data/USPTO_train.txt'\
   --save 'results/USPTO_train.txt'\
   --verbosity 0\
@@ -18,6 +19,11 @@ python generate_mechanism_data.py \
   --data 'data/USPTO_valid.txt'\
   --save 'results/USPTO_valid.txt'\
   --verbosity 0\
+=======
+  --data 'data/uspto_classified.txt'\
+  --rxn_class 'Oxo to hydroxyimino'\
+  --save 'results/test.txt'\
+>>>>>>> Stashed changes
   --proton True\
   --byproduct True\
   --spectator True\
@@ -43,6 +49,7 @@ python generate_mechanism_data.py \
   --explicit_H True\
   --process 30\
   --all_info False\
+<<<<<<< Updated upstream
 
   #  --remapping True\
   #--do_not_pruning True\
@@ -52,3 +59,7 @@ python generate_mechanism_data.py \
 #  --verbosity 4\
   #  --data 'data/uspto_classified.txt'\
 #  --rxn_class '"CO2H-Et deprotection":'\
+=======
+  --explicit_H False\
+  --do_not_pruning True
+>>>>>>> Stashed changes
