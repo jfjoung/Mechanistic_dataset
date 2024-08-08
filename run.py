@@ -2,7 +2,7 @@ import os
 import logging
 from scripts.setting import Args
 from datetime import datetime
-from scripts.generate_mech_data_v2 import generate_mechdata_multiprocess
+from scripts.generate_mech_data import generate_mechdata_multiprocess
 
 
 if __name__ == '__main__':

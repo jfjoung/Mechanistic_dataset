@@ -1,15 +1,185 @@
 import os
-import sys
 import logging
-import networkx as nx
-from tqdm import tqdm
 import json
+from tqdm import tqdm
 from multiprocessing import Pool
-from utils.apply_mechanistic_template import get_mechanistic_network, elementary_reaction, flatten_list, reagent_matching_for_single_reaction, find_chemical_nodes
-from utils.explicit_H import modify_explicit_H
+from utils import Reaction_templates, reaction_process
+from utils.elementary_reactions import Get_Reactions
+from utils.exceptions import *
+from utils.reaction_process import flatten_list
+from rdkit import Chem, RDLogger
+RDLogger.DisableLog('rdApp.*')
 
-def generate_mechdata_single(input):
+def merge_dicts(d, u):
+    for k, v in u.items():
+        if isinstance(v, dict):
+            d[k] = merge_dicts(d.get(k, {}), v)
+        else:
+            d[k] = d.get(k, 0) + v
+    return d
+
+def calling_rxn_template(reaction_dict):
+    """
+    Retrieve the elementary reaction templates of each reaction
+    reaction_dict: one reaction in reactions_with_conditions
+    """
+    rxn_class_name = reaction_dict['reaction_name']
+    rxn_condition = reaction_dict['conditions']
+    class_key = get_class_key(rxn_class_name)
+    rxn_templates = Reaction_templates.class_reaction_templates[class_key]
+
+    conditions = [rxn_templates[condition] for condition in rxn_condition]
+
+    return conditions
+
+def get_class_key(class_name):
+    """
+    returns the key(tuple) of class_reaction_templates that includes the class_name
+    """
+
+    for classes in Reaction_templates.class_reaction_templates.keys():
+        if class_name in classes:
+            return classes
+
+    return None
+
+def reagent_matching_for_single_reaction(reaction, class_key):
+    '''
+    To match reagents for a certain class from list of reaction, in the form of {'rxnsmiles': {'reaction_name': name}}.
+    reactions: list of reactions
+    '''
+    reactants, agents, products = reaction['reaction_smiles'].split(">")
+    mols = [Chem.MolFromSmiles(smi) for smi in reactants.split(".") + agents.split(".")]
+    reaction['conditions'] = []
+    class_key = get_class_key(class_key)
+    if class_key in Reaction_templates.class_reaction_templates:
+        class_data = Reaction_templates.class_reaction_templates[class_key]
+
+        for cond_name, cond_data in class_data.items():
+            if cond_data['Reagent'] or cond_data['Exclude_reagent']:
+                cond_mols = []
+                if cond_data['Reagent']:
+                    cond_mols = [Chem.MolFromSmarts(x) for x in cond_data['Reagent']]
+                exclude_cond_mols = []
+                if cond_data['Exclude_reagent']:
+                    exclude_cond_mols = [Chem.MolFromSmarts(x) for x in cond_data['Exclude_reagent']]
+
+                matched_reagents = []
+                exclude = False
+
+                for patt in cond_mols:
+                    for mol in mols:
+                        if mol.GetSubstructMatch(patt):
+                            matched_reagents.append(mol)
+                            break
+                for patt in exclude_cond_mols:
+                    for mol in mols:
+                        if mol.GetSubstructMatch(patt):
+                            exclude = True
+                            break
+                    if exclude: break
+                if not exclude and len(cond_mols) == len(matched_reagents):
+                    reaction['conditions'].append(cond_name)
+            else:
+                reaction['conditions'].append(cond_name)
+    return reaction
+
+def get_mechanistic_network(rxn, args):
+    conditions = calling_rxn_template(rxn)
+
+    reaction_dict = {}
+    statistic_dict = {}
+    first_error = 0
+    if args.verbosity > 0:
+        logging.info('Generating mechanism for: ' + rxn['reaction_smiles'])
+
+    for i, cond in enumerate(conditions):
+        reaction = reaction_process.Reaction_Network(rxn, i, args)
+        reaction.set_template_dict(cond)
+        for step in range(reaction.length):
+            try:
+                reaction.run_reaction(step)
+            except NoReactantError as e:
+                if first_error == 0:
+                    first_error = 1
+                continue
+            except NoAcidBaseError as e:
+                if first_error == 0:
+                    first_error = 2
+                continue
+            except Exception as e:
+                # print(e)
+                if first_error == 0:
+                    first_error = 3
+                continue
+
+        if reaction.is_product_formed():
+            elem_reactions = Get_Reactions(reaction)
+
+            if not args.do_not_pruning:
+                try:
+                    elem_reactions.graph_pruning()
+                except:
+                    statistic_dict[reaction.reaction_condition] = {'Reaction network pruning error': 1}
+                    # print(rxn)
+                    # raise
+                    continue
+                try:
+                    elem_reactions.get_elementary_reactions_info()
+                except:
+                    statistic_dict[reaction.reaction_condition] = {'Getting reaction info. error': 1}
+                    continue
+
+            if args.all_info:
+                reaction_dict[reaction.reaction_condition] = elem_reactions
+            else:
+                try:
+                    rxn_smi = elem_reactions.convert_to_smiles()
+                except:
+                    statistic_dict[reaction.reaction_condition] = {'Conversion to SMILES error': 1}
+                    continue
+
+                reaction_dict[reaction.reaction_condition] = rxn_smi
+            # elem_reactions.print_graph()
+            statistic_dict[reaction.reaction_condition] = {'Success': {'overall reactions': 1,
+                                                          'elementary reactions': len(rxn_smi),
+                                                           'reactants': len(elem_reactions.reactant_node),
+                                                           'products': len(elem_reactions.product_node),
+                                                           'byproducts': len(elem_reactions.byproduct_node),
+                                                           'intermediates': len(elem_reactions.intermediate_node),
+                                                           'spectators': len(elem_reactions.spectator_node),
+                                                           }}
+            if args.verbosity > 0: 
+                    logging.info(f'Product is formed for {reaction.reaction_condition}, total {len(rxn_smi)} elem. steps were generated ')
+        else:
+            if first_error == 0:
+                statistic_dict[reaction.reaction_condition] = {'No product': 1}
+                if args.verbosity > 0: 
+                    logging.info(f'Product is not produced for {reaction.reaction_condition}')
+            elif first_error == 1:
+                statistic_dict[reaction.reaction_condition] = {'No reactant': 1}
+                if args.verbosity > 0: 
+                    logging.info(f'Product is not produced for {reaction.reaction_condition} due to no reactant')
+            elif first_error == 2:
+                statistic_dict[reaction.reaction_condition] = {'No acid base': 1}
+                if args.verbosity > 0: 
+                    logging.info(f'Product is not produced for {reaction.reaction_condition} due to no acids or bases')
+            elif first_error == 3:
+                statistic_dict[reaction.reaction_condition] = {'Error': 1}
+                if args.verbosity > 0: 
+                    logging.info(f'Error occured for {reaction.reaction_condition}')
+
+    return reaction_dict, statistic_dict
+
+def generate_elementary_reaction(input):
+    """
+    It makes elementary reactions for a single overall reactions.
+    It takes a line of 'reactants>>products NameRXN_class'
+    It returns two dictionaries for the reaction networks and statistics
+    """
+    # try:
     line, args = input
+    reaction_networks = {}
 
     rxn = line.split()[0]
     if len(line.split()[1:]) == 1:
@@ -24,127 +194,20 @@ def generate_mechdata_single(input):
     rxn_dict = {'reaction_name': label,
                 'reaction_smiles': rxn, }
 
-    elem_steps_stats = {label: {'No templates': 0,
-                                'Error': 0,}}  # To get statistics
+    try:
+        rxn_dict = reagent_matching_for_single_reaction(rxn_dict, label)
+        if not rxn_dict['conditions']:
+            statistics = {'No templates' : 1}
+            return rxn, [], {label: statistics}
 
-    if args.debug:
-        line = ';'.join([rxn, label.replace("\n", "")])
+        results, statistics = get_mechanistic_network(rxn_dict, args)
+    except:
+        statistics = {'Invalid reaction' : 1}
+        return rxn, [], {label: statistics}
 
-    rxn_dict = reagent_matching_for_single_reaction(rxn_dict, label)
-    if not rxn_dict['conditions']:
-        elem_steps_stats[label]['No templates']+=1
-        return False, 'No templates', line, elem_steps_stats
-    else:
-        if args.verbosity > 0:
-            logging.info('Generating mechanism for: ' + rxn_dict['reaction_smiles'])
-        try:
-            G_dict = get_mechanistic_network(rxn_dict, args)
-        except Exception as e:
-            elem_steps_stats[label]['Error'] += 1
-            if args.verbosity > 0:
-                logging.info('Error occured in {}'.format(rxn))
-                logging.info(f'{e}')
-            return False, f'{e}', line, elem_steps_stats  # 0
+    return rxn, list(results.values()), {label: statistics}
+    
 
-        # if args.all_info:
-        elem_dict = dict()
-        # else:
-        elem_list = list()
-
-
-        failed_products=[]
-        for cond, G in G_dict.items():
-            elem_steps_stats[label][cond]= {'No products': 0,
-                                            'Too many reactions': 0,
-                                            'Error': 0,
-                                            'Success': {}}
-
-            if G == "Products are not produced.":
-                elem_steps_stats[label][cond]['No products'] += 1
-                if args.debug:
-                    failed_products.append([ line, cond, 'No products',])
-                if args.verbosity > 0:
-                    logging.info('Products are not produced for the reaction of {}'.format(cond))
-
-            else:
-                try:
-                    elem_rxns = elementary_reaction(G, args)
-                    reaction_node, reactant_node, product_node, byproduct_node, intermediate_node, spectator_node=find_chemical_nodes(G)
-                    elem_steps_stats[label][cond]['Success'] = {'Num of overall reaction': 1,
-                                                                 'Num of total elem steps': len(elem_rxns),
-                                                                 'Num of total reactants': len(reactant_node),
-                                                                 'Num of total products': len(product_node),
-                                                                 'Num of total byproducts': len(byproduct_node),
-                                                                 'Num of total intermediates': len(intermediate_node),
-                                                                 'Num of total spectators': len(spectator_node),
-                                                                 }
-
-                    if args.all_info:
-                        elem_dict[cond] = {'Reaction graph': nx.node_link_data(G),
-                                           'Elementary steps': elem_rxns}
-                    else:
-                        elem_list.append(elem_rxns)
-
-                except Exception as e:
-                    if str(e) == "Too many reaction nodes.":
-                        if args.verbosity > 0:
-                            logging.info('There are too many steps for the reaction of {}'.format(cond))
-                        elem_steps_stats[label][cond]['Too many reactions']+=1
-                        if args.debug:
-                            failed_products.append([line, cond, 'Too many reactions'])
-                    elif str(e) == "Too many cycles.":
-                        if args.verbosity > 0:
-                            logging.info('There are too catalytic cycles for the reaction of {}'.format(cond))
-                        elem_steps_stats[label][cond]['Too many reactions']+=1
-                        if args.debug:
-                            failed_products.append([line, cond, 'Too many cycles' ])
-                    else:
-                        if args.verbosity > 0:
-                            logging.info('Error occured in {}'.format(cond))
-                            logging.info(f'{e}')
-                        elem_steps_stats[label][cond]['Error'] += 1
-                        if args.debug:
-                            failed_products.append([line, cond, f'{e}'])
-
-        if args.all_info and elem_dict:
-            rxn_dict['Mechanism'] = elem_dict
-            if args.debug:
-                return True, rxn_dict, elem_steps_stats, failed_products
-            else:
-                return True, rxn_dict, elem_steps_stats
-
-        elif elem_list:
-            output = flatten_list(elem_list)
-            if args.explicit_H:
-                new_output = []
-                for implicit_rxn in output:
-                    try:
-                        H_rxn, _ = modify_explicit_H(implicit_rxn)
-                        new_output.append(H_rxn)
-                    except Exception as e:  #TODO: logging the error
-                        if args.verbosity > 3:
-                            logging.info(f'{e}')
-                        continue
-                output = new_output
-
-            if args.debug:
-                return True, output, elem_steps_stats, failed_products
-            else:
-                return True, output, elem_steps_stats
-        else:
-            if args.debug:
-                return True, [], elem_steps_stats, failed_products
-            else:
-                return True, [] ,elem_steps_stats
-
-
-def merge_dicts(d, u):
-    for k, v in u.items():
-        if isinstance(v, dict):
-            d[k] = merge_dicts(d.get(k, {}), v)
-        else:
-            d[k] = d.get(k, 0) + v
-    return d
 
 def generate_mechdata_multiprocess(args):
     '''
@@ -161,59 +224,34 @@ def generate_mechdata_multiprocess(args):
 
     with open(args.data, 'r') as file:
         lines = file.readlines()
+        iterables = [(line, args) for line in lines]
 
     if args.stat:
         statistics = {}
-
 
 
     base_file_root, _ = os.path.splitext(args.save)
     debug_file_path = f"{base_file_root}_debug.txt"
 
     with open(args.save, 'w') as fout, open(debug_file_path, 'w') as file_debug:
-        iterables = [(line, args) for line in lines]
-        for result in tqdm(p.imap_unordered(generate_mechdata_single, iterables), total=len(lines)):
-            if args.debug:
-                failed_reaction = []
-            if not result: continue
-            if result[0]:
-                if args.debug:
-                    _, elem_reaction, stat, failed_products = result
-                else:
-                    _, elem_reaction, stat = result
-                if elem_reaction:
-                    num_used_rxn += 1
-                    if args.all_info:
-                        fout.write(json.dumps(elem_reaction) + "\n")
-                        # json.dump(elem_reaction, fout, indent=4)
-                        # fout.write("\n")
-                    else:
-                        fout.write('\n'.join(elem_reaction) + '\n')
-                num_generated_rxn += len(elem_reaction)
-                if args.stat:
-                    merge_dicts(statistics, stat)
-                if args.debug:
-                    for failed in failed_products:
-                        failed_reaction.append(';'.join(failed)+ '\n')
-            else:
-                _, error, line, stat = result
-                if args.stat:
-                    merge_dicts(statistics, stat)
-                if args.debug:
-                    failed_reaction.append(f'{line};No condition;{error}'+ '\n')
-            if args.debug:
-                if failed_reaction:
-                    file_debug.write(failed_reaction[0])
+        for results in tqdm(p.imap_unordered(generate_elementary_reaction, iterables), total=len(lines)):
+            rxn, elem_rxns, stat = results
 
+            if elem_rxns:
+                num_used_rxn += 1
+                elem_rxns = flatten_list(elem_rxns)
+                num_generated_rxn += len(elem_rxns)
+                fout.write('\n'.join(elem_rxns) + '\n')
 
-    if args.stat:
-        base_file_root, _ = os.path.splitext(args.save)
-        stat_file_path = f"{base_file_root}_statistics.json"
-        with open(stat_file_path, 'w') as file:
-            json.dump(statistics, file, indent=4)
-    if not args.debug:
-        os.remove(debug_file_path)
+            merge_dicts(statistics, stat)
 
-    logging.info(f'{num_used_rxn} reactions was successfully used to make elementary steps')
-    logging.info(f'{num_generated_rxn} elementary steps generated')
-    logging.info('The generation process has ended')
+        if args.stat:
+            base_file_root, _ = os.path.splitext(args.save)
+            stat_file_path = f"{base_file_root}_statistics.json"
+            with open(stat_file_path, 'w') as file:
+                json.dump(statistics, file, indent=4)
+
+    logging.info(f'In total, {num_used_rxn} overall reactions were utilized')
+    logging.info(f'{num_generated_rxn} elementary steps were generated')
+    logging.info(f'Mechanistic dataset generation is done')
+
