@@ -1,15 +1,22 @@
 import os
-import sys
 import logging
+import json
 from tqdm import tqdm
 from multiprocessing import Pool
 from utils import Reaction_templates, reaction_process
 from utils.elementary_reactions import Get_Reactions
 from utils.exceptions import *
+from utils.reaction_process import flatten_list
 from rdkit import Chem, RDLogger
 RDLogger.DisableLog('rdApp.*')
 
-
+def merge_dicts(d, u):
+    for k, v in u.items():
+        if isinstance(v, dict):
+            d[k] = merge_dicts(d.get(k, {}), v)
+        else:
+            d[k] = d.get(k, 0) + v
+    return d
 
 def calling_rxn_template(reaction_dict):
     """
@@ -83,6 +90,8 @@ def get_mechanistic_network(rxn, args):
     reaction_dict = {}
     statistic_dict = {}
     first_error = 0
+    if args.verbosity > 0:
+        logging.info('Generating mechanism for: ' + rxn['reaction_smiles'])
 
     for i, cond in enumerate(conditions):
         reaction = reaction_process.Reaction_Network(rxn, i, args)
@@ -99,7 +108,7 @@ def get_mechanistic_network(rxn, args):
                     first_error = 2
                 continue
             except Exception as e:
-                print(e)
+                # print(e)
                 if first_error == 0:
                     first_error = 3
                 continue
@@ -112,34 +121,53 @@ def get_mechanistic_network(rxn, args):
                     elem_reactions.graph_pruning()
                 except:
                     statistic_dict[reaction.reaction_condition] = {'Reaction network pruning error': 1}
-                    print(rxn)
-                    raise
+                    # print(rxn)
+                    # raise
                     continue
-            elem_reactions.get_elementary_reactions_info()
+                try:
+                    elem_reactions.get_elementary_reactions_info()
+                except:
+                    statistic_dict[reaction.reaction_condition] = {'Getting reaction info. error': 1}
+                    continue
 
             if args.all_info:
                 reaction_dict[reaction.reaction_condition] = elem_reactions
             else:
-                rxn_smi = elem_reactions.convert_to_smiles()
+                try:
+                    rxn_smi = elem_reactions.convert_to_smiles()
+                except:
+                    statistic_dict[reaction.reaction_condition] = {'Conversion to SMILES error': 1}
+                    continue
+
                 reaction_dict[reaction.reaction_condition] = rxn_smi
             # elem_reactions.print_graph()
-            statistic_dict[reaction.reaction_condition] = {'overall reactions': 1,
-                                                          'elementary reactions': len(elem_reactions.reaction_node),
+            statistic_dict[reaction.reaction_condition] = {'Success': {'overall reactions': 1,
+                                                          'elementary reactions': len(rxn_smi),
                                                            'reactants': len(elem_reactions.reactant_node),
                                                            'products': len(elem_reactions.product_node),
                                                            'byproducts': len(elem_reactions.byproduct_node),
                                                            'intermediates': len(elem_reactions.intermediate_node),
                                                            'spectators': len(elem_reactions.spectator_node),
-                                                           }
+                                                           }}
+            if args.verbosity > 0: 
+                    logging.info(f'Product is formed for {reaction.reaction_condition}, total {len(rxn_smi)} elem. steps were generated ')
         else:
             if first_error == 0:
                 statistic_dict[reaction.reaction_condition] = {'No product': 1}
+                if args.verbosity > 0: 
+                    logging.info(f'Product is not produced for {reaction.reaction_condition}')
             elif first_error == 1:
                 statistic_dict[reaction.reaction_condition] = {'No reactant': 1}
+                if args.verbosity > 0: 
+                    logging.info(f'Product is not produced for {reaction.reaction_condition} due to no reactant')
             elif first_error == 2:
                 statistic_dict[reaction.reaction_condition] = {'No acid base': 1}
+                if args.verbosity > 0: 
+                    logging.info(f'Product is not produced for {reaction.reaction_condition} due to no acids or bases')
             elif first_error == 3:
                 statistic_dict[reaction.reaction_condition] = {'Error': 1}
+                if args.verbosity > 0: 
+                    logging.info(f'Error occured for {reaction.reaction_condition}')
 
     return reaction_dict, statistic_dict
 
@@ -149,9 +177,9 @@ def generate_elementary_reaction(input):
     It takes a line of 'reactants>>products NameRXN_class'
     It returns two dictionaries for the reaction networks and statistics
     """
+    # try:
     line, args = input
     reaction_networks = {}
-
 
     rxn = line.split()[0]
     if len(line.split()[1:]) == 1:
@@ -166,15 +194,19 @@ def generate_elementary_reaction(input):
     rxn_dict = {'reaction_name': label,
                 'reaction_smiles': rxn, }
 
-    rxn_dict = reagent_matching_for_single_reaction(rxn_dict, label)
-    if not rxn_dict['conditions']:
-        statistics = {'No templates' : 1}
-        return rxn, {label: reaction_networks}, {label: statistics}
+    try:
+        rxn_dict = reagent_matching_for_single_reaction(rxn_dict, label)
+        if not rxn_dict['conditions']:
+            statistics = {'No templates' : 1}
+            return rxn, [], {label: statistics}
 
-    results, statistics = get_mechanistic_network(rxn_dict, args)
+        results, statistics = get_mechanistic_network(rxn_dict, args)
+    except:
+        statistics = {'Invalid reaction' : 1}
+        return rxn, [], {label: statistics}
 
-    return rxn, {label: results}, {label: statistics}
-
+    return rxn, list(results.values()), {label: statistics}
+    
 
 
 def generate_mechdata_multiprocess(args):
@@ -192,6 +224,7 @@ def generate_mechdata_multiprocess(args):
 
     with open(args.data, 'r') as file:
         lines = file.readlines()
+        iterables = [(line, args) for line in lines]
 
     if args.stat:
         statistics = {}
@@ -200,42 +233,25 @@ def generate_mechdata_multiprocess(args):
     base_file_root, _ = os.path.splitext(args.save)
     debug_file_path = f"{base_file_root}_debug.txt"
 
-
     with open(args.save, 'w') as fout, open(debug_file_path, 'w') as file_debug:
-        iterables = [(line, args) for line in lines]
-        for result in tqdm(p.imap_unordered(generate_elementary_reaction, iterables), total=len(lines)):
-            rxn, results, stat = result
-            print(rxn)
-            print(stat, '\n')
+        for results in tqdm(p.imap_unordered(generate_elementary_reaction, iterables), total=len(lines)):
+            rxn, elem_rxns, stat = results
 
-            # if args.debug:
-            #     failed_reaction = []
-            # if not result: continue
-            # if result[0]:
-            #     if args.debug:
-            #         rxn, results, stat = result
-            #     else:
-            #         _, elem_reaction, stat = result
-            #     if elem_reaction:
-            #         num_used_rxn += 1
-            #         if args.all_info:
-            #             fout.write(json.dumps(elem_reaction) + "\n")
-            #             # json.dump(elem_reaction, fout, indent=4)
-            #             # fout.write("\n")
-            #         else:
-            #             fout.write('\n'.join(elem_reaction) + '\n')
-            #     num_generated_rxn += len(elem_reaction)
-            #     if args.stat:
-            #         merge_dicts(statistics, stat)
-            #     if args.debug:
-            #         for failed in failed_products:
-            #             failed_reaction.append(';'.join(failed)+ '\n')
-            # else:
-            #     _, error, line, stat = result
-            #     if args.stat:
-            #         merge_dicts(statistics, stat)
-            #     if args.debug:
-            #         failed_reaction.append(f'{line};No condition;{error}'+ '\n')
-            # if args.debug:
-            #     if failed_reaction:
-            #         file_debug.write(failed_reaction[0])
+            if elem_rxns:
+                num_used_rxn += 1
+                elem_rxns = flatten_list(elem_rxns)
+                num_generated_rxn += len(elem_rxns)
+                fout.write('\n'.join(elem_rxns) + '\n')
+
+            merge_dicts(statistics, stat)
+
+        if args.stat:
+            base_file_root, _ = os.path.splitext(args.save)
+            stat_file_path = f"{base_file_root}_statistics.json"
+            with open(stat_file_path, 'w') as file:
+                json.dump(statistics, file, indent=4)
+
+    logging.info(f'In total, {num_used_rxn} overall reactions were utilized')
+    logging.info(f'{num_generated_rxn} elementary steps were generated')
+    logging.info(f'Mechanistic dataset generation is done')
+

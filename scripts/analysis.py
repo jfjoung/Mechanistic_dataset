@@ -403,7 +403,7 @@ def ERS_analysis(args):
 
     ax1.set_xlabel('Bond change type')  # , fontsize=14)
     ax1.set_ylabel('$\\mathbf{N}_{reaction}$')  # , fontsize=14)
-    ax1.text(0.95, 0.95, 'Total 81 types of bond changes', horizontalalignment='right', verticalalignment='top',
+    ax1.text(0.95, 0.95, f'Total {len(bond_change_types)} types of bond changes', horizontalalignment='right', verticalalignment='top',
              transform=ax1.transAxes)
 
     for bar in bars:
