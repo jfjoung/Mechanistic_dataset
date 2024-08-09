@@ -19,8 +19,8 @@ def flatten_list(lst):
 
 
 def has_duplicate_atom(atom_map_list):
-    for sublist in atom_map_list:
-        if len(sublist) != len(set(sublist)):
+    new_map_list = flatten_list(atom_map_list)
+    if len(new_map_list) != len(set(new_map_list)):
             return True
     return False
 
