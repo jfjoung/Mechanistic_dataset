@@ -5,6 +5,7 @@ import networkx as nx
 import itertools
 from rdkit import Chem, RDLogger
 from rdkit.Chem import AllChem
+import logging
 RDLogger.DisableLog('rdApp.*')
 
 def flatten_list(lst):
@@ -108,6 +109,8 @@ class Reaction_Network:
 
                 if not outcomes:
                     continue
+                if self.args.verbosity:
+                    logging.info(f'Reactants are {[mol_node.__str__() for mol_node in rmols]}')
 
                 for outcome in outcomes:
                     # pmols_index = []
@@ -130,6 +133,8 @@ class Reaction_Network:
         produced_molecule_idx = []
 
         query_mol_nodes = [molecule_process.Molecule_Node(prod_mol, self.args) for prod_mol in outcome]
+        if self.args.verbosity: 
+            logging.info(f'{[mol_node.__str__() for mol_node in query_mol_nodes]} were produced')
         [mol_node.add_intermediate() for mol_node in query_mol_nodes]
         query_mol_atommap = flatten_list([mol_node.atom_mapping for mol_node in query_mol_nodes])
 
@@ -265,6 +270,7 @@ if __name__ == '__main__':
                     continue
                 except NoAcidBaseError as e:
                     print('No acid base')
+                    continue
             reaction.print_graph()
             print(reaction.is_product_formed())
 

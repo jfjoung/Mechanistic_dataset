@@ -3,7 +3,8 @@ import logging
 import json
 from tqdm import tqdm
 from multiprocessing import Pool
-from utils import Reaction_templates, reaction_process
+from templates import Reaction_templates
+from utils import reaction_process
 from utils.elementary_reactions import Get_Reactions
 from utils.exceptions import *
 from utils.reaction_process import flatten_list
@@ -89,13 +90,14 @@ def get_mechanistic_network(rxn, args):
 
     reaction_dict = {}
     statistic_dict = {}
-    first_error = 0
-    if args.verbosity > 0:
+    
+    if args.verbosity:
         logging.info('Generating mechanism for: ' + rxn['reaction_smiles'])
 
     for i, cond in enumerate(conditions):
         reaction = reaction_process.Reaction_Network(rxn, i, args)
         reaction.set_template_dict(cond)
+        first_error = 0
         for step in range(reaction.length):
             try:
                 reaction.run_reaction(step)
@@ -108,7 +110,6 @@ def get_mechanistic_network(rxn, args):
                     first_error = 2
                 continue
             except Exception as e:
-                # print(e)
                 if first_error == 0:
                     first_error = 3
                 continue
@@ -121,8 +122,6 @@ def get_mechanistic_network(rxn, args):
                     elem_reactions.graph_pruning()
                 except:
                     statistic_dict[reaction.reaction_condition] = {'Reaction network pruning error': 1}
-                    # print(rxn)
-                    # raise
                     continue
                 try:
                     elem_reactions.get_elementary_reactions_info()
@@ -149,24 +148,24 @@ def get_mechanistic_network(rxn, args):
                                                            'intermediates': len(elem_reactions.intermediate_node),
                                                            'spectators': len(elem_reactions.spectator_node),
                                                            }}
-            if args.verbosity > 0: 
+            if args.verbosity: 
                     logging.info(f'Product is formed for {reaction.reaction_condition}, total {len(rxn_smi)} elem. steps were generated ')
         else:
             if first_error == 0:
                 statistic_dict[reaction.reaction_condition] = {'No product': 1}
-                if args.verbosity > 0: 
+                if args.verbosity: 
                     logging.info(f'Product is not produced for {reaction.reaction_condition}')
             elif first_error == 1:
                 statistic_dict[reaction.reaction_condition] = {'No reactant': 1}
-                if args.verbosity > 0: 
+                if args.verbosity: 
                     logging.info(f'Product is not produced for {reaction.reaction_condition} due to no reactant')
             elif first_error == 2:
                 statistic_dict[reaction.reaction_condition] = {'No acid base': 1}
-                if args.verbosity > 0: 
+                if args.verbosity: 
                     logging.info(f'Product is not produced for {reaction.reaction_condition} due to no acids or bases')
             elif first_error == 3:
                 statistic_dict[reaction.reaction_condition] = {'Error': 1}
-                if args.verbosity > 0: 
+                if args.verbosity: 
                     logging.info(f'Error occured for {reaction.reaction_condition}')
 
     return reaction_dict, statistic_dict
@@ -179,7 +178,6 @@ def generate_elementary_reaction(input):
     """
     # try:
     line, args = input
-    reaction_networks = {}
 
     rxn = line.split()[0]
     if len(line.split()[1:]) == 1:
@@ -201,7 +199,9 @@ def generate_elementary_reaction(input):
             return rxn, [], {label: statistics}
 
         results, statistics = get_mechanistic_network(rxn_dict, args)
-    except:
+    except Exception as e:
+        if args.verbosity:
+            logging.info(f'{e}')
         statistics = {'Invalid reaction' : 1}
         return rxn, [], {label: statistics}
 
@@ -235,21 +235,29 @@ def generate_mechdata_multiprocess(args):
 
     with open(args.save, 'w') as fout, open(debug_file_path, 'w') as file_debug:
         for results in tqdm(p.imap_unordered(generate_elementary_reaction, iterables), total=len(lines)):
-            rxn, elem_rxns, stat = results
+            if results is not None:
+                rxn, elem_rxns, stat = results
 
-            if elem_rxns:
-                num_used_rxn += 1
-                elem_rxns = flatten_list(elem_rxns)
-                num_generated_rxn += len(elem_rxns)
-                fout.write('\n'.join(elem_rxns) + '\n')
+                if elem_rxns:
+                    num_used_rxn += 1
+                    elem_rxns = flatten_list(elem_rxns)
+                    num_generated_rxn += len(elem_rxns)
+                    fout.write('\n'.join(elem_rxns) + '\n')
 
-            merge_dicts(statistics, stat)
+                else:
+                    file_debug.write(f"{rxn} {stat}")
+
+                merge_dicts(statistics, stat)
 
         if args.stat:
             base_file_root, _ = os.path.splitext(args.save)
             stat_file_path = f"{base_file_root}_statistics.json"
             with open(stat_file_path, 'w') as file:
                 json.dump(statistics, file, indent=4)
+
+
+    if not args.debug:
+        os.remove(debug_file_path)
 
     logging.info(f'In total, {num_used_rxn} overall reactions were utilized')
     logging.info(f'{num_generated_rxn} elementary steps were generated')

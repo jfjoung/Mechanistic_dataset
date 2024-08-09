@@ -1,5 +1,6 @@
 from templates import AcidBase_lookup
 import itertools
+import logging
 import networkx as nx
 from rdkit import Chem, RDLogger
 from rdkit.Chem import AllChem
@@ -42,6 +43,9 @@ class Template_process:
         else:
             self.ps = Chem.SmilesParserParams()
             self.ps.sanitize = False
+        
+        if self.args.verbosity:
+            logging.info(f'Templates of elementary step for {self.description}')
 
     def __str__(self):
         return f'Templates of elementary step for {self.description}'
@@ -180,6 +184,8 @@ class Template_process:
         pKa_list = self.pKa_list
         templ_list = self.template_list
         if pKa_list == [None]*len(pKa_list):
+            # if self.args.verbosity:
+            #     logging.info('Proton balancing is not needed for this step')
             return
 
         new_rxn_template = []
@@ -210,7 +216,12 @@ class Template_process:
                 new_p = '.'.join([p, acid_base[1]])
                 new_templ='>>'.join([new_r,new_p])
                 new_rxn_template.append(new_templ)
+
+        if self.args.verbosity:
+            logging.info(f'{len(new_rxn_template)} new proton balanced templates were made from {len(templ_list)} templates')
+
         if not new_rxn_template:
+            logging.info(f'No acid base error')
             raise NoAcidBaseError
 
         self.template_list = new_rxn_template
