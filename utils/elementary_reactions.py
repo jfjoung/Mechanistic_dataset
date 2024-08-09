@@ -1,6 +1,7 @@
-from utils import Reaction_templates, reaction_process
+from utils import reaction_process
 from utils.exceptions import *
 from utils.reaction_process import flatten_list
+from templates import Reaction_templates
 from collections import defaultdict
 from itertools import product
 import networkx as nx

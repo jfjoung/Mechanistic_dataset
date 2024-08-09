@@ -16,8 +16,8 @@ class Args:
         self.explicit_H = True  # Explicitly represents hydrogens in the reaction SMARTS.
         self.reagent = False  # Places non-participating chemical species between '>>' in Reaction SMARTS formatted as Reactants > Reagents > Products.
         self.remapping = True  # Remaps the atom mapping in Reaction SMARTS to start from 1.
-        self.data = './data/old/USPTO_valid.txt'  # Path to the file containing overall reactions.
-        self.save = './results/uspto_valid.txt'  # Path to the file where results will be saved.
+        self.data = './data/uspto_classified.txt'  # Path to the file containing overall reactions.
+        self.save = './results/uspto_full.txt'  # Path to the file where results will be saved.
         self.debug = False  # Records reactions with errors for debugging purposes.
         self.all_info = False  # Saves all reactions, including the reaction network.
         self.stat = True  # Generates statistics for the reactions.

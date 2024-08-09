@@ -1,4 +1,4 @@
-from utils import AcidBase_lookup
+from templates import AcidBase_lookup
 import itertools
 import networkx as nx
 from rdkit import Chem, RDLogger
