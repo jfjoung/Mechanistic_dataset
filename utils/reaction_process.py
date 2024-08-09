@@ -110,7 +110,8 @@ class Reaction_Network:
                 if not outcomes:
                     continue
                 if self.args.verbosity:
-                    logging.info(f'Reactants are {[mol_node.__str__() for mol_node in rmols]}')
+                    printing_rsmi = [G.nodes[idx]['mol_node'].__str__() for idx in reactant]
+                    logging.info(f'Reactants are {printing_rsmi}')
 
                 for outcome in outcomes:
                     # pmols_index = []
@@ -212,8 +213,13 @@ class Reaction_Network:
     def is_product_formed(self):
         if self.find_product():
             self.assign_identity()
+            if self.args.verbosity:
+                logging.info(f'Product is produced')
             return True
-        else: return False
+        else: 
+            if self.args.verbosity:
+                logging.info(f'Product is NOT produced')
+            return False
 
     def assign_identity(self):
         """If product is formed, assign the chemical identity, e.g. spectator, byproduct"""

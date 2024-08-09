@@ -254,6 +254,7 @@ class Get_Reactions:
             pruned_graph.add_node(node, mol_node=node_info['mol_node'], type='mol_node')
 
         self.pruned_graph = pruned_graph
+        # self.print_graph()
         self.find_chemical_nodes()
 
 
@@ -315,6 +316,9 @@ class Get_Reactions:
             for rxn_node in rxn_path:
                 #Get reactants and products for this elementary step
                 precursor_nodes = [node for node in G.predecessors(rxn_node)]
+                # print(precursor_nodes)
+                precursor_atommap = flatten_list([G.nodes[node]['mol_node'].atom_mapping for node in precursor_nodes if G.nodes[node]['type'] == 'mol_node'])
+                # print(precursor_atommap)
                 successor_nodes = [node for node in G.successors(rxn_node)]
 
                 #Check any reactants are consumed before
@@ -346,6 +350,10 @@ class Get_Reactions:
                 produced_byproduct_nodes = []
                 for by_node in self.byproduct_node + self.product_node:
                     reaction_node_for_byproduct = [node for node in G.predecessors(by_node)][0]
+                    by_node_atommap = G.nodes[by_node]['mol_node'].atom_mapping
+                    # print('by_node_mapping',by_node_atommap)
+                    if set(by_node_atommap) & set(precursor_atommap):
+                        continue
 
                     if reaction_node_for_byproduct not in rxn_path:
                         #This byproduct cannot be formed in this pathway
@@ -391,6 +399,7 @@ class Get_Reactions:
 
             reaction_info[idx] = reaction_info_path
         self.reaction_info = reaction_info
+        # print(reaction_info)
         # return self.convert_to_smiles()
 
     def convert_to_smiles(self):

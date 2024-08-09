@@ -1,14 +1,12 @@
 import re
 
 def parse_smarts(smarts):
-    # Extended pattern to capture complex atoms with additional properties like ;H1, $([O]-S), etc.
-    # Modified to include '*' as a valid atom symbol.
     atom_pattern = re.compile(r'\[([*#A-Za-z0-9,+;\-&!$()\[\]]*):(\d+)\]')
     atoms = atom_pattern.findall(smarts)
     atom_dict = {}
 
     for atom, mapping in atoms:
-        if 'H' in atom:
+        if 'H' in atom and re.search(r'H\d*', atom):
             h_count = re.search(r'H(\d*)', atom)
             if h_count and h_count.group(1):
                 h_count = int(h_count.group(1))
@@ -17,7 +15,7 @@ def parse_smarts(smarts):
         else:
             h_count = 0
 
-        atom_dict[mapping] = {'atom': atom, 'h_count': h_count}
+        atom_dict[mapping] = {'atom': atom, 'h_count': h_count, 'original': f'[{atom}:{mapping}]'}
 
     return atom_dict
 
@@ -33,7 +31,10 @@ def update_smarts_with_hydrogen_mapping(smarts, atom_dict):
     added_h_mappings = {}
 
     for mapping, info in atom_dict.items():
-        atom_str = f'[{info["atom"]}:{mapping}]'
+        if info['atom'].startswith('H'):
+            continue  # 이미 명시된 수소를 무시
+
+        atom_str = info['original']
         cleaned_atom_str = clean_hydrogen_notation(atom_str)
 
         new_h_atoms = []
@@ -81,7 +82,10 @@ def update_smarts_product(smarts, atom_dict, added_h_mappings, hydrogen_changes)
     new_smarts = smarts
 
     for mapping, info in atom_dict.items():
-        atom_str = f'[{info["atom"]}:{mapping}]'
+        if info['atom'].startswith('H'):
+            continue  # 이미 명시된 수소를 무시
+
+        atom_str = info['original']
         cleaned_atom_str = clean_hydrogen_notation(atom_str)
 
         new_h_atoms = []
@@ -114,7 +118,10 @@ def update_smarts_product_no_change(smarts, atom_dict, added_h_mappings):
     new_smarts = smarts
 
     for mapping, info in atom_dict.items():
-        atom_str = f'[{info["atom"]}:{mapping}]'
+        if info['atom'].startswith('H'):
+            continue  # 이미 명시된 수소를 무시
+
+        atom_str = info['original']
         cleaned_atom_str = clean_hydrogen_notation(atom_str)
 
         new_h_atoms = []
@@ -146,7 +153,6 @@ def modify_explicit_H(smarts):
         new_products = update_smarts_product(products, product_dict, added_h_mappings, hydrogen_changes)
 
     return f'{new_reactants}>{reagent}>{new_products}', added_h_mappings
-
 
 if __name__ == '__main__':
     # Test case 1: No hydrogen change
@@ -183,3 +189,8 @@ if __name__ == '__main__':
     smarts7 = '[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[n&!$([#7]~[#7]);H0:100]1[c:99][c:98][c:97][c:96][c:95]1>>[O;H0;+0:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[n;+1&!$([#7]~[#7]);H1:100]1[c:99][c:98][c:97][c:96][c:95]1'
     result7, added_h_mappings7 = modify_explicit_H(smarts7)
     print(result7)
+
+    # Test case 8
+    smarts8 = '[*:2]-[O;H0:3]-[Pd:1]-[#6;H2:4].[H:5][H:6]>>[*:2]-[O;H0:3]-[H:5].[H:6]-[#6;H2:4].[Pd:1]'
+    smarts8, added_h_mappings8 = modify_explicit_H(smarts8)
+    print(smarts8)

@@ -245,7 +245,7 @@ def generate_mechdata_multiprocess(args):
                     fout.write('\n'.join(elem_rxns) + '\n')
 
                 else:
-                    file_debug.write(f"{rxn} {stat}")
+                    file_debug.write(f"{rxn} {stat}\n")
 
                 merge_dicts(statistics, stat)
 
