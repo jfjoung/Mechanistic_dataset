@@ -1,8 +1,8 @@
-from utils import Reaction_templates, molecule_process,template_process
+from utils import molecule_process,template_process
 from utils.exceptions import *
+from templates import Reaction_templates
 import networkx as nx
 import itertools
-import rdkit
 from rdkit import Chem, RDLogger
 from rdkit.Chem import AllChem
 RDLogger.DisableLog('rdApp.*')
