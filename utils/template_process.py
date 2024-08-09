@@ -221,7 +221,8 @@ class Template_process:
             logging.info(f'{len(new_rxn_template)} new proton balanced templates were made from {len(templ_list)} templates')
 
         if not new_rxn_template:
-            logging.info(f'No acid base error')
+            if self.args.verbosity:
+                logging.info(f'No acid base error')
             raise NoAcidBaseError
 
         self.template_list = new_rxn_template
