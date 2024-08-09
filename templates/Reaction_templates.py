@@ -2158,8 +2158,9 @@ class_reaction_templates={
                                            }
                                            
     }},
-('Nitrogen oxidation',):{'Peroxy acid':{'Reagent':['[n]','[O]=[C]-[O]-[O]'],'Exclude_reagent':None,
-      'Stages':{0:{'Templates':['[n:1].[O:2]=[C:3]-[O:4]-[O:5]>>[n;+1:1]-[O;H0;-1:5].[O:4]=[C:3]-[O:2]'],
+('Nitrogen oxidation',):{'Peroxy acid':{'Reagent':['[n]','[#8]=[#6]-[#8]-[#8]'],'Exclude_reagent':None,
+      'Stages':{0:{'Templates':['[n:1].[O;H0:2]=[C:3]-[O;H0:4]-[O;H1:5]>>[n;+1:1]-[O;H0;-1:5].[O;H0:4]=[C:3]-[O;H1:2]',
+                                '[n:1].[O;H0:2]=[C:3]-[O;H0:4]-[O;H0;-1:5]>>[n;+1:1]-[O;H0;-1:5].[O;H0:4]=[C:3]-[O;H0;-1:2]'],
                    'pKa':[None],
                    'Description':'Butterfly mechanism'}}},
                   },

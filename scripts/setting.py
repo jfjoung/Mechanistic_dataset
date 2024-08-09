@@ -18,9 +18,9 @@ class Args:
         self.remapping = True  # Remaps the atom mapping in Reaction SMARTS to start from 1.
         self.data = './data/uspto_classified.txt'  # Path to the file containing overall reactions.
         self.save = './results/uspto_full.txt'  # Path to the file where results will be saved.
-        self.debug = False  # Records reactions with errors for debugging purposes.
+        self.debug = True  # Records reactions with errors for debugging purposes.
         self.all_info = False  # Saves all reactions, including the reaction network.
         self.stat = True  # Generates statistics for the reactions.
         self.rxn_class = None  # Specifies a particular reaction class to extract elementary reactions from.
         self.process = 32  # Number of processors to use in multiprocessing.
-        self.verbosity = 0  # Sets the logging level.
+        self.verbosity = False  # Sets the logging.
