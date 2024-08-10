@@ -246,8 +246,9 @@ def generate_mechdata_multiprocess(args):
 
                 else:
                     file_debug.write(f"{rxn} {stat}\n")
-
-                merge_dicts(statistics, stat)
+                    
+                if args.stat:
+                    merge_dicts(statistics, stat)
 
         if args.stat:
             base_file_root, _ = os.path.splitext(args.save)
