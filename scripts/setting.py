@@ -13,11 +13,11 @@ class Args:
         self.full = False  # Determines whether to return overall reaction SMARTS instead of elementary reaction SMARTS.
         self.end = True  # Adds reactions that generate a product from an already existing product.
         self.plain = False  # Generates reaction SMARTS without atom mapping numbers.
-        self.explicit_H = True  # Explicitly represents hydrogens in the reaction SMARTS.
+        self.explicit_H = False  # Explicitly represents hydrogens in the reaction SMARTS.
         self.reagent = False  # Places non-participating chemical species between '>>' in Reaction SMARTS formatted as Reactants > Reagents > Products.
-        self.remapping = False  # Remaps the atom mapping in Reaction SMARTS to start from 1.
-        self.data = './data/uspto_classified.txt'  # Path to the file containing overall reactions.
-        self.save = './results/uspto_full.txt'  # Path to the file where results will be saved.
+        self.remapping = True  # Remaps the atom mapping in Reaction SMARTS to start from 1.
+        self.data = './data/Pistachio_train'  # Path to the file containing overall reactions.
+        self.save = './results/Pistachio_train.txt'  # Path to the file where results will be saved.
         self.debug = True  # Records reactions with errors for debugging purposes.
         self.all_info = False  # Saves all reactions, including the reaction network.
         self.stat = True  # Generates statistics for the reactions.

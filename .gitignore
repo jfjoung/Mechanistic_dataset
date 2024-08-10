@@ -53,7 +53,7 @@ results2/
 
 # ipynb files and checkpoints#
 ######################
-*.ipynb
+# *.ipynb
 *.pyc
 **/.ipynb_checkpoints
 __pycache__/
