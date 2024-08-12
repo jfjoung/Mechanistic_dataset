@@ -71,6 +71,38 @@ def check_reaction_validity(smi):
     else:
         return True
 
+def remapping(rxn_smi):
+    ps = Chem.SmilesParserParams()
+    ps.removeHs = False
+    ps.sanitize = False
+
+    rsmi, resmi, psmi = rxn_smi.split('>')
+    rmol = Chem.MolFromSmiles(rsmi, ps)
+    remol = Chem.MolFromSmiles(resmi, ps)
+    pmol = Chem.MolFromSmiles(psmi, ps)
+
+    mapping_dict = {} #old map: new map
+
+    for idx, atom in enumerate(rmol.GetAtoms()):
+        new_map = idx+1
+        mapping_dict[atom.GetAtomMapNum()] = new_map
+        atom.SetAtomMapNum(new_map)
+
+    rsmi = Chem.MolToSmiles(rmol)
+
+    for idx, atom in enumerate(remol.GetAtoms()):
+        new_re_map = new_map + idx+1
+        mapping_dict[atom.GetAtomMapNum()] = new_re_map
+        atom.SetAtomMapNum(new_re_map)
+
+    for atom in pmol.GetAtoms():
+        atom.SetAtomMapNum(mapping_dict[atom.GetAtomMapNum()])
+
+    resmi = Chem.MolToSmiles(remol)
+    psmi = Chem.MolToSmiles(pmol)
+
+    return f'{rsmi}>{resmi}>{psmi}'
+
 
 if __name__ == '__main__':
 
