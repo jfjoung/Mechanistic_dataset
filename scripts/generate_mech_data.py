@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+import pickle
 from tqdm import tqdm
 from multiprocessing import Pool
 from templates import Reaction_templates
@@ -129,27 +130,32 @@ def get_mechanistic_network(rxn, args):
                     statistic_dict[reaction.reaction_condition] = {'Getting reaction info. error': 1}
                     continue
 
+            try:
+                rxn_smi = elem_reactions.convert_to_smiles()
+            except:
+                statistic_dict[reaction.reaction_condition] = {'Conversion to SMILES error': 1}
+                continue
+
             if args.all_info:
                 reaction_dict[reaction.reaction_condition] = elem_reactions
             else:
-                try:
-                    rxn_smi = elem_reactions.convert_to_smiles()
-                except:
-                    statistic_dict[reaction.reaction_condition] = {'Conversion to SMILES error': 1}
-                    continue
-
                 reaction_dict[reaction.reaction_condition] = rxn_smi
-            # elem_reactions.print_graph()
+                
             statistic_dict[reaction.reaction_condition] = {'Success': {'overall reactions': 1,
-                                                          'elementary reactions': len(rxn_smi),
-                                                           'reactants': len(elem_reactions.reactant_node),
-                                                           'products': len(elem_reactions.product_node),
-                                                           'byproducts': len(elem_reactions.byproduct_node),
-                                                           'intermediates': len(elem_reactions.intermediate_node),
-                                                           'spectators': len(elem_reactions.spectator_node),
-                                                           }}
+                                        'elementary reactions': len(rxn_smi),
+                                        'reactants': len(elem_reactions.reactant_node),
+                                        'products': len(elem_reactions.product_node),
+                                        'byproducts': len(elem_reactions.byproduct_node),
+                                        'intermediates': len(elem_reactions.intermediate_node),
+                                        'spectators': len(elem_reactions.spectator_node),
+                                        }}
             if args.verbosity: 
-                    logging.info(f'Product is formed for {reaction.reaction_condition}, total {len(rxn_smi)} elem. steps were generated ')
+                logging.info(f'Product is formed for {reaction.reaction_condition}, total {len(rxn_smi)} elem. steps were generated ')
+
+                
+            # elem_reactions.print_graph()
+
+
         else:
             if first_error == 0:
                 statistic_dict[reaction.reaction_condition] = {'No product': 1}
@@ -207,7 +213,16 @@ def generate_elementary_reaction(input):
 
     return rxn, list(results.values()), {label: statistics}
     
-
+def find_elementary_reactions(d):
+    if isinstance(d, dict):
+        for key, value in d.items():
+            if key == 'elementary reactions':
+                return value
+            elif isinstance(value, dict):
+                result = find_elementary_reactions(value)
+                if result is not None:
+                    return result
+    return None
 
 def generate_mechdata_multiprocess(args):
     '''
@@ -233,16 +248,24 @@ def generate_mechdata_multiprocess(args):
     base_file_root, _ = os.path.splitext(args.save)
     debug_file_path = f"{base_file_root}_debug.txt"
 
-    with open(args.save, 'w') as fout, open(debug_file_path, 'w') as file_debug:
+    if args.all_info:
+        writing_format = 'wb'
+    else: writing_format = 'w'
+
+    with open(args.save, writing_format) as fout, open(debug_file_path, 'w') as file_debug:
         for results in tqdm(p.imap_unordered(generate_elementary_reaction, iterables), total=len(lines)):
             if results is not None:
                 rxn, elem_rxns, stat = results
-
                 if elem_rxns:
                     num_used_rxn += 1
-                    elem_rxns = flatten_list(elem_rxns)
-                    num_generated_rxn += len(elem_rxns)
-                    fout.write('\n'.join(elem_rxns) + '\n')
+                    if args.all_info:
+                        if find_elementary_reactions(stat):
+                            num_generated_rxn += find_elementary_reactions(stat)
+                        pickle.dump(elem_rxns, fout, protocol=pickle.HIGHEST_PROTOCOL)
+                    else:
+                        elem_rxns = flatten_list(elem_rxns)
+                        num_generated_rxn += len(elem_rxns)
+                        fout.write('\n'.join(elem_rxns) + '\n')
 
                 else:
                     file_debug.write(f"{rxn} {stat}\n")

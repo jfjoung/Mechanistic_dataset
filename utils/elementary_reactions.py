@@ -115,6 +115,18 @@ class Get_Reactions:
         for edge in G.edges(data=True):
             print(edge)
 
+    def get_node(self, node_id):
+        if not self.args.do_not_pruning and self.pruned_graph:
+            G = self.pruned_graph
+        else:
+            G = self.rxn_network
+
+        if G.nodes[node_id]['type'] == 'rxn_node':
+            return G.nodes[node_id]['rxn_node']
+        
+        elif G.nodes[node_id]['type'] == 'mol_node':
+            return G.nodes[node_id]['mol_node']
+
     def graph_pruning(self):
         G = self.rxn_network
         reaction_path = []
