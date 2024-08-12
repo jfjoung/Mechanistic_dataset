@@ -1,28 +1,55 @@
+import os
+from multiprocessing import Pool, cpu_count
+from tqdm import tqdm
 from utils.explicit_H import modify_explicit_H
 from utils.validity_check import check_reaction_validity, remapping
 from scripts.setting import Args
-import os
-from tqdm import tqdm
 
+def process_reaction(implicit_rxn):
+    """Process a single reaction, modify explicit H and check validity."""
+    try:
+        H_rxn, _ = modify_explicit_H(implicit_rxn)
+    except:
+        return None
+    try:
+        if check_reaction_validity(H_rxn):
+            return remapping(H_rxn)
+        else: return None
+    except:
+        return None
+
+def save_valid_reactions(file_path, valid_reactions):
+    """Save valid reactions to the specified file."""
+    with open(file_path, 'w') as fout:
+        for rxn in tqdm(valid_reactions, total=len(valid_reactions), desc="Saving reactions"):
+            if rxn:  # Ensure None values are not written
+                fout.write(f'{rxn}\n')
 
 def main(args):
-
-    with open(args.save, 'r') as file:
-        lines = file.readlines()
+    try:
+        with open(args.save, 'r') as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        print(f"File not found: {args.save}")
+        return
 
     base_file_root, _ = os.path.splitext(args.save)
     postprocess_file_path = f"{base_file_root}_explicit.txt"
 
-    num_rxn = 0
+    # Using multiprocessing to process reactions in parallel
+    num_workers = cpu_count()  # Number of CPU cores available
+    with Pool(num_workers) as pool:
+        valid_reactions = list(tqdm(pool.imap(process_reaction, lines), total=len(lines), desc="Processing reactions"))
 
-    with open(postprocess_file_path, 'w') as fout:
-        for implicit_rxn in tqdm(lines):
-            H_rxn, _ = modify_explicit_H(implicit_rxn)
-            if check_reaction_validity(H_rxn):
-                fout.write(f'{remapping(H_rxn)}\n')
-                num_rxn += 1
-                
+    # Filter out None values that indicate invalid reactions
+    valid_reactions = [rxn for rxn in valid_reactions if rxn is not None]
+
+    save_valid_reactions(postprocess_file_path, valid_reactions)
+
+    num_rxn = len(valid_reactions)
+    percent_remaining = (num_rxn / len(lines)) * 100
+    print(f'Total {num_rxn} reactions remain out of {len(lines)} ({percent_remaining:.1f}%)')
 
 if __name__ == '__main__':
-    args=Args()
+    args = Args()
     main(args)
