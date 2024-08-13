@@ -1,5 +1,5 @@
 import os
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 from tqdm import tqdm
 from utils.explicit_H import modify_explicit_H
 from utils.validity_check import check_reaction_validity, remapping
@@ -37,8 +37,7 @@ def main(args):
     postprocess_file_path = f"{base_file_root}_explicit.txt"
 
     # Using multiprocessing to process reactions in parallel
-    num_workers = cpu_count()  # Number of CPU cores available
-    with Pool(num_workers) as pool:
+    with Pool(args.process) as pool:
         valid_reactions = list(tqdm(pool.imap(process_reaction, lines), total=len(lines), desc="Processing reactions"))
 
     # Filter out None values that indicate invalid reactions

@@ -16,10 +16,10 @@ class Args:
         self.explicit_H = False  # Explicitly represents hydrogens in the reaction SMARTS.
         self.reagent = False  # Places non-participating chemical species between '>>' in Reaction SMARTS formatted as Reactants > Reagents > Products.
         self.remapping = False  # Remaps the atom mapping in Reaction SMARTS to start from 1.
-        self.data = './data/uspto_train.txt'  # Path to the file containing overall reactions.
-        self.save = './results/flow/train.txt'  # Path to the file where results will be saved.
+        self.data = './data/test_data.txt'  # Path to the file containing overall reactions.
+        self.save = './results/test.pickle'  # Path to the file where results will be saved.
         self.debug = True  # Records reactions with errors for debugging purposes.
-        self.all_info = False  # Saves all reactions, including the reaction network.
+        self.all_info = True  # Saves all reactions, including the reaction network.
         self.stat = True  # Generates statistics for the reactions.
         self.rxn_class = None  # Specifies a particular reaction class to extract elementary reactions from.
         self.process = 32  # Number of processors to use in multiprocessing.

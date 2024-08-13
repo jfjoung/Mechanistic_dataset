@@ -8,6 +8,7 @@ from templates import AcidBase_lookup, Reaction_templates
 from multiprocessing import Pool
 from tqdm import tqdm
 import pandas as pd
+from utils.validity_check import check_reaction_validity
 
 def loadall(filename):
     with open(filename, "rb") as f:
@@ -152,6 +153,8 @@ def reaction_analysis(input):
     Atom_dict = {}
     Atom_types = {}
 
+    invalid_reaction = None
+
     
     reaction_info = reaction.reaction_info
 
@@ -219,7 +222,22 @@ def reaction_analysis(input):
             merge_dicts(MW_dict, mw_dict)
             merge_dicts(Atom_dict, atom_dict)
 
-        return ers_dict, rp_dict, bond_change_types, smiles_identity, MW_dict, Atom_dict, Atom_types
+    if args.validity:
+        for rxn_smi in reaction.rxn_smi:
+            invalid = False
+            try:
+                check_reaction_validity(rxn_smi)
+                if not check_reaction_validity(rxn_smi):
+                    invalid = True
+            except Exception as e:
+                invalid = True
+            if invalid:
+                reaction_smiles = reaction.reaction_smiles
+                reaction_class = reaction.reaction_class
+                invalid_reaction = f'{reaction_smiles} {reaction_class}'
+                break
+
+    return ers_dict, rp_dict, bond_change_types, smiles_identity, MW_dict, Atom_dict, Atom_types, invalid_reaction
 
         
 
@@ -234,6 +252,8 @@ def main(args):
     MW_file_path = f"{base_file_root}_MW.csv"
     AtomCount_file_path = f"{base_file_root}_AtomCount.csv"
     AtomTypes_file_path = f"{base_file_root}_AtomTypes.csv"
+
+    validity_file_path = f"{base_file_root}_invalid.txt"
    
 
     if args.template_analysis:
@@ -249,12 +269,13 @@ def main(args):
     Atom_dict = {}
     Atom_types = {}
 
+    invalid_reactions = []
     p = Pool(args.process)
 
     iterables = [(rxn, args) for reactions in tqdm(items, desc="Data loading") for rxn in reactions]
 
     for results in tqdm(p.imap_unordered(reaction_analysis, iterables), total=len(iterables)):
-        ers, rp, bc, iden, mw, atom_count, atom_type = results
+        ers, rp, bc, iden, mw, atom_count, atom_type, invalid = results
 
         merge_dicts(ers_dict, ers)
         merge_dicts(rp_dict, rp)
@@ -263,6 +284,8 @@ def main(args):
         merge_dicts(MW_dict, mw)
         merge_dicts(Atom_dict, atom_count)
         merge_dicts(Atom_types, atom_type)
+        if invalid is not None:
+            invalid_reactions.append(invalid)
 
     if args.ERS_analysis:
         ers_df = pd.DataFrame(list(ers_dict.items()), columns=['Types', 'Count']).sort_values(by='Types')
@@ -290,6 +313,9 @@ def main(args):
 
         print(f'There are {len(Atom_types)} types of atoms')
 
+    if args.validity:
+        with open(validity_file_path, 'w') as fout:
+            fout.write('\n'.join(invalid_reactions) + '\n')
 
 
 

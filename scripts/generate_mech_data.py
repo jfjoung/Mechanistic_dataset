@@ -138,6 +138,7 @@ def get_mechanistic_network(rxn, args):
 
             if args.all_info:
                 reaction_dict[reaction.reaction_condition] = elem_reactions
+                # print(elem_reactions.reaction_info)
             else:
                 reaction_dict[reaction.reaction_condition] = rxn_smi
                 
