@@ -6,3 +6,4 @@ class Args:
         self.mol_analysis = False
         self.process = 32  # Number of processors to use in multiprocessing.
         self.validity = True
+        self.verbosity = True

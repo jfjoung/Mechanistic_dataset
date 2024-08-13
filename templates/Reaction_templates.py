@@ -33,7 +33,7 @@ class_reaction_templates={
      'Description': 'Proton exchange between amide and urea'}}},
 
 
-  'Condensation without catalyst': {'Reagent': ['[#8]-[#6]=[#8]','[#7]'], 'Exclude_reagent': None,
+  'Condensation without catalyst': {'Reagent': ['[#8]-[#6]=[#8]','[#7]'], 'Exclude_reagent': ['[N]=[C]=[N]'],
    'Stages': {0: {'Templates': ['[*:4]-[#7;!H0;+0:5].[O:1]-[C;H0;+0:14](-[#6:13])=[O:15]>>[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;+1:5]-[*:4]',
       '[#7;!H0;+0:5].[O:1]-[C;H0;+0:14](-[#6:13])=[O:15]>>[#6:13]-[C;H0;+0:14](-[O;-1:15])(-[O:1])-[#7;+1:5]'],
      'pKa': [None, None],
@@ -2306,7 +2306,7 @@ class_reaction_templates={
 #                    'Description':'Formation of TPPO'},
 #                    }}},
 ('O-Acetylation',):{'Neutral':{'Reagent':['[#6]-[O]','[C]-[C](=[O])-[O]-[C](=[O])-[C]'],'Exclude_reagent':None,
-          'Stages':{0:{'Templates':['[#6:1]-[O:2].[C:3]-[C:4](=[O:5])-[O:6]-[C:7](=[O:8])-[C:9]>>[#6:1]-[O;H1;+1:2]-[C:4](-[C:3])(-[O;H0;-1:5])-[O:6]-[C:7](=[O:8])'],
+          'Stages':{0:{'Templates':['[#6:1]-[O;H1;+0:2].[C:3]-[C:4](=[O:5])-[O:6]-[C:7](=[O:8])-[C:9]>>[#6:1]-[O;H1;+1:2]-[C:4](-[C:3])(-[O;H0;-1:5])-[O:6]-[C:7](=[O:8])-[C:9]'],
                        'pKa':[None],
                        'Description':'Nucleophilic addition'},
                     1:{'Templates':['[#6:1]-[O;H1;+1:2]-[C:4](-[C:3])(-[O;H0;-1:5])-[O:6]-[C:7](=[O:8])>>[#6:1]-[O;H1;+1:2]-[C:4](-[C:3])(=[O;H0;+0:5]).[O;H0;-1:6]-[C:7](=[O:8])'],
@@ -2320,7 +2320,7 @@ class_reaction_templates={
                                       '[C:1]-[O;H1;+0:2]>>[C:1]-[O;H0;-1:2]'],
                          'pKa':[{'B':10},{'B':17}],
                          'Description':'Deprotonation'},
-                      1:{'Templates':['[#6:1]-[O;H0;-1:2].[C:3]-[C:4](=[O:5])-[O:6]-[C:7](=[O:8])-[C:9]>>[#6:1]-[O;H0;+0:2]-[C:4](-[C:3])(-[O;H0;-1:5])-[O:6]-[C:7](=[O:8])'],
+                      1:{'Templates':['[#6:1]-[O;H0;-1:2].[C:3]-[C:4](=[O:5])-[O:6]-[C:7](=[O:8])-[C:9]>>[#6:1]-[O;H0;+0:2]-[C:4](-[C:3])(-[O;H0;-1:5])-[O:6]-[C:7](=[O:8])-[C:9]'],
                          'pKa':[None,None],
                          'Description':'Nucleophilic addition'},
                       2:{'Templates':['[#6:1]-[O;H0;+0:2]-[C:4](-[C:3])(-[O;H0;-1:5])-[O:6]-[C:7](=[O:8])>>[#6:1]-[O;H0;+0:2]-[C:4](-[C:3])(=[O;H0;+0:5]).[O;H0;-1:6]-[C:7](=[O:8])'],
