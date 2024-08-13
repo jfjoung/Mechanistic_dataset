@@ -228,8 +228,11 @@ def reaction_analysis(input):
             try:
                 check_reaction_validity(rxn_smi)
                 if not check_reaction_validity(rxn_smi):
+                    # print(reaction_info)
+                    # reaction.print_graph()
                     invalid = True
             except Exception as e:
+                # print(e)
                 invalid = True
             if invalid:
                 reaction_smiles = reaction.reaction_smiles
