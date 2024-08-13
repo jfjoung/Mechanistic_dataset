@@ -121,8 +121,10 @@ def get_mechanistic_network(rxn, args):
             if not args.do_not_pruning:
                 try:
                     elem_reactions.graph_pruning()
-                except:
+                except Exception as e:
                     statistic_dict[reaction.reaction_condition] = {'Reaction network pruning error': 1}
+                    if args.verbosity:
+                        logging.info(f'{e}')
                     continue
                 try:
                     elem_reactions.get_elementary_reactions_info()
