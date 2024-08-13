@@ -6,6 +6,7 @@ from collections import defaultdict
 from itertools import product
 import networkx as nx
 from rdkit import Chem, RDLogger
+import copy
 RDLogger.DisableLog('rdApp.*')
 
 
@@ -59,6 +60,9 @@ class Get_Reactions:
     def __init__(self, reaction):
         self.rxn_network = reaction.rxn_network
         self.args = reaction.args
+        self.reaction_class = reaction.reaction_class
+        self.reaction_smiles = reaction.reaction_smiles
+        self.reaction_condition = reaction.reaction_condition
         self.reaction_node = []
         self.reactant_node = []
         self.product_node = []
@@ -67,6 +71,7 @@ class Get_Reactions:
         self.spectator_node = []
         self.pruned_graph = None
         self.reaction_info = None
+        self.rxn_smi = []
         self.find_chemical_nodes()
 
     def find_chemical_nodes(self):
@@ -420,7 +425,7 @@ class Get_Reactions:
 
         """
         args = self.args
-        reaction_info = self.reaction_info
+        reaction_info = copy.deepcopy(self.reaction_info)
         if self.pruned_graph:
             G = self.pruned_graph
         else:
@@ -506,8 +511,11 @@ class Get_Reactions:
                 re_smi = '.'.join([G.nodes[node]['mol_node'].smiles_w_mapping for node in overall_reagent])
                 psmi = '.'.join([G.nodes[node]['mol_node'].smiles_w_mapping for node in overall_product])
             rxn_smi = f'{rsmi}>{re_smi}>{psmi}'
+            
             rxn_smiles.append(rxn_smi)
 
+        self.rxn_smi = rxn_smiles
+        
         return rxn_smiles
 
     def remapping(self, rxn_smi):
