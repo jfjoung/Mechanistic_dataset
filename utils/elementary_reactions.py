@@ -237,8 +237,9 @@ class Get_Reactions:
                     possible_byproduct = [node for node in G.successors(rxnode) if G.nodes[node]['mol_node'].identity in ['byproduct', 'product']]
                     if successor_nodes == possible_byproduct:
                         path_node.append(rxnode)
-                        for nn in successor_nodes:
-                            path_node.append(nn)
+                        for nn in successor_nodes+precursor_nodes:
+                            if nn not in path_node:
+                                path_node.append(nn)
                 
                 # The case where one disconnected node is producing the byproduct in one step
                 elif set(disconnected_intermediates + isolates) & set(precursor_nodes):
@@ -246,8 +247,9 @@ class Get_Reactions:
                     possible_byproduct = [node for node in G.successors(rxnode) if G.nodes[node]['mol_node'].identity in ['byproduct', 'product']]
                     if successor_nodes == possible_byproduct:
                         path_node.append(rxnode)
-                        for nn in successor_nodes:
-                            path_node.append(nn)
+                        for nn in successor_nodes+precursor_nodes:
+                            if nn not in path_node:
+                                path_node.append(nn)
 
             pruned_graph = nx.DiGraph(G.subgraph(path_node))
             isolates = [node for node in nx.isolates(pruned_graph)]

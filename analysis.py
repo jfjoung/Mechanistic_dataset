@@ -228,11 +228,15 @@ def reaction_analysis(input):
             try:
                 check_reaction_validity(rxn_smi)
                 if not check_reaction_validity(rxn_smi):
-                    # print(reaction_info)
-                    # reaction.print_graph()
+                    if args.verbosity:
+                        print(reaction_info)
+                        reaction.print_graph()
+                        print(rxn_smi)
                     invalid = True
             except Exception as e:
-                # print(e)
+                if args.verbosity:
+                    print(rxn_smi)
+                    print(e)
                 invalid = True
             if invalid:
                 reaction_smiles = reaction.reaction_smiles
@@ -317,6 +321,7 @@ def main(args):
         print(f'There are {len(Atom_types)} types of atoms')
 
     if args.validity:
+        print(f'There are {len(invalid_reactions)} invalid reactions')
         with open(validity_file_path, 'w') as fout:
             fout.write('\n'.join(invalid_reactions) + '\n')
 
