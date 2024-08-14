@@ -229,7 +229,7 @@ def reaction_analysis(input):
                 check_reaction_validity(rxn_smi)
                 if not check_reaction_validity(rxn_smi):
                     if args.verbosity:
-                        print(reaction_info)
+                        # print(reaction_info)
                         reaction.print_graph()
                         print(rxn_smi)
                     invalid = True
