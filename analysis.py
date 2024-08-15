@@ -226,12 +226,12 @@ def reaction_analysis(input):
         for rxn_smi in reaction.rxn_smi:
             invalid = False
             try:
-                check_reaction_validity(rxn_smi)
-                if not check_reaction_validity(rxn_smi):
+                result = check_reaction_validity(rxn_smi)
+                if not result:
                     if args.verbosity:
-                        # print(reaction_info)
                         reaction.print_graph()
                         print(rxn_smi)
+                        print(reaction_info)
                     invalid = True
             except Exception as e:
                 if args.verbosity:
