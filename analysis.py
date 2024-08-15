@@ -224,6 +224,7 @@ def reaction_analysis(input):
 
     if args.validity:
         for rxn_smi in reaction.rxn_smi:
+            # print(rxn_smi)
             invalid = False
             try:
                 result = check_reaction_validity(rxn_smi)
@@ -235,8 +236,10 @@ def reaction_analysis(input):
                     invalid = True
             except Exception as e:
                 if args.verbosity:
+                    reaction.print_graph()
                     print(rxn_smi)
                     print(e)
+                    print(reaction_info)
                 invalid = True
             if invalid:
                 reaction_smiles = reaction.reaction_smiles
