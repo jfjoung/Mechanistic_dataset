@@ -1,7 +1,7 @@
 class Args:
     def __init__(self):
         self.num_combination = 30  # Limits the number of possible reactant combinations per template to prevent combinatorial explosion.
-        self.uni_rxn = True  # Adds a unimolecular version of a bimolecular reaction template while retaining the original bimolecular template.
+        self.uni_rxn = False  # Adds a unimolecular version of a bimolecular reaction template while retaining the original bimolecular template.
         self.proton = True  # Ensures proton balance; if True, the program checks if an acid or base from AcidBase_Lookup is present in the reaction flask and adjusts the template on-the-fly to maintain proton balance.
         self.max_num_temp = 30  # Limits the number of possible templates when uni_rxn or proton is set to True, preventing combinatorial explosion.
         self.stoichiometry = True  # Allows adding duplicated reactants to the flask if the stoichiometry of a reactant used more than once is recorded incorrectly.

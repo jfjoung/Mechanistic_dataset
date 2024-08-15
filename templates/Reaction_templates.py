@@ -182,7 +182,7 @@ class_reaction_templates={
 
  ('Aldehyde reductive amination',): {'Reaction': {'Reagent': ['[#6]=[#8]','[#7]'], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[C;H1;+0:1]=[O;+0:2]>>[C;H1;+0:1]=[OH1;+1:2]'],
-     'pKa': [{'A': 17}],
+     'pKa': [{'A': -2}],
      'Description': 'Protonation of aldehyde'},
 
     1: {'Templates': ['[C;H1;+0:1]=[OH1;+1:2].[N;H3;+0:3]>>[N;H3;+1:3]-[C;H1;+0:1]-[OH1;+0:2]',
@@ -701,13 +701,14 @@ class_reaction_templates={
 
     'Reaction with Pd coordinated with 3 or 4 ligands': {'Reagent': ['[Pd;D3,D4;$([Pd](-[*])(-[*])-[*]),$([Pd](-[*])(-[*])(-[*])-[*]);!$([Pd]([Cl,Br,I,O])[Cl,Br,I,O]);+0]'],
                                                          'Exclude_reagent': None,
-                                                         'Stages': {0: {'Templates': ['[Pd;D4;+0:1](-[*:6])(-[*:4])(-[*:5])-[*:8]>>[Pd;+0:1].[*:6].[*:5].[*:4].[*:8]',],
+                                                         'Stages': {
+      0: {'Templates': ['[Pd;D4;+0:1](-[P;H0:6])(-[P;H0:4])(-[P;H0:5])-[P;H0:8]>>[Pd;D3;+0:1](-[P;H0:6])(-[P;H0:4])(-[P;H0:5]).[P;H0:8]',],
      'pKa': [None, ],
      'Description': 'Ligand leaving'},
-      1: {'Templates': ['[Pd;D3;+0:1](-[*:6])(-[*:5])-[*:8]>>[Pd;D2;+0:1](-[*:6])(-[*:5]).[*:8]',],
+      1: {'Templates': ['[Pd;D3;+0:1](-[P;H0:6])(-[P;H0:5])-[P;H0:8]>>[Pd;D2;+0:1](-[P;H0:6])(-[P;H0:5]).[P;H0:8]',],
          'pKa': [None, ],
          'Description': 'Ligand leaving'},
-      2: {'Templates': ['[Pd;D2;+0;!$([Pd]~[Cl,Br,I,O]:1](-[*;!Cl;!Br;!I;!O:6])-[*;!Cl;!Br;!I;!O:5]>>[Pd;+0:1].[*:6].[*:5]',],
+      2: {'Templates': ['[Pd;D2;+0:1](-[P;H0:6])-[P;H0:5]>>[Pd;+0:1].[P;H0:6].[P;H0:5]',],
          'pKa': [None, ],
          'Description': 'Ligand leaving'},
      
@@ -955,14 +956,16 @@ class_reaction_templates={
  ('O-TBS deprotection',
   'O-TBDPS deprotection',
   'O-TIPS deprotection',): {'Fluoride condition': {'Reagent': ['[F;+0;H1]','[O]-[Si]'], 'Exclude_reagent': None,
-   'Stages': {0: {'Templates': ['[#8:1]-[Si;+0:2].[F;H1;+0:3]>>[#8;H1;+1:1]-[Si;-1:2]-[F;H0;+0:3]',
-      '[#8:1]-[Si;+0:2].[F;H0;-1:3]>>[#8:1]-[Si;-1:2]-[F;H0;+0:3]'],
+   'Stages': {0: {'Templates': ['[#8;H0;+0:1]-[Si;+0:2].[F;H1;+0:3]>>[#8;H1;+1:1]-[Si;-1:2]-[F;H0;+0:3]',
+      '[#8;H0;+0:1]-[Si;+0:2].[F;H0;-1:3]>>[#8;H0;+0:1]-[Si;-1:2]-[F;H0;+0:3]'],
      'pKa': [None, None],
      'Description': 'Fluoride addition'},
-    1: {'Templates': ['[#8:1]-[Si;-1:2]-[F;H0;+0:3]>>[#8;-1:1].[Si;+0:2]-[F;H0;+0:3]'],
-     'pKa': [None],
+    1: {'Templates': ['[#8;H1;+1:1]-[Si;-1:2]-[F;H0;+0:3]>>[#8;H1;+0:1].[Si;+0:2]-[F;H0;+0:3]',
+                      '[#8;H0;+0:1]-[Si;-1:2]-[F;H0;+0:3]>>[#8;H0;-1:1].[Si;+0:2]-[F;H0;+0:3]'
+                      ],
+     'pKa': [None, None],
      'Description': 'Si group leaves'},
-    2: {'Templates': ['[#8;-1:1]>>[#8;H1;+0:1]'],
+    2: {'Templates': ['[#8;H0;-1:1]>>[#8;H1;+0:1]'],
      'pKa': [{'A': 15.5}],
      'Description': 'Protonation of alkoxide'}}},
 
