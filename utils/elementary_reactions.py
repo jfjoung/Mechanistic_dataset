@@ -7,6 +7,7 @@ from itertools import product
 import networkx as nx
 from rdkit import Chem, RDLogger
 import copy
+import logging
 RDLogger.DisableLog('rdApp.*')
 
 
@@ -162,10 +163,14 @@ class Get_Reactions:
                                 for path in paths:
                                     shortest_lenght = min(shortest_lenght, len(path))
                                 route_length[node] = shortest_lenght
-                node_close_to_product = min(route_length, key=route_length.get)
+                rxn_keys = {k: v for k, v in route_length.items() if isinstance(k, str) and k.startswith('rxn')}
+                node_close_to_product = min(rxn_keys, key=rxn_keys.get)
 
+                # node_close_to_product = min(route_length, key=route_length.get)
+                # print('node_close_to_product', node_close_to_product)
                 for cycle in cycle_list:
                     if node_close_to_product in cycle:
+                        # print('cycle', cycle)
                         route_to_product.append(cycle)
                         pass
                     else:
@@ -230,6 +235,11 @@ class Get_Reactions:
         if disconnected_intermediates or isolates:
             for rxnode in self.reaction_node:
                 precursor_nodes = [node for node in G.predecessors(rxnode)]
+                # print(precursor_nodes)
+                has_product_as_reactant = any(item in self.product_node for item in precursor_nodes)
+                if has_product_as_reactant:
+                    continue
+                # print(has_product_as_reactant)
 
                 # The case where two disconnected nodes are the reactants for the subsequent reactions
                 if set(precursor_nodes).issubset(set(disconnected_intermediates + isolates)):
@@ -347,14 +357,59 @@ class Get_Reactions:
 
         reaction_node_for_product = [node for node in G.predecessors(self.product_node[0])][0]
 
-
+        
+        new_reaction_paths=[]
+        for path in reaction_paths:
+            new_paths = []
+            for p in nx.all_simple_paths(G, source=path[0], target=reaction_node_for_product):
+                sub_rxn_path = [node for node in p if G.nodes[node]['type'] == 'rxn_node']
+                new_paths.append(sub_rxn_path)
+            unique_to_rxn_node = [item for item in path if all(item not in sublist for sublist in new_paths)]
+            # for sublist in new_paths:
+            #     sublist.extend(unique_to_rxn_node)
+            #     new_reaction_paths.append(sublist)
+            #     
+            # print(unique_to_rxn_node)
+            for node in unique_to_rxn_node:
+                is_connected = False
+                for sublist in new_paths:
+                    for rxn_node in sublist:
+                        try:
+                            if nx.has_path(G, source=rxn_node, target=node) or nx.has_path(G, source=node, target=rxn_node):
+                                is_connected = True
+                                break
+                        except nx.NetworkXNoPath:
+                            continue
+                    if is_connected:
+                        sublist.append(node)
+                        break
+                if not is_connected:
+                    if self.args.verbosity:
+                        logging.info(f"Node {node} is not connected to any paths in new_paths.")
+                    continue
+    
+            new_reaction_paths.extend(new_paths)
+            # for unique_node in unique_to_rxn_node:
+            #     precursor_node = [node for node in G.predecessors(unique_node) if G.nodes[node]['type'] == 'mol_node']
+            #     for sublist in new_paths:
+            #         produced_nodes = []
+            #         for rxn_node in sublist:
+            #             produced_node = [node for node in G.successors(rxn_node) if G.nodes[node]['type'] == 'mol_node']
+            #             produced_nodes += produced_node
+            #         if set(precursor_node).issubset(set(produced_nodes)):
+            #             sublist.append(unique_node)
+            #         new_reaction_paths.append(sublist)
+        # print(new_reaction_paths)
         reaction_info = {}
-        for idx, rxn_path in enumerate(reaction_paths):
+        for idx, rxn_path in enumerate(new_reaction_paths):
             reaction_info_path = {}
-            for rxn_node in rxn_path:
+            passed_node = []
+            for i, rxn_node in enumerate(rxn_path):
+                passed_node.append(rxn_node)
+                # print(rxn_node)
                 #Get reactants and products for this elementary step
                 precursor_nodes = [node for node in G.predecessors(rxn_node)]
-                # print(precursor_nodes)
+                # print('precursor_nodes', precursor_nodes)
                 precursor_atommap = flatten_list([G.nodes[node]['mol_node'].atom_mapping for node in precursor_nodes if G.nodes[node]['type'] == 'mol_node'])
                 # print(precursor_atommap)
                 successor_nodes = [node for node in G.successors(rxn_node)]
@@ -377,13 +432,56 @@ class Get_Reactions:
                                     path = [node for node in path if G.nodes[node]['type'] == 'rxn_node']
                                     not_allowed_nodes = set(path) - set(rxn_path)
                                     if not not_allowed_nodes:
-                                        conmused_reactant_node.append(r_node)
-                                        is_used = True
-                                        break
+                                        if set(path).issubset(set(passed_node)):
+                                            # print(path, passed_node)
+                                            conmused_reactant_node.append(r_node)
+                                            is_used = True
+                                            break
                                 if is_used: break
+                # print(conmused_reactant_node)
+                not_used_reactants = list(set(self.reactant_node) - set(conmused_reactant_node))
 
-                not_used_reactants = set(self.reactant_node) - set(conmused_reactant_node)
-                
+                #Check any intermediates are produced but not consumed yet
+                formed_intermediate_node = []
+
+                if reaction_info_path:
+                    all_reactants = set()
+                    filtered_products = set()
+                    product_usage = {}
+                    for key, reaction in reaction_info_path.items():
+                        if key == 'end rxn': break
+                        all_reactants.update(reaction['reactants'])
+                        filtered_products.update(reaction['products'])
+                        for reactant_id in reaction['reactants']:
+                            if reactant_id in product_usage:
+                                product_usage[reactant_id] -= 1
+                            else:
+                                product_usage[reactant_id] = -1
+                        for product_id in reaction['products']:
+                            if product_id in product_usage:
+                                product_usage[product_id] += 1
+                            else:
+                                product_usage[product_id] = 1
+
+                    formed_products = [k for k, v in product_usage.items() if v > 0]
+
+                    formed_intermediate_node = list(set(formed_products) - set(precursor_nodes) -set(self.product_node + self.byproduct_node))
+
+
+                    # for i_node in produced_nodes:
+                    #     # if i_node in self.intermediate_node:
+                    #       formed_intermediate_node.append(i_node)
+
+                # for i_node in self.intermediate_node:
+                #     for precursor in precursor_nodes:
+                #         if precursor in self.intermediate_node:
+                #             continue
+                #         else:
+                #             is_used = False
+
+                # not_used_reactants = list(set(self.reactant_node) - set(conmused_reactant_node))
+
+
                 #Check the byproducts are formed before
                 produced_byproduct_nodes = []
                 for by_node in self.byproduct_node + self.product_node:
@@ -426,19 +524,51 @@ class Get_Reactions:
                 # print(rxn_node, produced_byproduct_nodes, not_used_reactants)
                 reaction_info_path[rxn_node] = {'reactants': precursor_nodes,
                                                 'products': successor_nodes,
-                                                'not used reactants': not_used_reactants,
+                                                'not used reactants': not_used_reactants+formed_intermediate_node,
                                                 'byproducts': produced_byproduct_nodes,
                                                 'spectators': self.spectator_node}
                 if args.end and rxn_node == reaction_node_for_product:
                     reaction_info_path['end rxn'] = {'reactants': successor_nodes, 'products': successor_nodes,
-                                                    'not used reactants': not_used_reactants,
+                                                    'not used reactants': not_used_reactants+formed_intermediate_node,
                                                     'byproducts': produced_byproduct_nodes,
                                                      'spectators': self.spectator_node}
 
             reaction_info[idx] = reaction_info_path
-        self.reaction_info = reaction_info
-        # print(reaction_info)
+        # print(len(reaction_info))
+        reaction_info = {key: value for key, value in reaction_info.items() if self.check_reaction_consistency(value)}
+
+        unique_reaction_info = {}
+        seen_values = set()
+
+        for key, nested_dict in reaction_info.items():
+            # print(nested_dict)
+            # nested_dict을 frozenset으로 변환하여 중복 확인을 쉽게 함
+            item = frozenset(nested_dict)
+            # print(item)
+            if item  not in seen_values:
+                unique_reaction_info[key] = nested_dict 
+                seen_values.add(item)
+        # print(len(reaction_info))
+        # print(unique_reaction_info)
+        self.reaction_info = unique_reaction_info
+
         # return self.convert_to_smiles()
+
+    def check_reaction_consistency(self, reaction_info):
+        products_set = set(self.reactant_node)
+        
+        for rxn_id, rxn_info in reaction_info.items():
+            for product in rxn_info['products']:
+                products_set.add(product)
+        
+        for rxn_id, rxn_info in reaction_info.items():
+            for reactant in rxn_info['reactants']:
+                if reactant not in products_set:
+                    if self.args.verbosity:
+                        logging.info(f"Inconsistency found in reaction {rxn_id}: reactant {reactant} was never produced.")
+                    return False
+        
+        return True
 
     def convert_to_smiles(self):
         """
@@ -513,9 +643,11 @@ class Get_Reactions:
 
                     rxn_smi = f'{rsmi}>{re_smi}>{psmi}'
                     # if not args.spectator or not args.byproduct:
-                    if not args.plain:
+                    if not args.plain and args.remapping:
                         rxn_smi = self.remapping(rxn_smi)
-                    rxn_smiles.append(rxn_smi)
+                    if rxn_smi not in rxn_smiles:
+                        # print(rxn_node, rxn_smi)
+                        rxn_smiles.append(rxn_smi)
 
 
         if args.full:
