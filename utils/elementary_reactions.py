@@ -354,17 +354,20 @@ class Get_Reactions:
             reaction_paths]
         # print('reaction_paths', reaction_paths)
         # reaction_paths = [sorted(reaction_paths, key=lambda x: int(x.split()[1]))]
-
-        reaction_node_for_product = [node for node in G.predecessors(self.product_node[0])][0]
+        # print([node for node in G.predecessors(self.product_node[0])])
+        # reaction_node_for_product = [node for node in G.predecessors(self.product_node[0])][0]
+        reaction_node_for_product = [node for node in G.predecessors(self.product_node[0])]
 
         
         new_reaction_paths=[]
         for path in reaction_paths:
             new_paths = []
-            for p in nx.all_simple_paths(G, source=path[0], target=reaction_node_for_product):
-                sub_rxn_path = [node for node in p if G.nodes[node]['type'] == 'rxn_node']
-                new_paths.append(sub_rxn_path)
+            for prod_rxn_node in reaction_node_for_product:
+                for p in nx.all_simple_paths(G, source=path[0], target=prod_rxn_node):
+                    sub_rxn_path = [node for node in p if G.nodes[node]['type'] == 'rxn_node']
+                    new_paths.append(sub_rxn_path)
             unique_to_rxn_node = [item for item in path if all(item not in sublist for sublist in new_paths)]
+            # print(unique_to_rxn_node)
             # for sublist in new_paths:
             #     sublist.extend(unique_to_rxn_node)
             #     new_reaction_paths.append(sublist)
@@ -389,6 +392,7 @@ class Get_Reactions:
                     continue
     
             new_reaction_paths.extend(new_paths)
+        # print(new_reaction_paths)
             # for unique_node in unique_to_rxn_node:
             #     precursor_node = [node for node in G.predecessors(unique_node) if G.nodes[node]['type'] == 'mol_node']
             #     for sublist in new_paths:
@@ -536,7 +540,7 @@ class Get_Reactions:
                                                 'not used reactants': not_used_reactants+formed_intermediate_node,
                                                 'byproducts': produced_byproduct_nodes,
                                                 'spectators': self.spectator_node}
-                if args.end and rxn_node == reaction_node_for_product:
+                if args.end and rxn_node in reaction_node_for_product:
                     reaction_info_path['end rxn'] = {'reactants': successor_nodes, 'products': successor_nodes,
                                                     'not used reactants': not_used_reactants+formed_intermediate_node,
                                                     'byproducts': produced_byproduct_nodes,
