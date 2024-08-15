@@ -289,6 +289,7 @@ class Get_Reactions:
             raise ValueError('Too many reaction nodes')
 
         cycle_pathways = [i for i in nx.simple_cycles(G)]
+        # print('cycle_pathways', cycle_pathways)
 
         if cycle_pathways:
             if len(cycle_pathways) > args.num_cycles:
@@ -303,7 +304,24 @@ class Get_Reactions:
                     filtered_cycles.append(filtered_cycle)
             elif len(cycle_pathways) == 1:
                 filtered_cycles = [node for node in cycle_pathways[0] if G.nodes[node]['type'] == 'rxn_node']
+
+            def remove_subsets(filtered_cycles):
+                # Sort the cycles by length, longest first
+                filtered_cycles = sorted(filtered_cycles, key=len, reverse=True)
+                
+                # Initialize a list to hold the filtered results
+                result = []
+                
+                for cycle in filtered_cycles:
+                    # Check if the current cycle is a subset of any already accepted cycle
+                    if not any(set(cycle).issubset(set(res)) for res in result):
+                        result.append(cycle)
+                
+                return result
+
+            filtered_cycles = remove_subsets(filtered_cycles)
             cycle_dict=find_shared_nodes(filtered_cycles)
+            # print('cycle_dict', cycle_dict)
             reaction_nodes_outside=list(set(self.reaction_node)-set(flatten_list(filtered_cycles)))
 
             def create_combinations(cycle_dict):
@@ -311,6 +329,7 @@ class Get_Reactions:
                 sequences = [seq for sequences in cycle_dict.values() for seq in sequences]
                 # Create all possible combinations of one sequence from each group
                 combinations = list(product(*cycle_dict.values()))
+                # print('combinations', combinations)
                 return combinations
 
             combination_of_cycles=create_combinations(cycle_dict) # In case of more than 2 cycles
@@ -321,9 +340,9 @@ class Get_Reactions:
 
         # reaction_paths = [sorted(reactions, key=lambda x: int(x.split()[1])) for reactions in reaction_paths]
         reaction_paths = [
-            sorted(reactions, key=lambda x: int(x.split()[1]) if len(x.split()) > 1 else float('inf')) for reactions in
+            sorted(set(reactions), key=lambda x: int(x.split()[1]) if len(x.split()) > 1 else float('inf')) for reactions in
             reaction_paths]
-
+        # print('reaction_paths', reaction_paths)
         # reaction_paths = [sorted(reaction_paths, key=lambda x: int(x.split()[1]))]
 
         reaction_node_for_product = [node for node in G.predecessors(self.product_node[0])][0]
