@@ -443,7 +443,8 @@ class Get_Reactions:
 
                 #Check any intermediates are produced but not consumed yet
                 formed_intermediate_node = []
-
+                produced_byproduct_nodes = []
+                product_is_formed = False
                 if reaction_info_path:
                     all_reactants = set()
                     filtered_products = set()
@@ -462,10 +463,13 @@ class Get_Reactions:
                                 product_usage[product_id] += 1
                             else:
                                 product_usage[product_id] = 1
+                            if product_id in self.product_node:
+                                product_is_formed = True
 
                     formed_products = [k for k, v in product_usage.items() if v > 0]
 
                     formed_intermediate_node = list(set(formed_products) - set(precursor_nodes) -set(self.product_node + self.byproduct_node))
+                    produced_byproduct_nodes = list(set(self.byproduct_node) & set(formed_products))
 
 
                     # for i_node in produced_nodes:
@@ -483,45 +487,50 @@ class Get_Reactions:
 
 
                 #Check the byproducts are formed before
-                produced_byproduct_nodes = []
-                for by_node in self.byproduct_node + self.product_node:
-                    reaction_node_for_byproduct = [node for node in G.predecessors(by_node)][0]
-                    by_node_atommap = G.nodes[by_node]['mol_node'].atom_mapping
-                    # print('by_node_mapping',by_node_atommap)
-                    if set(by_node_atommap) & set(precursor_atommap):
-                        continue
+                # produced_byproduct_nodes = []
+                # for by_node in self.byproduct_node + self.product_node:
+                #     reaction_node_for_byproduct = [node for node in G.predecessors(by_node)][0]
+                #     by_node_atommap = G.nodes[by_node]['mol_node'].atom_mapping
+                #     # print('by_node_mapping',by_node_atommap)
+                #     if set(by_node_atommap) & set(precursor_atommap):
+                #         continue
 
-                    if reaction_node_for_byproduct not in rxn_path:
-                        #This byproduct cannot be formed in this pathway
-                        continue
+                #     if reaction_node_for_byproduct not in rxn_path:
+                #         #This byproduct cannot be formed in this pathway
+                #         continue
 
-                    for precursor in precursor_nodes:
-                        is_produced = False
-                        if precursor in self.reactant_node:
-                            continue
-                        try:
-                            paths_between_two=[path for path in nx.all_shortest_paths(G, source=reaction_node_for_byproduct, target=precursor)]
-                        except Exception as e:
-                            continue
+                #     for precursor in precursor_nodes:
+                #         is_produced = False
+                #         if precursor in self.reactant_node:
+                #             continue
+                #         try:
+                #             paths_between_two=[path for path in nx.all_shortest_paths(G, source=reaction_node_for_byproduct, target=precursor)]
+                #         except Exception as e:
+                #             continue
 
-                        for path in paths_between_two:
-                            if reaction_node_for_product not in path:
-                                is_there_reactant = any(element in self.reactant_node for element in path)
-                                if is_there_reactant: continue
-                                if reaction_node_for_product in path:
-                                    further_reacting_intermidiate = [node for node in
-                                                                     G.successors(reaction_node_for_product) if
-                                                                     G.nodes[node]['mol_node'].identity == 'intermediate']
-                                    if not further_reacting_intermidiate:
-                                        continue
-                                path=[node for node in path if G.nodes[node]['type'] == 'rxn_node']
-                                not_allowed_nodes = set(path) - set(rxn_path)
-                                if not not_allowed_nodes and rxn_node not in path:
-                                    produced_byproduct_nodes.append(by_node)
-                                    is_produced=True
-                                    break
-                        if is_produced: break
+                        # for path in paths_between_two:
+                        #     if reaction_node_for_product not in path:
+                        #         is_there_reactant = any(element in self.reactant_node for element in path)
+                        #         if is_there_reactant: continue
+                        #         if reaction_node_for_product in path:
+                        #             further_reacting_intermidiate = [node for node in
+                        #                                              G.successors(reaction_node_for_product) if
+                        #                                              G.nodes[node]['mol_node'].identity == 'intermediate']
+                        #             if not further_reacting_intermidiate:
+                        #                 continue
+                        #         path=[node for node in path if G.nodes[node]['type'] == 'rxn_node']
+                        #         not_allowed_nodes = set(path) - set(rxn_path)
+                        #         if not not_allowed_nodes and rxn_node not in path:
+                        #             produced_byproduct_nodes.append(by_node)
+                        #             is_produced=True
+                        #             break
+                        # if is_produced: break
                 # print(rxn_node, produced_byproduct_nodes, not_used_reactants)
+
+                if product_is_formed:
+                    if not any(element in self.product_node for element in successor_nodes):
+                        produced_byproduct_nodes += self.product_node
+                        
                 reaction_info_path[rxn_node] = {'reactants': precursor_nodes,
                                                 'products': successor_nodes,
                                                 'not used reactants': not_used_reactants+formed_intermediate_node,

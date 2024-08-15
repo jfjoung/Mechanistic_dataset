@@ -61,8 +61,15 @@ class Reaction_Network:
             self.atom_map = mol_node.add_reactant(self.atom_map)
             mol_node.index = i
             G.add_node(i, mol_node=mol_node, type='mol_node')
+        
+        if len(pmol) > 1:
+            pmol_dict = {}
+            for p in pmol:
+                pmol_dict[p] = p.GetNumHeavyAtoms()
+            pmol = max(pmol_dict, key=pmol_dict.get)
+        else: pmol = pmol[0]
 
-        pmol = Chem.MolFromSmiles(Chem.MolToSmiles(pmol[0]))  # TODO: If products are multiple, it needs to pick the major product.
+        pmol = Chem.MolFromSmiles(Chem.MolToSmiles(pmol))  # TODO: If products are multiple, it needs to pick the major product.
         pmol_node = molecule_process.Molecule_Node(pmol, self.args)
         pmol_node.add_product()
         self.recorded_product = pmol_node
