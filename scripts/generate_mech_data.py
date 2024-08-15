@@ -113,6 +113,8 @@ def get_mechanistic_network(rxn, args):
             except Exception as e:
                 if first_error == 0:
                     first_error = 3
+                if args.verbosity:
+                    logging.info(f'{e}')
                 continue
 
         if reaction.is_product_formed():
@@ -128,14 +130,18 @@ def get_mechanistic_network(rxn, args):
                     continue
                 try:
                     elem_reactions.get_elementary_reactions_info()
-                except:
+                except Exception as e:
                     statistic_dict[reaction.reaction_condition] = {'Getting reaction info. error': 1}
+                    if args.verbosity:
+                        logging.info(f'{e}')
                     continue
 
             try:
                 rxn_smi = elem_reactions.convert_to_smiles()
-            except:
+            except Exception as e:
                 statistic_dict[reaction.reaction_condition] = {'Conversion to SMILES error': 1}
+                if args.verbosity:
+                    logging.info(f'{e}')
                 continue
 
             if args.all_info:
