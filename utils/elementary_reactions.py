@@ -132,9 +132,23 @@ class Get_Reactions:
         
         elif G.nodes[node_id]['type'] == 'mol_node':
             return G.nodes[node_id]['mol_node']
+        
+    def get_successful_reaction_path(self, G, reaction_path):
+        rp_set, successful_reaction_path = set(), []
+        for path in reaction_path:
+            successors = {node for rxn_node in path for node in G.successors(rxn_node)}
+            predecessors = {node for rxn_node in path for node in G.predecessors(rxn_node)}
+            intermediates = predecessors - set(self.reactant_node)
+
+            if intermediates.issubset(successors) and frozenset([frozenset(successors), frozenset(predecessors)]) not in rp_set:
+                rp_set.add(frozenset([frozenset(successors), frozenset(predecessors)]))
+                successful_reaction_path.append(path)
+        return successful_reaction_path
 
     def graph_pruning(self):
         G = self.rxn_network
+        if len(self.reaction_node) > self.args.num_reaction_node:
+            raise ValueError('Too many reaction nodes')
         reaction_path = []
 
         cycle_pathways = [i for i in nx.simple_cycles(G)]
@@ -146,7 +160,6 @@ class Get_Reactions:
             """If there are cycles, 
             check if the cycle is not related to product formation, and record them in route_to_impurity
             """
-
             route_to_product = []
             route_length = {}
             for shared_node, cycle_list in shared_cycles.items():
@@ -193,6 +206,11 @@ class Get_Reactions:
 
 
         # Get every reaction node connecting the reactants and products
+        # reaction_node_for_product = [node for node in G.predecessors(self.product_node[0])]
+        # print(reaction_node_for_product)
+        # for rxnode in reaction_node_for_product:
+        #     precursor_nodes = [node for node in G.predecessors(rxnode)]
+        #     print(precursor_nodes)
         for rnode in self.reactant_node:
             for pnode in self.product_node:
                 try:
@@ -202,16 +220,34 @@ class Get_Reactions:
                         if any(node in route_to_impurity for node in rxn_path):
                             continue
                         # print(rxn_path)
-                        reaction_path.append(rxn_path)
+                        if rxn_path not in reaction_path:
+                            reaction_path.append(rxn_path)
                 except nx.NetworkXNoPath:
                     # print('no path')
                     continue
+        # print(reaction_path) 
+        # rp_set = set()
+        # successful_reaction_path = []
 
-        reaction_path = flatten_list(reaction_path)
+        # for path in reaction_path:
+        #     successors = {node for rxn_node in path for node in G.successors(rxn_node)}
+        #     predecessors = {node for rxn_node in path for node in G.predecessors(rxn_node)}
+        #     intermediates = predecessors - set(self.reactant_node)
+
+        #     if intermediates.issubset(successors) and frozenset([frozenset(successors), frozenset(predecessors)]) not in rp_set:
+        #         rp_set.add(frozenset([frozenset(successors), frozenset(predecessors)]))
+        #         successful_reaction_path.append(path)
+        #         # print(successor, predecessors, path)
+
+        successful_reaction_path = self.get_successful_reaction_path(G, reaction_path)
+        # print(successful_reaction_path)
+        reaction_path = flatten_list(successful_reaction_path)
         reaction_path = list(set(reaction_path))
         # print('reaction_path', reaction_path)
 
         # Get all neighbors of the reaction nodes
+        reaction_path = sorted(reaction_path, key=lambda x: int(x.split()[1]))
+        
         path_node = []
         for reaction_node in reaction_path:
             path_node.append(reaction_node)
@@ -270,7 +306,7 @@ class Get_Reactions:
                 raise ValueError(f'There is disconnected intermediate!{disconnected_intermediates, isolates}') #TODO: If there are two or more disconnected intermediates, find a route connecting them.
 
         
-
+        # self.print_graph()
         # Those nodes were reactants, but now they are spectators
         missing_reactant_nodes = [node_id for node_id in self.reactant_node if node_id not in pruned_graph.nodes]
         for node in missing_reactant_nodes:
@@ -344,14 +380,29 @@ class Get_Reactions:
 
             combination_of_cycles=create_combinations(cycle_dict) # In case of more than 2 cycles
             reaction_paths=[flatten_list(list(combi)+reaction_nodes_outside) for combi in combination_of_cycles]
-        else: reaction_paths = [self.reaction_node]
+        else: 
+            reaction_paths = []
+            for rnode in self.reactant_node:
+                for pnode in self.product_node:
+                    try:
+                        paths = nx.all_shortest_paths(G, source=rnode, target=pnode)
+                        for path in paths:
+                            rxn_path = [node for node in path if G.nodes[node]['type'] == 'rxn_node']
+                            if rxn_path not in reaction_paths:
+                                reaction_paths.append(rxn_path)
+                    except nx.NetworkXNoPath:
+                        continue
+            # reaction_paths = [self.reaction_node]
+        # print('reaction_paths', reaction_paths)
+        successful_reaction_path = self.get_successful_reaction_path(G, reaction_paths)
 
+        # print('Hi', successful_reaction_path)
         #Sorting the reactions
 
         # reaction_paths = [sorted(reactions, key=lambda x: int(x.split()[1])) for reactions in reaction_paths]
         reaction_paths = [
             sorted(set(reactions), key=lambda x: int(x.split()[1]) if len(x.split()) > 1 else float('inf')) for reactions in
-            reaction_paths]
+            successful_reaction_path]
         # print('reaction_paths', reaction_paths)
         # reaction_paths = [sorted(reaction_paths, key=lambda x: int(x.split()[1]))]
         # print([node for node in G.predecessors(self.product_node[0])])
@@ -540,7 +591,7 @@ class Get_Reactions:
                                                 'not used reactants': not_used_reactants+formed_intermediate_node,
                                                 'byproducts': produced_byproduct_nodes,
                                                 'spectators': self.spectator_node}
-                if args.end and rxn_node in reaction_node_for_product:
+                if self.args.end and rxn_node in reaction_node_for_product:
                     reaction_info_path['end rxn'] = {'reactants': successor_nodes, 'products': successor_nodes,
                                                     'not used reactants': not_used_reactants+formed_intermediate_node,
                                                     'byproducts': produced_byproduct_nodes,
@@ -562,7 +613,6 @@ class Get_Reactions:
                 unique_reaction_info[key] = nested_dict 
                 seen_values.add(item)
         # print(len(reaction_info))
-        # print(unique_reaction_info)
         self.reaction_info = unique_reaction_info
 
         # return self.convert_to_smiles()
