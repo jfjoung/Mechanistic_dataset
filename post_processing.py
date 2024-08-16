@@ -5,15 +5,15 @@ from utils.explicit_H import modify_explicit_H
 from utils.validity_check import check_reaction_validity, remapping
 from scripts.setting import Args
 
-def process_reaction(implicit_rxn):
+def process_reaction(rxn):
     """Process a single reaction, modify explicit H and check validity."""
+    # try:
+    #     H_rxn, _ = modify_explicit_H(rxn)
+    # except:
+    #     return None
     try:
-        H_rxn, _ = modify_explicit_H(implicit_rxn)
-    except:
-        return None
-    try:
-        if check_reaction_validity(H_rxn):
-            return remapping(H_rxn)
+        if check_reaction_validity(rxn):
+            return rxn # remapping(H_rxn)
         else: return None
     except:
         return None
