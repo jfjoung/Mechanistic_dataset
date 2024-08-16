@@ -121,20 +121,33 @@ class Reaction_Network:
                     logging.info(f'Reactants are {printing_rsmi}')
 
                 for outcome in outcomes:
-                    # pmols_index = []
                     rxn_node = {'template': templ, 'description': template.description}
                     produced_molecule_idx = self.find_duplicated_outcomes(outcome)
                     # print('produced_molecule_idx', produced_molecule_idx)
-
+                    
                     if produced_molecule_idx:
-                        rxn_node_count = len([node for node, data in G.nodes(data=True) if data['type'] == 'rxn_node'])
-                        # print('rxn_node_count', rxn_node_count)
-                        G.add_node(f'rxn {rxn_node_count}', rxn_node=rxn_node, type='rxn_node')
+                        # Check if a connection already exists between ridx and pidx through an existing rxn_node
+                        connection_exists = False
+                        for rxnnode in [node for node, data in G.nodes(data=True) if data['type'] == 'rxn_node']:
+                            # Check if all reactants are connected to this rxn_node
+                            reactants_connected = all(rxnnode in G.successors(ridx) for ridx in reactant)
+                            
+                            # Check if all products are connected to this rxn_node
+                            products_connected = all(pidx in G.successors(rxnnode) for pidx in produced_molecule_idx)
 
-                        for ridx in reactant:
-                            G.add_edge(ridx, f'rxn {rxn_node_count}')
-                        for pidx in produced_molecule_idx:
-                            G.add_edge(f'rxn {rxn_node_count}', pidx)
+                            # If all reactants and products are connected through this rxn_node, set the flag
+                            if reactants_connected and products_connected:
+                                connection_exists = True
+                                break
+                        # If no existing rxn_node connects ridx and pidx, create a new rxn_node
+                        if not connection_exists:
+                            rxn_node_count = len([node for node, data in G.nodes(data=True) if data['type'] == 'rxn_node'])
+                            
+                            G.add_node(f'rxn {rxn_node_count}', rxn_node=rxn_node, type='rxn_node')
+                            for ridx in reactant:
+                                G.add_edge(ridx, f'rxn {rxn_node_count}')
+                            for pidx in produced_molecule_idx:
+                                G.add_edge(f'rxn {rxn_node_count}', pidx)
 
     def find_duplicated_outcomes(self, outcome):
         G = self.rxn_network
@@ -161,7 +174,7 @@ class Reaction_Network:
             for combi in combinations:
                 flask_atommap = flatten_list([G.nodes[idx]['mol_node'].atom_mapping for idx in combi])
                 if set(query_mol_atommap) == set(flask_atommap):
-                    return False #No need to add
+                    return list(combi)  # False #No need to add
 
         #If there is not a set matching with a set in the flask, then examine individual chemicals
         #If chemical is in the flask, return its index
