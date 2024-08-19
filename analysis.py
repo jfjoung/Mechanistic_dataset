@@ -163,12 +163,13 @@ def reaction_analysis(input):
                 rnodes = chemicals['reactants']
                 pnodes = chemicals['products']
                 if rnodes != pnodes:
+                    rp_count = f"{len(rnodes)}r{len(pnodes)}p"
+                    if rp_count in rp_dict:
+                        rp_dict[rp_count] += 1
+                    else:
+                        rp_dict[rp_count] = 1
+
                     try:
-                        rp_count = f"{len(rnodes)}r{len(pnodes)}p"
-                        if rp_count in rp_dict:
-                            rp_dict[rp_count] += 1
-                        else:
-                            rp_dict[rp_count] = 1
 
                         rsmi = '.'.join([reaction.get_node(node_id).smiles_w_mapping for node_id in rnodes])
                         psmi = '.'.join([reaction.get_node(node_id).smiles_w_mapping for node_id in pnodes])
@@ -180,8 +181,21 @@ def reaction_analysis(input):
                             ers_dict[ers] += 1
                         else:
                             ers_dict[ers] = 1
-                    except:
+
+                    except Exception as e:
+                        if args.verbosity:
+                            print(e)
+                            print(reaction.reaction_smiles)
+                            print(chemicals)
+                            print(reaction.reaction_class)
+                            print(reaction.reaction_condition)
                         continue
+                else:
+                    ers = "b0f0"
+                    if ers in ers_dict:
+                        ers_dict[ers] += 1
+                    else:
+                        ers_dict[ers] = 1
 
     if args.mol_analysis:
         chemical_nodes = reaction.reactant_node + reaction.product_node + reaction.byproduct_node + reaction.intermediate_node + reaction.spectator_node
