@@ -120,6 +120,7 @@ def template_analysis(args):
     reaction_name = []
     for rxnclass in Reaction_templates.class_reaction_templates.keys():
         for rxn in rxnclass:
+            # print(rxn)
             reaction_name.append(rxn)
 
     print(f"Covered reaction classes: {len(reaction_name)}")
@@ -316,83 +317,84 @@ def main(args):
     if args.template_analysis:
         template_analysis(args)
 
-    items = loadall(save_file)
-    ers_dict = {}
-    bond_change_types = {}
-    rp_dict = {}
+    if args.ERS_analysis or args.mol_analysis or args.validity:
+        items = loadall(save_file)
+        ers_dict = {}
+        bond_change_types = {}
+        rp_dict = {}
 
-    smiles_identity = {}
-    MW_dict = {}
-    Atom_dict = {}
-    Atom_types = {}
+        smiles_identity = {}
+        MW_dict = {}
+        Atom_dict = {}
+        Atom_types = {}
 
-    invalid_reactions = []
-    num_invalid = 0
-    total_rxn = 0 
-    p = Pool(args.process)
+        invalid_reactions = []
+        num_invalid = 0
+        total_rxn = 0 
+        p = Pool(args.process)
 
-    iterables = [(rxn, args) for reactions in tqdm(items, desc="Data loading") for rxn in reactions]
+        iterables = [(rxn, args) for reactions in tqdm(items, desc="Data loading") for rxn in reactions]
 
-    for results in tqdm(p.imap_unordered(reaction_analysis, iterables), total=len(iterables)):
-        ers, rp, bc, iden, invalid, num, tot = results
+        for results in tqdm(p.imap_unordered(reaction_analysis, iterables), total=len(iterables)):
+            ers, rp, bc, iden, invalid, num, tot = results
 
-        merge_dicts(ers_dict, ers)
-        merge_dicts(rp_dict, rp)
-        merge_dicts(bond_change_types, bc)
-        merge_dicts(smiles_identity, iden)
-        num_invalid += num
-        total_rxn += tot
-        if invalid is not None:
-            invalid_reactions.append(invalid)
+            merge_dicts(ers_dict, ers)
+            merge_dicts(rp_dict, rp)
+            merge_dicts(bond_change_types, bc)
+            merge_dicts(smiles_identity, iden)
+            num_invalid += num
+            total_rxn += tot
+            if invalid is not None:
+                invalid_reactions.append(invalid)
 
-    if args.ERS_analysis:
-        ers_df = pd.DataFrame(list(ers_dict.items()), columns=['Types', 'Count']).sort_values(by='Types')
-        ers_df.to_csv(ers_file_path, index=False)
+        if args.ERS_analysis:
+            ers_df = pd.DataFrame(list(ers_dict.items()), columns=['Types', 'Count']).sort_values(by='Types')
+            ers_df.to_csv(ers_file_path, index=False)
 
-        rp_df = pd.DataFrame(list(rp_dict.items()), columns=['Types', 'Count']).sort_values(by='Types')
-        rp_df.to_csv(rp_file_path, index=False)
+            rp_df = pd.DataFrame(list(rp_dict.items()), columns=['Types', 'Count']).sort_values(by='Types')
+            rp_df.to_csv(rp_file_path, index=False)
 
-        bc_df = pd.DataFrame(list(bond_change_types.items()), columns=['Types', 'Count']).sort_values(by='Count', ascending=False)
-        bc_df.to_csv(bc_file_path, index=False)
+            bc_df = pd.DataFrame(list(bond_change_types.items()), columns=['Types', 'Count']).sort_values(by='Count', ascending=False)
+            bc_df.to_csv(bc_file_path, index=False)
 
-    if args.mol_analysis:
-        print(f'There are {len(smiles_identity)} unique molecules')
+        if args.mol_analysis:
+            print(f'There are {len(smiles_identity)} unique molecules')
 
-        mol_file_path = f"{base_file_root}_molecule_dict.json"
-        with open(mol_file_path, 'w') as file:
-            json.dump(smiles_identity, file, indent=4)
+            mol_file_path = f"{base_file_root}_molecule_dict.json"
+            with open(mol_file_path, 'w') as file:
+                json.dump(smiles_identity, file, indent=4)
 
-        # with open(mol_file_path, 'r') as file:
-        #     smiles_identity = json.load(file)
+            # with open(mol_file_path, 'r') as file:
+            #     smiles_identity = json.load(file)
 
-        iterables2 = [(key, value) for key, value in smiles_identity.items()]
+            iterables2 = [(key, value) for key, value in smiles_identity.items()]
 
-        for results2 in tqdm(p.imap_unordered(mol_analysis, iterables2), total=len(iterables2)):
-            mw, atom_count, atom_type = results2
-            merge_dicts(MW_dict, mw)
-            merge_dicts(Atom_dict, atom_count)
-            merge_dicts(Atom_types, atom_type)
+            for results2 in tqdm(p.imap_unordered(mol_analysis, iterables2), total=len(iterables2)):
+                mw, atom_count, atom_type = results2
+                merge_dicts(MW_dict, mw)
+                merge_dicts(Atom_dict, atom_count)
+                merge_dicts(Atom_types, atom_type)
 
-        MW_df = pd.DataFrame.from_dict(MW_dict, orient='index')
-        MW_df = MW_df.transpose().fillna(0).sort_index()
-        MW_df.to_csv(MW_file_path, index_label="Molecular weight")
+            MW_df = pd.DataFrame.from_dict(MW_dict, orient='index')
+            MW_df = MW_df.transpose().fillna(0).sort_index()
+            MW_df.to_csv(MW_file_path, index_label="Molecular weight")
 
-        atom_df = pd.DataFrame.from_dict(Atom_dict, orient='index')
-        atom_df = atom_df.transpose().fillna(0).sort_index()
-        atom_df.to_csv(AtomCount_file_path, index_label="Number of heavy atoms")
+            atom_df = pd.DataFrame.from_dict(Atom_dict, orient='index')
+            atom_df = atom_df.transpose().fillna(0).sort_index()
+            atom_df.to_csv(AtomCount_file_path, index_label="Number of heavy atoms")
 
-        atomtype_df =pd.DataFrame(list(Atom_types.items()), columns=['Types', 'Count']).sort_values(by='Count', ascending=False)
-        atomtype_df.to_csv(AtomTypes_file_path, index=False)
+            atomtype_df =pd.DataFrame(list(Atom_types.items()), columns=['Types', 'Count']).sort_values(by='Count', ascending=False)
+            atomtype_df.to_csv(AtomTypes_file_path, index=False)
 
-        print(f'There are {len(Atom_types)} types of atoms')
+            print(f'There are {len(Atom_types)} types of atoms')
 
-    if args.validity:
-        print(f'Total {len(invalid_reactions)} overall reactions conatin invalid elementary steps')
-        with open(validity_file_path, 'w') as fout:
-            fout.write('\n'.join(invalid_reactions) + '\n')
+        if args.validity:
+            print(f'Total {len(invalid_reactions)} overall reactions conatin invalid elementary steps')
+            with open(validity_file_path, 'w') as fout:
+                fout.write('\n'.join(invalid_reactions) + '\n')
 
-        percent_remaining = (num_invalid / total_rxn) * 100
-        print(f'Total {num_invalid} elementary reactions are invalid out of {total_rxn} ({percent_remaining:.1f}%)')
+            percent_remaining = (num_invalid / total_rxn) * 100
+            print(f'Total {num_invalid} elementary reactions are invalid out of {total_rxn} ({percent_remaining:.1f}%)')
 
 
  
