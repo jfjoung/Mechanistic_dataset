@@ -1451,7 +1451,7 @@ class_reaction_templates={
 
 'Reaction with Pd coordinated with 3 or 4 ligands': {'Reagent': ['[Pd;D3,D4;$([Pd](-[*])(-[*])-[*]),$([Pd](-[*])(-[*])(-[*])-[*]);!$([Pd]([Cl,Br,I,O])[Cl,Br,I,O]);+0]'],
                                                      'Exclude_reagent': None,
-     'Stages': {0: {'Templates': ['[Pd;D4;+0:1](-[*:6])(-[*:4])(-[*:5])-[*:8]>>[Pd;+0:1].[*:6].[*:5].[*:4].[*:8]',],
+     'Stages': {0: {'Templates': ['[Pd;D4;+0:1](-[*:6])(-[*:4])(-[*:5])-[*:8]>>[Pd;D3;+0:1](-[*:6])(-[*:4])(-[*:5]).[*:8]',],
      'pKa': [None, ],
      'Description': 'Ligand leaving'},
       1: {'Templates': ['[Pd;D3;+0:1](-[*:6])(-[*:5])-[*:8]>>[Pd;D2;+0:1](-[*:6])(-[*:5]).[*:8]',],

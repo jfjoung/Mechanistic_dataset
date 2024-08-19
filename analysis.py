@@ -8,6 +8,7 @@ from templates import AcidBase_lookup, Reaction_templates
 from multiprocessing import Pool
 from tqdm import tqdm
 import pandas as pd
+import json
 from utils.validity_check import check_reaction_validity
 
 def loadall(filename):
@@ -100,6 +101,8 @@ def get_bond_edits(rxn_smi):
         ers += f"b{negative_count}"
     if positive_count > 0:
         ers += f"f{positive_count}"
+    if negative_count == 0 and positive_count == 0:
+        ers = "b0f0"
 
     return ers, bond_change_types
 
@@ -149,13 +152,9 @@ def reaction_analysis(input):
 
     #Mol
     smiles_identity = {}
-    MW_dict = {}
-    Atom_dict = {}
-    Atom_types = {}
 
     invalid_reaction = None
-
-    
+    num_invalid = 0
     reaction_info = reaction.reaction_info
 
     if args.ERS_analysis:
@@ -198,29 +197,29 @@ def reaction_analysis(input):
                 else:
                     smiles_identity[smi][identity] = 1
 
-            mol = Chem.MolFromSmiles(smi, sanitize=False)
-            mol.UpdatePropertyCache(strict=False)
-            Chem.SanitizeMol(mol,
-                            Chem.SanitizeFlags.SANITIZE_FINDRADICALS | Chem.SanitizeFlags.SANITIZE_SETAROMATICITY | Chem.SanitizeFlags.SANITIZE_SETCONJUGATION | Chem.SanitizeFlags.SANITIZE_SETHYBRIDIZATION | Chem.SanitizeFlags.SANITIZE_SYMMRINGS,
-                            catchErrors=True)
+            # mol = Chem.MolFromSmiles(smi, sanitize=False)
+            # mol.UpdatePropertyCache(strict=False)
+            # Chem.SanitizeMol(mol,
+            #                 Chem.SanitizeFlags.SANITIZE_FINDRADICALS | Chem.SanitizeFlags.SANITIZE_SETAROMATICITY | Chem.SanitizeFlags.SANITIZE_SETCONJUGATION | Chem.SanitizeFlags.SANITIZE_SETHYBRIDIZATION | Chem.SanitizeFlags.SANITIZE_SYMMRINGS,
+            #                 catchErrors=True)
             
-            mass = round(Descriptors.MolWt(mol))
-            atom_count = mol.GetNumHeavyAtoms()
+            # mass = round(Descriptors.MolWt(mol))
+            # atom_count = mol.GetNumHeavyAtoms()
 
-            atom_type = {}
-            for a in mol.GetAtoms():
-                symbol = a.GetSymbol()
-                if symbol not in atom_type:
-                    atom_type[symbol] = 1
-                else:
-                    atom_type[symbol] += 1
-            merge_dicts(Atom_types, atom_type)
+            # atom_type = {}
+            # for a in mol.GetAtoms():
+            #     symbol = a.GetSymbol()
+            #     if symbol not in atom_type:
+            #         atom_type[symbol] = 1
+            #     else:
+            #         atom_type[symbol] += 1
+            # merge_dicts(Atom_types, atom_type)
 
 
-            mw_dict = {identity: {mass: 1}}
-            atom_dict = {identity: {atom_count: 1}}
-            merge_dicts(MW_dict, mw_dict)
-            merge_dicts(Atom_dict, atom_dict)
+            # mw_dict = {identity: {mass: 1}}
+            # atom_dict = {identity: {atom_count: 1}}
+            # merge_dicts(MW_dict, mw_dict)
+            # merge_dicts(Atom_dict, atom_dict)
 
     if args.validity:
         for rxn_smi in reaction.rxn_smi:
@@ -245,11 +244,45 @@ def reaction_analysis(input):
                 reaction_smiles = reaction.reaction_smiles
                 reaction_class = reaction.reaction_class
                 invalid_reaction = f'{reaction_smiles} {reaction_class}'
-                break
+                if args.verbosity:
+                    break
+                else: num_invalid += 1
 
-    return ers_dict, rp_dict, bond_change_types, smiles_identity, MW_dict, Atom_dict, Atom_types, invalid_reaction
+    return ers_dict, rp_dict, bond_change_types, smiles_identity, invalid_reaction, num_invalid, len(reaction.rxn_smi)
 
-        
+
+def mol_analysis(input):
+    smi, identity_dict = input
+    
+    MW_dict = {}
+    Atom_dict = {}
+    Atom_types = {}
+    mol = Chem.MolFromSmiles(smi, sanitize=False)
+    mol.UpdatePropertyCache(strict=False)
+    Chem.SanitizeMol(mol,
+                    Chem.SanitizeFlags.SANITIZE_FINDRADICALS | Chem.SanitizeFlags.SANITIZE_SETAROMATICITY | Chem.SanitizeFlags.SANITIZE_SETCONJUGATION | Chem.SanitizeFlags.SANITIZE_SETHYBRIDIZATION | Chem.SanitizeFlags.SANITIZE_SYMMRINGS,
+                    catchErrors=True)
+    
+    mass = round(Descriptors.MolWt(mol))
+    atom_count = mol.GetNumHeavyAtoms()
+
+    atom_type = {}
+    for a in mol.GetAtoms():
+        symbol = a.GetSymbol()
+        if symbol not in atom_type:
+            atom_type[symbol] = 1
+        else:
+            atom_type[symbol] += 1
+    merge_dicts(Atom_types, atom_type)
+
+    for key, value in identity_dict.items():
+        if value > 0:
+            mw_dict = {key: {mass: 1}}
+            atom_dict = {key: {atom_count: 1}}
+    merge_dicts(MW_dict, mw_dict)
+    merge_dicts(Atom_dict, atom_dict)
+
+    return MW_dict, Atom_dict, Atom_types 
 
 def main(args):
     save_file = args.data
@@ -280,20 +313,21 @@ def main(args):
     Atom_types = {}
 
     invalid_reactions = []
+    num_invalid = 0
+    total_rxn = 0 
     p = Pool(args.process)
 
     iterables = [(rxn, args) for reactions in tqdm(items, desc="Data loading") for rxn in reactions]
 
     for results in tqdm(p.imap_unordered(reaction_analysis, iterables), total=len(iterables)):
-        ers, rp, bc, iden, mw, atom_count, atom_type, invalid = results
+        ers, rp, bc, iden, invalid, num, tot = results
 
         merge_dicts(ers_dict, ers)
         merge_dicts(rp_dict, rp)
         merge_dicts(bond_change_types, bc)
         merge_dicts(smiles_identity, iden)
-        merge_dicts(MW_dict, mw)
-        merge_dicts(Atom_dict, atom_count)
-        merge_dicts(Atom_types, atom_type)
+        num_invalid += num
+        total_rxn += tot
         if invalid is not None:
             invalid_reactions.append(invalid)
 
@@ -310,6 +344,21 @@ def main(args):
     if args.mol_analysis:
         print(f'There are {len(smiles_identity)} unique molecules')
 
+        mol_file_path = f"{base_file_root}_molecule_dict.json"
+        with open(mol_file_path, 'w') as file:
+            json.dump(smiles_identity, file, indent=4)
+
+        # with open(mol_file_path, 'r') as file:
+        #     smiles_identity = json.load(file)
+
+        iterables2 = [(key, value) for key, value in smiles_identity.items()]
+
+        for results2 in tqdm(p.imap_unordered(mol_analysis, iterables2), total=len(iterables2)):
+            mw, atom_count, atom_type = results2
+            merge_dicts(MW_dict, mw)
+            merge_dicts(Atom_dict, atom_count)
+            merge_dicts(Atom_types, atom_type)
+
         MW_df = pd.DataFrame.from_dict(MW_dict, orient='index')
         MW_df = MW_df.transpose().fillna(0).sort_index()
         MW_df.to_csv(MW_file_path, index_label="Molecular weight")
@@ -324,10 +373,15 @@ def main(args):
         print(f'There are {len(Atom_types)} types of atoms')
 
     if args.validity:
-        print(f'There are {len(invalid_reactions)} invalid reactions')
+        print(f'Total {len(invalid_reactions)} overall reactions conatin invalid elementary steps')
         with open(validity_file_path, 'w') as fout:
             fout.write('\n'.join(invalid_reactions) + '\n')
 
+        percent_remaining = (num_invalid / total_rxn) * 100
+        print(f'Total {num_invalid} elementary reactions are invalid out of {total_rxn} ({percent_remaining:.1f}%)')
+
+
+ 
 
 
 if __name__ == '__main__':
