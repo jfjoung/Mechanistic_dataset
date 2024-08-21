@@ -131,7 +131,7 @@ class_reaction_templates={
                      '[#6:1]-[#8;H1;+0:2]>>[#6:1]-[#8;H0;-1:2]',
                     ],
      'pKa': [None, None, None, {'B': 14}],
-     'Description': 'Addition of alcohol under acidic / deprotonation of alcohol'},
+     'Description': 'Addition of alcohol under acidic condition / deprotonation of alcohol'},
         1: {
        'Templates': [# Acidic pKa
                      '[#6:1]-[#8;H1;+1:2]-[C:5]>>[#6:1]-[#8;H0;+0:2]-[C:5]',
@@ -140,7 +140,7 @@ class_reaction_templates={
                      '[#6:1]-[#8;H0;-1:2].[O:3]=[S:4]([O:5]-[C:6])=[O:7]>>[O:3]=[S:4]([O;H0;-1:5])=[O:7].[#6:1]-[#8;H0;+0:2]-[C:6]',
                     ],
      'pKa': [{'B': -1.7}, None, None],
-     'Description': 'Neutralization of protonated ester / Addition of alcohol under basic pKa'},
+     'Description': 'Neutralization of protonated ether / Addition of alcohol under basic pKa'},
             }}},
 
  ('Bromo N-alkylation',
