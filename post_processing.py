@@ -23,7 +23,7 @@ def save_valid_reactions(file_path, valid_reactions):
     with open(file_path, 'w') as fout:
         for rxn in tqdm(valid_reactions, total=len(valid_reactions), desc="Saving reactions"):
             if rxn:  # Ensure None values are not written
-                fout.write(f'{rxn}\n')
+                fout.write(f'{rxn}')
 
 def main(args):
     try:
