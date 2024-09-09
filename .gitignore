@@ -59,3 +59,5 @@ results2/
 __pycache__/
 scratch/
 logs/
+
+kekulization.py

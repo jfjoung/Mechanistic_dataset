@@ -203,6 +203,8 @@ def generate_elementary_reaction(input):
     # When reaction class is specified, then corresponding reactions will only be considered.
     if args.rxn_class and args.rxn_class not in label:
         return None
+    if args.exclude_rxn and label in args.exclude_rxn:
+        return None
 
     rxn_dict = {'reaction_name': label,
                 'reaction_smiles': rxn, }

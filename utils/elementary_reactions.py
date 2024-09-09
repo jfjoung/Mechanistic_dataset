@@ -225,9 +225,24 @@ class Get_Reactions:
                 except nx.NetworkXNoPath:
                     # print('no path')
                     continue
-
+        # print(reaction_path)
         successful_reaction_path = self.get_successful_reaction_path(G, reaction_path)
-        # print(successful_reaction_path)
+
+        if not successful_reaction_path:
+            for rnode in self.reactant_node:
+                for pnode in self.product_node:
+                    try:
+                        paths = nx.all_simple_paths(G, source=rnode, target=pnode)
+                        for path in paths:
+                            rxn_path = [node for node in path if G.nodes[node]['type'] == 'rxn_node']
+                            if any(node in route_to_impurity for node in rxn_path):
+                                continue
+                            if rxn_path not in reaction_path:
+                                reaction_path.append(rxn_path)
+                    except nx.NetworkXNoPath:
+                        continue
+            successful_reaction_path = self.get_successful_reaction_path(G, reaction_path)
+
         reaction_path = flatten_list(successful_reaction_path)
         reaction_path = list(set(reaction_path))
         # print('reaction_path', reaction_path)
@@ -367,6 +382,7 @@ class Get_Reactions:
 
             combination_of_cycles=create_combinations(cycle_dict) # In case of more than 2 cycles
             reaction_paths=[flatten_list(list(combi)+reaction_nodes_outside) for combi in combination_of_cycles]
+            successful_reaction_path = self.get_successful_reaction_path(G, reaction_paths)
         else: 
             reaction_paths = []
             for rnode in self.reactant_node:
@@ -379,9 +395,23 @@ class Get_Reactions:
                                 reaction_paths.append(rxn_path)
                     except nx.NetworkXNoPath:
                         continue
+            successful_reaction_path = self.get_successful_reaction_path(G, reaction_paths)
+            if not successful_reaction_path:
+                for rnode in self.reactant_node:
+                    for pnode in self.product_node:
+                        try:
+                            paths = nx.all_simple_paths(G, source=rnode, target=pnode)
+                            for path in paths:
+                                rxn_path = [node for node in path if G.nodes[node]['type'] == 'rxn_node']
+                                if rxn_path not in reaction_paths:
+                                    reaction_paths.append(rxn_path)
+                        except nx.NetworkXNoPath:
+                            continue
+                successful_reaction_path = self.get_successful_reaction_path(G, reaction_paths)
             # reaction_paths = [self.reaction_node]
         # print('reaction_paths', reaction_paths)
-        successful_reaction_path = self.get_successful_reaction_path(G, reaction_paths)
+        
+
 
         # print('Hi', successful_reaction_path)
         #Sorting the reactions
