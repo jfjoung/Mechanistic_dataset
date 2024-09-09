@@ -27,9 +27,10 @@ def count_lone_pairs(a):
     return v - c - b - h
 
 
-def get_BE_matrix(r):
+def get_BE_matrix(r, kekule=False):
     ps = Chem.SmilesParserParams()
     ps.removeHs = False
+    # if not kekule:
     ps.sanitize = False
     rmol = Chem.MolFromSmiles(r, ps)
     # Chem.Kekulize(rmol)
