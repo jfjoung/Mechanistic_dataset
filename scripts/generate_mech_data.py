@@ -276,7 +276,10 @@ def generate_mechdata_multiprocess(args):
                     else:
                         elem_rxns = flatten_list(elem_rxns)
                         num_generated_rxn += len(elem_rxns)
-                        fout.write('\n'.join(elem_rxns) + '\n')
+                        if args.rxn_numbering:
+                            fout.write(f'|{num_used_rxn}\n'.join(elem_rxns) + f'|{num_used_rxn}\n')
+                        else:
+                            fout.write('\n'.join(elem_rxns) + '\n')
 
                 else:
                     file_debug.write(f"{rxn} {stat}\n")
