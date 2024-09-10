@@ -21,13 +21,3 @@ if __name__ == '__main__':
         logging.info('{}: {}'.format(key, value))
 
     generate_mechdata_multiprocess(args)
-
-    # args.data = './data/uspto_val.txt'
-    # args.save = './results/flow_ood/Negishi_coupling_val.txt'
-
-    # generate_mechdata_multiprocess(args)
-
-    # args.data = './data/uspto_test.txt'
-    # args.save = './results/flow_ood/Negishi_coupling_test.txt'
-
-    # generate_mechdata_multiprocess(args)

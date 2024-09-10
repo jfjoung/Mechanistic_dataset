@@ -11,8 +11,13 @@ def process_reaction(rxn):
     #     H_rxn, _ = modify_explicit_H(rxn)
     # except:
     #     return None
+
+    if '|' in rxn:
+        new_rxn, _ = rxn.split('|')
+    else:
+        new_rxn = rxn
     try:
-        if check_reaction_validity(rxn):
+        if check_reaction_validity(new_rxn):
             return rxn # remapping(H_rxn)
         else: return None
     except:

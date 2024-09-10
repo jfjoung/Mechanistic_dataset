@@ -16,7 +16,7 @@ class Args:
         self.explicit_H = True  # Explicitly represents hydrogens in the reaction SMARTS.
         self.reagent = False  # Places non-participating chemical species between '>>' in Reaction SMARTS formatted as Reactants > Reagents > Products.
         self.remapping = True  # Remaps the atom mapping in Reaction SMARTS to start from 1.
-        self.data = './data/uspto_test.txt'  # Path to the file containing overall reactions.
+        self.data = './data/test_data.txt'  # Path to the file containing overall reactions.
         self.save = './results/test.txt'  # Path to the file where results will be saved.
         self.debug = True  # Records reactions with errors for debugging purposes.
         self.all_info = False  # Saves all reactions, including the reaction network.
@@ -25,3 +25,4 @@ class Args:
         self.exclude_rxn = ['Negishi coupling', 'N-Bn deprotection', 'Hydroxy to bromo', 'Urea Schotten-Baumann', 'Carboxylic acid + sulfonamide condensation', 'Appel bromination', 'Transamidation']
         self.process = 32  # Number of processors to use in multiprocessing.
         self.verbosity = False  # Sets the logging.
+        self.rxn_numbering = True # Puts reaction numbering at the end of SMILES
