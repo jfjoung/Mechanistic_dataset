@@ -81,17 +81,12 @@ class Molecule_Node:
         _mol.UpdatePropertyCache(strict=False)
         _mol = remove_atom_map(_mol)
         args = self.args
+        ps = Chem.SmilesParserParams()
+        ps.sanitize = False
 
         if args.explicit_H:
-            # _mol.UpdatePropertyCache(strict=False)
             _mol = Chem.AddHs(_mol, explicitOnly=False)
-            ps = Chem.SmilesParserParams()
             ps.removeHs = False
-            ps.sanitize = False
-        else:
-            # _mol.UpdatePropertyCache(strict=False)
-            ps = Chem.SmilesParserParams()
-            ps.sanitize = False
 
         start_idx = idx
         for atom in _mol.GetAtoms():
@@ -111,13 +106,12 @@ class Molecule_Node:
         return idx
 
     def add_product(self):
+        args = self.args
         _mol = Chem.Mol(self.mol)
         _mol.UpdatePropertyCache(strict=False)
         _mol = remove_atom_map(_mol)
-        args = self.args
 
         if args.explicit_H:
-            # _mol.UpdatePropertyCache(strict=False)
             _mol = Chem.AddHs(_mol, explicitOnly=False)
             self.mol = _mol
 
