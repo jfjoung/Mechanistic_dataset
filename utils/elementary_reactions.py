@@ -694,7 +694,10 @@ class Get_Reactions:
                     rxn_smi = f'{rsmi}>{re_smi}>{psmi}'
                     # if not args.spectator or not args.byproduct:
                     if not args.plain and args.remapping:
-                        rxn_smi = self.remapping(rxn_smi)
+                        try:
+                            rxn_smi = self.remapping(rxn_smi)
+                        except:
+                            continue
                     if rxn_smi not in rxn_smiles:
                         # print(rxn_node, rxn_smi)
                         rxn_smiles.append(rxn_smi)
@@ -725,10 +728,10 @@ class Get_Reactions:
         if self.args.explicit_H:
             ps = Chem.SmilesParserParams()
             ps.removeHs = False
-            ps.sanitize = False
+            ps.sanitize = self.args.sanitize
         else:
             ps = Chem.SmilesParserParams()
-            ps.sanitize = False
+            ps.sanitize = self.args.sanitize
 
         rsmi, resmi, psmi = rxn_smi.split('>')
         rmol = Chem.MolFromSmiles(rsmi, ps)
@@ -758,71 +761,6 @@ class Get_Reactions:
         return f'{rsmi}>{resmi}>{psmi}'
 
 
-def calling_rxn_template(reaction_dict):
-    """
-    Retrieve the elementary reaction templates of each reaction
-    reaction_dict: one reaction in reactions_with_conditions
-    """
-    rxn_class_name = reaction_dict['reaction_name']
-    rxn_condition = reaction_dict['conditions']
-    class_key = get_class_key(rxn_class_name)
-    rxn_templates = Reaction_templates.class_reaction_templates[class_key]
-
-    conditions = [rxn_templates[condition] for condition in rxn_condition]
-
-    return conditions
-
-def get_class_key(class_name):
-    """
-    returns the key(tuple) of class_reaction_templates that includes the class_name
-    """
-
-    for classes in Reaction_templates.class_reaction_templates.keys():
-        if class_name in classes:
-            return classes
-
-    return None
-
-def reagent_matching_for_single_reaction(reaction, class_key):
-    '''
-    To match reagents for a certain class from list of reaction, in the form of {'rxnsmiles': {'reaction_name': name}}.
-    reactions: list of reactions
-    '''
-    reactants, agents, products = reaction['reaction_smiles'].split(">")
-    mols = [Chem.MolFromSmiles(smi) for smi in reactants.split(".") + agents.split(".")]
-    reaction['conditions'] = []
-    class_key = get_class_key(class_key)
-    if class_key in Reaction_templates.class_reaction_templates:
-        class_data = Reaction_templates.class_reaction_templates[class_key]
-
-        for cond_name, cond_data in class_data.items():
-            if cond_data['Reagent'] or cond_data['Exclude_reagent']:
-                cond_mols = []
-                if cond_data['Reagent']:
-                    cond_mols = [Chem.MolFromSmarts(x) for x in cond_data['Reagent']]
-                exclude_cond_mols = []
-                if cond_data['Exclude_reagent']:
-                    exclude_cond_mols = [Chem.MolFromSmarts(x) for x in cond_data['Exclude_reagent']]
-
-                matched_reagents = []
-                exclude = False
-
-                for patt in cond_mols:
-                    for mol in mols:
-                        if mol.GetSubstructMatch(patt):
-                            matched_reagents.append(mol)
-                            break
-                for patt in exclude_cond_mols:
-                    for mol in mols:
-                        if mol.GetSubstructMatch(patt):
-                            exclude = True
-                            break
-                    if exclude: break
-                if not exclude and len(cond_mols) == len(matched_reagents):
-                    reaction['conditions'].append(cond_name)
-            else:
-                reaction['conditions'].append(cond_name)
-    return reaction
 
 if __name__ == '__main__':
     import argparse
