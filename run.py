@@ -19,6 +19,4 @@ if __name__ == '__main__':
     logging.info(f'Arguments')
     for key, value in vars(args).items():
         logging.info('{}: {}'.format(key, value))
-
     generate_mechdata_multiprocess(args)
-
