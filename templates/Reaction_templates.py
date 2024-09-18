@@ -2214,7 +2214,7 @@ class_reaction_templates={
                   },
 ('Cyano to carbamoyl',):{'Acid-catalyzed':{'Reagent':['[C]#[N]'],'Exclude_reagent':None,
                         'Stages':{0:{'Templates':['[C:1]#[N:2]>>[C:1]#[N;H1;+1:2]'],
-                                     'pKa':[{'A':0}],
+                                     'pKa':[{'A':0.0001}],
                                      'Description':'Protonation'},
                                   1:{'Templates':['[C:1]#[N;H1;+1:2].[O;H2;+0:3]>>[N;H1;+0:2]=[C:1]-[O;H2;+1:3]'],
                                      'pKa':[None],
@@ -2223,7 +2223,7 @@ class_reaction_templates={
                                      'pKa':[None],
                                      'Description':'Proton transfer'},
                                   3:{'Templates':['[N;H2;+1:2]=[C:1]-[O;H1;+0:3]>>[N;H2;+0:2]-[C:1]=[O;H0;+0:3]'],
-                                     'pKa':[{'B':0}],
+                                     'pKa':[{'B':0.0001}],
                                      'Description':'Deprotonation'}}},
                         'Base-catalyzed':{'Reagent':['[C]#[N]'],'Exclude_reagent':None,
                         'Stages':{0:{'Templates':['[C:1]#[N:2].[O;H1;-1:3]>>[N;-1:2]=[C:1]-[O;H1;+0:3]'],
@@ -3048,11 +3048,14 @@ class_reaction_templates={
                                                    'Description':'SN2 type reaction'},
                                                    }  
                                                    },
-                                                   
-                                                   
-                                                   
                                                    },
-
+('Diels-Alder cycloaddition',) : {'Reaction': {'Reagent':['[#6]=[#6]','[#6]=[#6]-[#6]=[#6]'],'Exclude_reagent':None,
+                                       'Stages': {0: {'Templates':['[#6:1]=[#6:2].[#6:3]=[#6:4]-[#6:5]=[#6:6]>>[#6:1]1-[#6:2]-[#6:3]-[#6:4]=[#6:5]-[#6:6]1'],
+                                                   'pKa':[None],
+                                                   'Description':'Cycloaddition'},
+                                                   }  
+                                                   },
+                                                   },
 
 
 }

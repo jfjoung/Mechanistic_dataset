@@ -434,26 +434,28 @@ class Get_Reactions:
                     sub_rxn_path = [node for node in p if G.nodes[node]['type'] == 'rxn_node']
                     new_paths.append(sub_rxn_path)
             unique_to_rxn_node = [item for item in path if all(item not in sublist for sublist in new_paths)]
-
-            for node in unique_to_rxn_node:
-                is_connected = False
-                for sublist in new_paths:
-                    for rxn_node in sublist:
-                        try:
-                            if nx.has_path(G, source=rxn_node, target=node) or nx.has_path(G, source=node, target=rxn_node):
-                                is_connected = True
-                                break
-                        except nx.NetworkXNoPath:
-                            continue
-                    if is_connected:
-                        sublist.append(node)
-                        break
-                if not is_connected:
-                    if self.args.verbosity:
-                        logging.info(f"Node {node} is not connected to any paths in new_paths.")
-                    continue
-    
-            new_reaction_paths.extend(new_paths)
+            if reaction_node_for_product == unique_to_rxn_node:
+                new_reaction_paths.append(unique_to_rxn_node)
+            else:
+                for node in unique_to_rxn_node:
+                    is_connected = False
+                    for sublist in new_paths:
+                        for rxn_node in sublist:
+                            try:
+                                if nx.has_path(G, source=rxn_node, target=node) or nx.has_path(G, source=node, target=rxn_node):
+                                    is_connected = True
+                                    break
+                            except nx.NetworkXNoPath:
+                                continue
+                        if is_connected:
+                            sublist.append(node)
+                            break
+                    if not is_connected:
+                        if self.args.verbosity:
+                            logging.info(f"Node {node} is not connected to any paths in new_paths.")
+                        continue
+        
+                new_reaction_paths.extend(new_paths)
 
         reaction_info = {}
         for idx, rxn_path in enumerate(new_reaction_paths):
@@ -764,6 +766,7 @@ class Get_Reactions:
 
 if __name__ == '__main__':
     import argparse
+    from scripts.generate_mech_data import calling_rxn_template, reagent_matching_for_single_reaction
 
     def str2bool(v):
         if isinstance(v, bool):
