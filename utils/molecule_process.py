@@ -68,7 +68,7 @@ class Molecule_Node:
         Convert mol object to plain SMILES, no atom mapping and no isotope labeling
         '''
         _mol = Chem.Mol(self.mol)
-        plain = Chem.MolToSmiles(remove_atom_map(_mol, isotope=True))
+        plain = Chem.MolToSmiles(remove_atom_map(_mol, isotope=True), isomericSmiles=False)
         self.smiles = plain
 
     def add_reactant(self, idx):
@@ -117,7 +117,7 @@ class Molecule_Node:
 
         self.identity = 'product'
         if args.explicit_H:
-            plain = Chem.MolToSmiles(remove_atom_map(_mol, isotope=True))
+            plain = Chem.MolToSmiles(remove_atom_map(_mol, isotope=True), isomericSmiles=False)
             self.smiles = plain
 
     def add_intermediate(self):

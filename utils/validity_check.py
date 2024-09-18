@@ -27,13 +27,11 @@ def count_lone_pairs(a):
     return v - c - b - h
 
 
-def get_BE_matrix(r, kekule=False):
+def get_BE_matrix(r, santiize=False):
     ps = Chem.SmilesParserParams()
     ps.removeHs = False
-    # if not kekule:
-    ps.sanitize = False
+    ps.sanitize = santiize
     rmol = Chem.MolFromSmiles(r, ps)
-    # Chem.Kekulize(rmol)
     max_natoms = len(rmol.GetAtoms())
     f = np.zeros((max_natoms, max_natoms))
 
@@ -54,12 +52,16 @@ def get_BE_matrix(r, kekule=False):
 
     return f, map_dict, max_natoms
 
-def check_reaction_validity(smi):
+def check_reaction_validity(smi, santiize=False):
     rsmi, _ , psmi = smi.split('>')
 
-    rmat, rdict, max_natoms = get_BE_matrix(rsmi)
-    pmat, pdict, _ = get_BE_matrix(psmi)
+    rmat, rdict, max_natoms = get_BE_matrix(rsmi, santiize)
+    pmat, pdict, _ = get_BE_matrix(psmi, santiize)
 
+    # scr = set(np.unique(rmat))
+    # tgt = set(np.unique(pmat))
+    # has_negative_src = any(x < 0 for x in scr)
+    # has_negative_tgt = any(x < 0 for x in tgt)
 
     if max_natoms != len(rmat):
         return False
@@ -72,37 +74,37 @@ def check_reaction_validity(smi):
     else:
         return True
 
-def remapping(rxn_smi):
-    ps = Chem.SmilesParserParams()
-    ps.removeHs = False
-    ps.sanitize = False
+# def remapping(rxn_smi):
+#     ps = Chem.SmilesParserParams()
+#     ps.removeHs = False
+#     ps.sanitize = False
 
-    rsmi, resmi, psmi = rxn_smi.split('>')
-    rmol = Chem.MolFromSmiles(rsmi, ps)
-    remol = Chem.MolFromSmiles(resmi, ps)
-    pmol = Chem.MolFromSmiles(psmi, ps)
+#     rsmi, resmi, psmi = rxn_smi.split('>')
+#     rmol = Chem.MolFromSmiles(rsmi, ps)
+#     remol = Chem.MolFromSmiles(resmi, ps)
+#     pmol = Chem.MolFromSmiles(psmi, ps)
 
-    mapping_dict = {} #old map: new map
+#     mapping_dict = {} #old map: new map
 
-    for idx, atom in enumerate(rmol.GetAtoms()):
-        new_map = idx+1
-        mapping_dict[atom.GetAtomMapNum()] = new_map
-        atom.SetAtomMapNum(new_map)
+#     for idx, atom in enumerate(rmol.GetAtoms()):
+#         new_map = idx+1
+#         mapping_dict[atom.GetAtomMapNum()] = new_map
+#         atom.SetAtomMapNum(new_map)
 
-    rsmi = Chem.MolToSmiles(rmol)
+#     rsmi = Chem.MolToSmiles(rmol)
 
-    for idx, atom in enumerate(remol.GetAtoms()):
-        new_re_map = new_map + idx+1
-        mapping_dict[atom.GetAtomMapNum()] = new_re_map
-        atom.SetAtomMapNum(new_re_map)
+#     for idx, atom in enumerate(remol.GetAtoms()):
+#         new_re_map = new_map + idx+1
+#         mapping_dict[atom.GetAtomMapNum()] = new_re_map
+#         atom.SetAtomMapNum(new_re_map)
 
-    for atom in pmol.GetAtoms():
-        atom.SetAtomMapNum(mapping_dict[atom.GetAtomMapNum()])
+#     for atom in pmol.GetAtoms():
+#         atom.SetAtomMapNum(mapping_dict[atom.GetAtomMapNum()])
 
-    resmi = Chem.MolToSmiles(remol)
-    psmi = Chem.MolToSmiles(pmol)
+#     resmi = Chem.MolToSmiles(remol)
+#     psmi = Chem.MolToSmiles(pmol)
 
-    return f'{rsmi}>{resmi}>{psmi}'
+#     return f'{rsmi}>{resmi}>{psmi}'
 
 
 if __name__ == '__main__':

@@ -2,11 +2,12 @@ import os
 from multiprocessing import Pool
 from tqdm import tqdm
 from utils.explicit_H import modify_explicit_H
-from utils.validity_check import check_reaction_validity, remapping
+from utils.validity_check import check_reaction_validity
 from scripts.setting import Args
 
 def process_reaction(rxn):
     """Process a single reaction, modify explicit H and check validity."""
+    args = Args()
     # try:
     #     H_rxn, _ = modify_explicit_H(rxn)
     # except:
@@ -17,7 +18,7 @@ def process_reaction(rxn):
     else:
         new_rxn = rxn
     try:
-        if check_reaction_validity(new_rxn):
+        if check_reaction_validity(new_rxn, args.sanitize):
             return rxn # remapping(H_rxn)
         else: return None
     except:
