@@ -61,3 +61,5 @@ scratch/
 logs/
 
 kekulization.py
+scripts/setting.py
+run.py
