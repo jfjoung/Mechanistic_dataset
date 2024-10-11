@@ -14,7 +14,7 @@ def process_reaction(rxn):
     #     return None
 
     if '|' in rxn:
-        new_rxn, _ = rxn.split('|')
+        new_rxn = rxn.split('|')[0]
     else:
         new_rxn = rxn
     try:
