@@ -3150,4 +3150,22 @@ class_reaction_templates={
                                                    }  
                                                    },
                                                    },
+
+('O-SEM protection',
+ 'N-SEM protection') : {'Reaction': {'Reagent':['[OH,N]','[Cl,Br,I]-[C]',],'Exclude_reagent':None,
+                                       'Stages': {0: {'Templates':['[O;H1;+0:1].[Cl,Br,I:2]-[C:3]>>[O;H1;+1:1]-[C:3].[Cl,Br,I;H0;-1:2]',
+                                                                   '[#7;H3;+0:1].[Cl,Br,I:2]-[C:3]>>[#7;H3;+1:1]-[C:3].[Cl,Br,I;H0;-1:2]',
+                                                                   '[#7;H2;+0:1].[Cl,Br,I:2]-[C:3]>>[#7;H2;+1:1]-[C:3].[Cl,Br,I;H0;-1:2]',
+                                                                   '[#7;H1;+0:1].[Cl,Br,I:2]-[C:3]>>[#7;H1;+1:1]-[C:3].[Cl,Br,I;H0;-1:2]',],
+                                                   'pKa':[None],
+                                                   'Description':'SN2 type reaction'},
+                                                  1: {'Templates':['[O;H1;+1:1]-[C:3]>>[O;H0;+0:1]-[C:3]',
+                                                                   '[#7;H3;+1:1]-[C:3]>>[#7;H2;+0:1]-[C:3]',
+                                                                   '[#7;H2;+1:1]-[C:3]>>[#7;H1;+0:1]-[C:3]',
+                                                                   '[#7;H1;+1:1]-[C:3]>>[#7;H0;+0:1]-[C:3]',],
+                                                   'pKa':[{'B': 14}, {'B':10.6}, {'B':11}, {'B':10.8}],
+                                                   'Description':'Deprotonation'},
+                                                   }  
+                                                   },
+                                                   },
 }

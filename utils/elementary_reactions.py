@@ -694,12 +694,23 @@ class Get_Reactions:
                         psmi = '.'.join([G.nodes[node]['mol_node'].smiles_w_mapping for node in product_side])
 
                     rxn_smi = f'{rsmi}>{re_smi}>{psmi}'
+
                     # if not args.spectator or not args.byproduct:
                     if not args.plain and args.remapping:
                         try:
                             rxn_smi = self.remapping(rxn_smi)
                         except:
                             continue
+                    if args.rxn_numbering:
+                        # print(self.reaction_class)
+                        # print(self.reaction_condition)
+                        # print(G.nodes[rxn_node]['rxn_node']['description'])
+                        if rxn_node == 'end rxn':
+                            des = 'End of reaction'
+                        else:
+                            des = G.nodes[rxn_node]['rxn_node']['description']
+                        rxn_smi = f'{rxn_smi}|{self.reaction_class}|{self.reaction_condition}|{des}'
+                    
                     if rxn_smi not in rxn_smiles:
                         # print(rxn_node, rxn_smi)
                         rxn_smiles.append(rxn_smi)
