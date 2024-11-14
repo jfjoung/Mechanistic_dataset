@@ -122,6 +122,8 @@ class Reaction_Network:
 
                 for outcome in outcomes:
                     rxn_node = {'template': templ, 'description': template.description}
+                    if self.args.verbosity: 
+                        logging.info(f'{templ} were used')
                     produced_molecule_idx = self.find_duplicated_outcomes(outcome)
                     # print('produced_molecule_idx', produced_molecule_idx)
                     
