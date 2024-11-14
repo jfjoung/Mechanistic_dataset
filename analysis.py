@@ -122,7 +122,7 @@ def template_analysis(args):
         for rxn in rxnclass:
             # print(rxn)
             reaction_name.append(rxn)
-
+    print(reaction_name)
     print(f"Covered reaction classes: {len(reaction_name)}")
 
     templates = []
