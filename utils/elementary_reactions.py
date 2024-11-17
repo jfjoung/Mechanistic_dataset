@@ -197,12 +197,12 @@ class Get_Reactions:
             route_to_impurity = flatten_list(route_to_impurity)
             route_to_product = flatten_list(route_to_product)
 
-            route_to_impurity = [node for node in route_to_impurity if G.nodes[node]['type'] == 'rxn_node']
-            route_to_product = [node for node in route_to_product if G.nodes[node]['type'] == 'rxn_node']
+            route_to_impurity = set([node for node in route_to_impurity if G.nodes[node]['type'] == 'rxn_node'])
+            route_to_product = set([node for node in route_to_product if G.nodes[node]['type'] == 'rxn_node'])
 
-            route_to_impurity = list(set(route_to_impurity) - set(route_to_product))
-            # print('route_to_impurity', route_to_impurity)
-            # print('route_to_product', route_to_product)
+            route_to_impurity = list(route_to_impurity - route_to_product)
+            print('route_to_impurity', route_to_impurity)
+            print('route_to_product', route_to_product)
 
 
         # Get every reaction node connecting the reactants and products
@@ -216,17 +216,20 @@ class Get_Reactions:
                 try:
                     paths = nx.all_shortest_paths(G, source=rnode, target=pnode)
                     for path in paths:
+                        # print(path)
                         rxn_path = [node for node in path if G.nodes[node]['type'] == 'rxn_node']
                         if any(node in route_to_impurity for node in rxn_path):
                             continue
-                        # print(rxn_path)
+                        # print('rxn_path', rxn_path)
                         if rxn_path not in reaction_path:
                             reaction_path.append(rxn_path)
                 except nx.NetworkXNoPath:
                     # print('no path')
                     continue
-        # print(reaction_path)
+        # print('reaction_path', reaction_path)
+        # self.print_graph()
         successful_reaction_path = self.get_successful_reaction_path(G, reaction_path)
+        # print('successful_reaction_path', successful_reaction_path)
 
         if not successful_reaction_path:
             for rnode in self.reactant_node:
@@ -258,6 +261,7 @@ class Get_Reactions:
                 if nn not in path_node:
                     path_node.append(nn)
 
+        # print('path_node', path_node)
         pruned_graph = nx.DiGraph(G.subgraph(path_node))
 
         # self.print_graph()
@@ -311,6 +315,7 @@ class Get_Reactions:
         # self.print_graph()
         # Those nodes were reactants, but now they are spectators
         missing_reactant_nodes = [node_id for node_id in self.reactant_node if node_id not in pruned_graph.nodes]
+        # print(missing_reactant_nodes)
         for node in missing_reactant_nodes:
             node_info = G.nodes[node]
             pruned_graph.add_node(node, mol_node=node_info['mol_node'], type='mol_node')
@@ -395,7 +400,10 @@ class Get_Reactions:
                                 reaction_paths.append(rxn_path)
                     except nx.NetworkXNoPath:
                         continue
+
+            # print('reaction_paths', reaction_paths)
             successful_reaction_path = self.get_successful_reaction_path(G, reaction_paths)
+            # print('successful_reaction_path', successful_reaction_path)
             if not successful_reaction_path:
                 for rnode in self.reactant_node:
                     for pnode in self.product_node:

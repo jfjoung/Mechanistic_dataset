@@ -1,1 +1,1 @@
-O=C([O-])[O-].[Li]CCCC.CCOC([C@@H]1CCCNC1)=O.OCCOCCC(C2=CC=CC=C2)C3=CC=CC=C3.CC4=CC=C(S(Cl)(=O)=O)C=C4.C5COCC5.[K+].[K+].O>>CCOC([C@@H](C1)CCCN1CCOCCC(C2=CC=CC=C2)C3=CC=CC=C3)=O Alcohol + amine condensation
+ClC(C(Cl)=O)=O.OC[C@H](CC1)CC[C@@H]1C(OCC)=O.CS(C)=O.CCN(CC)CC.ClCCl>>O=C[C@H](CC1)CC[C@@H]1C(OCC)=O Aldehyde Swern oxidation
