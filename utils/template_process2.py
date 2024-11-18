@@ -115,7 +115,7 @@ class Template_process:
                 possible_reactant_list = []  #Save the matched reactant
                 for mol in node['mol']:
                     mol.UpdatePropertyCache(strict=False)
-
+                    # print(Chem.MolToSmiles(mol))
                     if mol and mol.GetSubstructMatch(pat): # and mol_node.smiles not in possible_reactant_smiles_list:
                         possible_reactant_list.append(mol)
                         # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))

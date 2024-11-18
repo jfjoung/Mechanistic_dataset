@@ -1,1 +1,1 @@
-ClC(C(Cl)=O)=O.OC[C@H](CC1)CC[C@@H]1C(OCC)=O.CS(C)=O.CCN(CC)CC.ClCCl>>O=C[C@H](CC1)CC[C@@H]1C(OCC)=O Aldehyde Swern oxidation
+CC(O)=O.CNOC.CN(C)C=O.CN([P+](ON1c2ccccc2N=N1)(N(C)C)N(C)C)C.CCN(CC)CC>>CC(N(OC)C)=O Weinreb amide synthesis

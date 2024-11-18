@@ -123,6 +123,7 @@ class Reaction_Network:
 
     def run_reaction(self):
         G = self.rxn_network
+        # print(self.reaction_condition)
 
         for step in range(self.length):
             
@@ -196,7 +197,7 @@ class Reaction_Network:
                             # print(prod_spec_smi)
 
                             plain_smiles = get_plain_smiles(Chem.MolFromSmiles(prod_spec_smi, sanitize=False))
-                            # print(plain_smiles)
+                            # print('plain_smiles', plain_smiles)
 
                             matching_nodes = [idx for idx in G.nodes 
                                             if G.nodes[idx].get('type') == 'mol_node' and G.nodes[idx].get('smiles') == plain_smiles
@@ -422,18 +423,18 @@ def get_mechanistic_network(rxn, args):
         logging.info('Generating mechanism for: ' + rxn['reaction_smiles'])
     elem_rxns = []
     for i, cond in enumerate(conditions):
-        try:
-            reaction = Reaction_Network(rxn, i, args)
-            reaction.set_template_dict(cond)
-            reaction.run_reaction()
-            reaction.find_product()
-            if reaction.product_nodes:
-                elem_rxn = reaction.get_rxn()
-                elem_rxns.append(elem_rxn)
+        # try:
+        reaction = Reaction_Network(rxn, i, args)
+        reaction.set_template_dict(cond)
+        reaction.run_reaction()
+        reaction.find_product()
+        if reaction.product_nodes:
+            elem_rxn = reaction.get_rxn()
+            elem_rxns.append(elem_rxn)
 
-        except Exception as e: 
-        #     # print(e)
-            continue
+        # except Exception as e: 
+        # #     # print(e)
+        #     continue
 
     return flatten_list(elem_rxns)
 
