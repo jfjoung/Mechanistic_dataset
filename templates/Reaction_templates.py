@@ -2285,14 +2285,58 @@ class_reaction_templates={
   ('O-TBS protection',
    'O-TMS protection',
    'O-TIPS protection',
-   'O-TES protection',): {'Reaction': {'Reagent': ['[Si]([C])([C])([C])[Cl,Br,I,O]','[#6]-[O]',], 'Exclude_reagent': None,
-   'Stages': {0: {'Templates': ['[O;H1;+0:1].[Si;H0;+0:2][Cl,Br,I,O;+0:3]>>[O;H1;+1:1]-[Si:2].[Cl,Br,I,O;-1:3]',],
+   'O-TES protection',): {'Reaction': {'Reagent': ['[Si]([C])([C])([C])[Cl,Br,I,O]','[#6]-[O]',], 'Exclude_reagent': ['[#6]1[#6][#6][#6][#6][#7]1', '[#6]1[#7][#6][#6][#7]1'],
+   'Stages': {
+       
+       0: {'Templates': ['[C:1][O;H1;+0:2]>>[C:1][O;H0;-1:2]',
+                      '[c:1][O;H1;+0:2]>>[c:1][O;H0;-1:2]',],
+     'pKa': [{'B': 14.1}, {'B': 10.1}],
+     'Description': 'Deprotonation'},
+       
+       1: {'Templates': ['[O;H1;+0:1].[Si;H0;+0:2][Cl,Br,I,O;+0:3]>>[O;H1;+1:1]-[Si:2].[Cl,Br,I,O;-1:3]',
+                         '[O;H0;-1:1].[Si;H0;+0:2][Cl,Br,I,O;+0:3]>>[O;H0;+0:1]-[Si:2].[Cl,Br,I,O;-1:3]',],
+     'pKa': [None, None],
+     'Description': 'Nucleophilic substitution'},
+
+    2: {'Templates': ['[C:1][O;H1;+1:2]-[Si:3]>>[C:1][O;H0;+0:2]-[Si:3]',
+                      '[c:1][O;H1;+1:2]-[Si:3]>>[c:1][O;H0;+0:2]-[Si:3]',],
+     'pKa': [{'B': -1.7}, {'B': -6.0}],
+     'Description': 'Deprotonation'}}},
+
+   'Reaction with pyridine': {'Reagent': ['[Si]([C])([C])([C])[Cl,Br,I,O]','[#6]-[O]','[#6]1[#6][#6][#6][#6][#7]1'], 'Exclude_reagent': None,
+   'Stages': {
+       0: {'Templates': ['[Si;H0;+0:1][Cl,Br,I,O;+0:2].[C:3]1=[C:4][C:5]=[C:6][C:7]=[N:8]1>>[C:3]1=[C:4][C:5]=[C:6][C:7]=[N;+1:8]1-[Si;H0;+0:1].[Cl,Br,I,O;-1:2]',],
+     'pKa': [None],
+     'Description': 'Pyridine-Si formation'},
+
+       
+       1: {'Templates': ['[O;H1;+0:1].[Si;H0;+0:2]-[#7;+1:8]>>[O;H1;+1:1]-[Si;H0;+0:2].[#7;+0:8]',],
      'pKa': [None],
      'Description': 'Nucleophilic substitution'},
-    1: {'Templates': ['[C:1][O;H1;+1:2]-[Si:3]>>[C:1][O;H0;+0:2]-[Si:3]',
+
+    2: {'Templates': ['[C:1][O;H1;+1:2]-[Si:3]>>[C:1][O;H0;+0:2]-[Si:3]',
                       '[c:1][O;H1;+1:2]-[Si:3]>>[c:1][O;H0;+0:2]-[Si:3]',],
-     'pKa': [{'B': -6.0}, {'B': -6.0}],
-     'Description': 'Deprotonation'}}}},
+     'pKa': [{'B': -1.7}, {'B': -6.0}],
+     'Description': 'Deprotonation'}}},
+
+
+   'Reaction with imidazole': {'Reagent': ['[Si]([C])([C])([C])[Cl,Br,I,O]','[#6]-[O]','[#6]1[#7][#6][#6][#7]1'], 'Exclude_reagent': None,
+   'Stages': {
+       0: {'Templates': ['[Si;H0;+0:1][Cl,Br,I,O;+0:2].[N:4]1=[C:3]-[N;H1;+0:7]-[C:6]=[C:5]1>>[Si:1]-[N:4]1-[C:3]=[N;H1;+1:7]-[C:6]=[C:5]1.[Cl,Br,I,O;-1:2]',],
+     'pKa': [None],
+     'Description': 'Pyridine-Si formation'},
+
+       
+       1: {'Templates': ['[O;H1;+0:1].[Si:2]-[N:4]1-[C:3]=[N;H1;+1:7][C:6]=[C:5]1>>[O;H1;+1:1]-[Si;H0;+0:2].[C:3]1=[N:4][C:5]=[C:6][N;H1;+0:7]1',],
+     'pKa': [None],
+     'Description': 'Nucleophilic substitution'},
+
+    2: {'Templates': ['[C:1][O;H1;+1:2]-[Si:3]>>[C:1][O;H0;+0:2]-[Si:3]',
+                      '[c:1][O;H1;+1:2]-[Si:3]>>[c:1][O;H0;+0:2]-[Si:3]',],
+     'pKa': [{'B': -1.7}, {'B': -6.0}],
+     'Description': 'Deprotonation'}}},
+
+     },
 
     ('Nitration',): {'Sulfuric acid': {'Reagent': ['[N+]([O-])(=[O])[O;H0,H1;+0,-1]', '[S](=[O])(=[O])([OH])[OH]', '[c;H1]',], 'Exclude_reagent': None,
                                         'Stages': {0: {'Templates': [
