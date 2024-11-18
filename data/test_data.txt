@@ -1,1 +1,1 @@
-O=C(C)O[C@H]([C@H](O[C@H]1N2C=NC3=C(N[C@@H]4C5=CC=CC=C5CC4)N=CN=C32)CO[Si](C(C)C)(C(C)C)C(C)C)[C@@H]1OC(C)=O.F.O6CCCC6.N7=CC=CC=C7>>O=C(C)O[C@H]([C@H](O[C@H]1N2C=NC3=C(N[C@@H]4C5=CC=CC=C5CC4)N=CN=C32)CO)[C@@H]1OC(C)=O O-TIPS deprotection
+[F:1][C:2]1=[CH:12][C:8]([CH2:9][C:10]#[N:11])=[C:5]([O:6][CH3:7])[CH:4]=[CH:3]1.[Al+3].[Al+3].[Cl-].[Cl-].[Cl-].[H-].[H-].[H-].[H-].[Li+].[Na+].[OH-].O.O.O>C2COCC2>[F:1][C:2]3=[CH:12][C:8]([CH2:9][CH2:10][NH2:11])=[C:5]([O:6][CH3:7])[CH:4]=[CH:3]3 Nitrile reduction

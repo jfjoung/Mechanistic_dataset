@@ -54,12 +54,16 @@ class Reaction_Network:
         else:
             rsmi = reactants
 
+        ps = Chem.SmilesParserParams()
+        ps.sanitize = False
+
         rmol = Chem.MolFromSmiles(rsmi, sanitize=False)
         rmol = remove_atom_map(rmol)
         pmol = Chem.MolFromSmiles(psmi, sanitize=False)
         pmol = remove_atom_map(pmol)
         self.pmol = pmol
         self.psmi = Chem.MolToSmiles(pmol)
+        
 
         # if len(pmol) > 1:  #TODO: If products are multiple, it needs to pick the major product.
         #     pmol_dict = {}
@@ -68,12 +72,18 @@ class Reaction_Network:
         #     pmol = max(pmol_dict, key=pmol_dict.get)
         # else: pmol = pmol[0]
 
-        ps = Chem.SmilesParserParams()
-        ps.sanitize = False
 
         if args.explicit_H:
-            rmol = Chem.AddHs(rmol, explicitOnly=False)
             ps.removeHs = False
+            rmol.UpdatePropertyCache(strict=False)
+            rmol = Chem.AddHs(rmol, explicitOnly=False)
+
+            hpmol = Chem.MolFromSmiles(psmi, sanitize=False)
+            hpmol = remove_atom_map(hpmol)
+            hpmol = Chem.AddHs(hpmol, explicitOnly=False)
+            self.pmol = hpmol
+            self.psmi = Chem.MolToSmiles(hpmol)
+            # print('self.psmi', self.psmi)
 
         atom_map = 1
         for atom in rmol.GetAtoms():
@@ -143,6 +153,7 @@ class Reaction_Network:
                 # print('template_reactant_dict', template_reactant_dict)
 
                 for templ, reactants in template_reactant_dict.items():
+                    # print(len(reactants))
 
                     if len(reactants) > self.args.num_combination:
                         raise ValueError('Too many combinations')

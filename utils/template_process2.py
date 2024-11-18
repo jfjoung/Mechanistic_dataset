@@ -170,6 +170,7 @@ class Template_process:
         temple_combi_dict = {}
         # print('template_reactant_dict', template_reactant_dict)
         for templ, reactant_dict in template_reactant_dict.items():
+            reactant_dict = self.deduplicate_reactants(reactant_dict)
             # print('reactant_dict', reactant_dict)
             # rmol_combinations = [list(combination) for combination in itertools.product(*reactant_dict.values()) if
             #                     len(combination) == len(reactant_dict)]
@@ -181,6 +182,38 @@ class Template_process:
             temple_combi_dict[templ] = rmol_combinations
 
         return temple_combi_dict, node
+    
+    def deduplicate_reactants(self, reactant_dict):
+        from collections import defaultdict
+        grouped_keys = defaultdict(list)
+        for key, value_list in reactant_dict.items():
+            grouped_keys[tuple(value_list)].append(key)
+        result_dict = {}
+        for value_list, keys in grouped_keys.items():
+            unique_values = list(value_list)  # Unique values (n)
+            m = len(keys)  # Number of keys
+            n = len(unique_values)  # Number of unique values
+            
+            # Step 3: Assign unique values to keys
+            for i, key in enumerate(keys[:min(m, n)]):
+                result_dict[key] = [unique_values[i]]
+            
+            # Step 4: Distribute remaining values evenly
+            remaining_keys = keys[min(m, n):]
+            remaining_values = unique_values[min(m, n):]
+            if remaining_keys:
+                per_key = len(remaining_values) // len(remaining_keys)
+                extra = len(remaining_values) % len(remaining_keys)
+                
+                idx = 0
+                for key in remaining_keys:
+                    end_idx = idx + per_key + (1 if extra > 0 else 0)
+                    result_dict[key] = remaining_values[idx:end_idx]
+                    idx = end_idx
+                    if extra > 0:
+                        extra -= 1
+
+        return result_dict
 
     # def allow_duplicating_reactant(self, problem_temple_reactant_dict, G):
     #     """
