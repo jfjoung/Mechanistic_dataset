@@ -39,7 +39,15 @@ def update_smarts_with_hydrogen_mapping(smarts, atom_dict):
 
         new_h_atoms = []
         for _ in range(info['h_count']):
-            new_mapping = min(set(range(1, len(atom_dict) * 3)) - used_mappings)
+            # try:
+            new_mapping = min(set(range(1, len(atom_dict) * 4)) - used_mappings)
+            # except:
+            #     print(atom_dict)
+            #     print(range(1, len(atom_dict) * 4))
+            #     print(used_mappings)
+            #     print(set(range(1, len(atom_dict) * 4)) - used_mappings)
+            #     raise
+
             used_mappings.add(new_mapping)
             new_h_atoms.append(f'([H:{new_mapping}])')
             if mapping not in added_h_mappings:
@@ -148,7 +156,7 @@ def modify_explicit_H(smarts):
     else:
         hydrogen_changes, total_lost, total_gained = detect_hydrogen_changes(reactant_dict, product_dict)
         if total_lost != total_gained:
-            raise ValueError(f"Total lost hydrogens ({total_lost}) does not match total gained hydrogens ({total_gained}).")
+            raise ValueError(f"{smarts}\n{reactant_dict}\n{product_dict}\nTotal lost hydrogens ({total_lost}) does not match total gained hydrogens ({total_gained}).")
         new_reactants, added_h_mappings = update_smarts_with_hydrogen_mapping(reactants, reactant_dict)
         new_products = update_smarts_product(products, product_dict, added_h_mappings, hydrogen_changes)
 
