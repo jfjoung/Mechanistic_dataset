@@ -1,1 +1,1 @@
-CC(O)=O.CNOC.CN(C)C=O.CN([P+](ON1c2ccccc2N=N1)(N(C)C)N(C)C)C.CCN(CC)CC>>CC(N(OC)C)=O Weinreb amide synthesis
+CC(O)=O.CO.C1(CCCCC1)N=C=NC2CCCCC2.C3=CC=CC=N3>>CC(OC)=O Esterification
