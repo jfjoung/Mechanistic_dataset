@@ -1,6 +1,6 @@
 class Args:
     def __init__(self):
-        self.num_combination = 300  # Limits the number of possible reactant combinations per template to prevent combinatorial explosion.
+        self.num_combination = 700  # Limits the number of possible reactant combinations per template to prevent combinatorial explosion.
         self.uni_rxn = True  # Adds a unimolecular version of a bimolecular reaction template while retaining the original bimolecular template.
         self.proton = True  # Ensures proton balance; if True, the program checks if an acid or base from AcidBase_Lookup is present in the reaction flask and adjusts the template on-the-fly to maintain proton balance.
         self.max_num_temp = 300  # Limits the number of possible templates when uni_rxn or proton is set to True, preventing combinatorial explosion.
@@ -23,7 +23,7 @@ class Args:
         self.debug = True  # Records reactions with errors for debugging purposes.
         self.all_info = False  # Saves all reactions, including the reaction network.
         self.stat = True  # Generates statistics for the reactions.
-        self.rxn_class = 'Pinner reaction'  # Specifies a particular reaction class to extract elementary reactions from.
+        self.rxn_class = 'O-TIPS deprotection'  # Specifies a particular reaction class to extract elementary reactions from.
         self.exclude_rxn = ['SEM protection', 'Menshutkin reaction', 'Staudinger reduction','Negishi coupling','Prilezhaev epoxidation', 'N-Bn deprotection', 'Hydroxy to bromo', 'Urea Schotten-Baumann', 'Carboxylic acid + sulfonamide condensation', 'Appel bromination', 'Transamidation', 'Diels-Alder cycloaddition']
         self.process = 32  # Number of processors to use in multiprocessing.
         self.rxn_numbering = True # Puts reaction numbering at the end of SMILES

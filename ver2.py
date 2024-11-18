@@ -123,6 +123,7 @@ class Reaction_Network:
 
     def run_reaction(self):
         G = self.rxn_network
+        # print(self.reaction_smiles)
         # print(self.reaction_condition)
 
         for step in range(self.length):
