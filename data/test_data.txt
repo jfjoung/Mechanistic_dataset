@@ -1,1 +1,1 @@
-O=C(OC(C)(C)C)C.C[Si](C)(I)C.O>>O=C(O)C CO2H-tBu deprotection
+O=C(C)O[C@H]([C@H](O[C@H]1N2C=NC3=C(N[C@@H]4C5=CC=CC=C5CC4)N=CN=C32)CO[Si](C(C)C)(C(C)C)C(C)C)[C@@H]1OC(C)=O.F.O6CCCC6.N7=CC=CC=C7>>O=C(C)O[C@H]([C@H](O[C@H]1N2C=NC3=C(N[C@@H]4C5=CC=CC=C5CC4)N=CN=C32)CO)[C@@H]1OC(C)=O O-TIPS deprotection
