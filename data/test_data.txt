@@ -1,1 +1,1 @@
-CC(O)=O.CO.C1(CCCCC1)N=C=NC2CCCCC2.C3=CC=CC=N3>>CC(OC)=O Esterification
+Cl[Si](CC)(CC)CC.CO.C1=CC=CC=N1>>CC[Si](CC)(OC)CC O-TES protection
