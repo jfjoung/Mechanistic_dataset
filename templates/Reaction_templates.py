@@ -303,20 +303,32 @@ class_reaction_templates={
  ('Bromo N-alkylation',
   'Chloro N-alkylation',
   'Iodo N-alkylation',): {'Reaction': {'Reagent': ['[#7]','[Cl,Br,I-C]',], 'Exclude_reagent': None,
-   'Stages': {0:
-             {'Templates': ['[N;H2;+0:1].[Cl,Br,I:2]-[C:3]>>[N;H2;+1:1]-[C:3].[Cl,Br,I;-1:2]',
+   'Stages': {
+       
+       0:{'Templates': ['[N;H2;+0:1]-[C:3]>>[N;H1;-1:1]-[C:3]',
+                            '[N;H1;+0:1]-[C:3]>>[N;H0;-1:1]-[C:3]',
+                            '[n;H2;+0:1]-[C:3]>>[n;H1;-1:1]-[C:3]',
+                            '[n;H1;+0:1]-[C:3]>>[n;H0;-1:1]-[C:3]',],
+     'pKa': [{'B': 36}, {'B': 37}, {'B':30}, {'B':30}],
+     'Description': 'Amine deprotonation'},
+       
+       1:{'Templates': ['[N;H2;+0:1].[Cl,Br,I:2]-[C:3]>>[N;H2;+1:1]-[C:3].[Cl,Br,I;-1:2]',
                             '[N;H1;+0:1].[Cl,Br,I:2]-[C:3]>>[N;H1;+1:1]-[C:3].[Cl,Br,I;-1:2]',
                             '[n;H2;+0:1].[Cl,Br,I:2]-[C:3]>>[n;H2;+1:1]-[C:3].[Cl,Br,I;-1:2]',
-                            '[n;H1;+0:1].[Cl,Br,I:2]-[C:3]>>[n;H1;+1:1]-[C:3].[Cl,Br,I;-1:2]',],
-     'pKa': [None, None, None, None],
+                            '[n;H1;+0:1].[Cl,Br,I:2]-[C:3]>>[n;H1;+1:1]-[C:3].[Cl,Br,I;-1:2]',
+                            '[#7;-1:1].[Cl,Br,I:2]-[C:3]>>[#7;+0:1]-[C:3].[Cl,Br,I;-1:2]',],
+     'pKa': [None, None, None, None,None],
      'Description': 'Addition of amine'},
 
-    1: {'Templates': ['[N;H2;+1:1]>>[N;H1;+0:1]',
+    2: {'Templates': ['[N;H2;+1:1]>>[N;H1;+0:1]',
       '[N;H1;+1:1]>>[N;H0;+0:1]',
       '[n;H2;+1:1]>>[n;H1;+0:1]',
       '[n;H1;+1:1]>>[n;H0;+0:1]',],
      'pKa': [{'B': 9.25}, {'B': 9.25}, {'B': 4.63}, {'B': 4.63}],
-     'Description': 'Amine deprotonation'}}}},
+     'Description': 'Amine deprotonation'},
+     
+     
+     }}},
 
  ('SNAr ether synthesis',):
     {'reaction with alcohol group': {'Reagent': ['[#8]','[c]',], 'Exclude_reagent': None,
