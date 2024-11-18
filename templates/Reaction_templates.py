@@ -1038,11 +1038,13 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Forming a complex'},
 
-    3: {'Templates': ['[#8;H1;+1:5]-[P;+0:1]-[N;H0;+0:2]-[N;H1;+0:3]>>[#8;H0;+1:5]=[P;+0:1].[N;H1;+0:2]-[N;H1;+0:3]',],
+    3: {'Templates': ['[#8;H1;+1:5]-[P;+0:1]-[N;H0;+0:2]-[N;H1;+0:3]>>[#8;H0;+0:5]-[P;+0:1]-[N;H1;+1:2]-[N;H1;+0:3]',],
      'pKa': [None],
-     'Description': 'Bond cleavage and proton exchange'},
-
-    4: {'Templates': ['[P;+0:1]=[#8;H0;+1:5]-[#6;+0:6].[#7,#8,#16;H0;-1:4]>>[P;+0:1]=[#8;H0;+0:5].[#6;+0:6]-[#7,#8,#16;H0;+0:4]',],
+     'Description': 'Intramolecular proton transfer'},
+    4: {'Templates': ['[#8;H0;+0:5]-[P;+0:1]-[N;H1;+1:2]-[N;H1;+0:3]>>[#8;H0;+1:5]=[P;+0:1].[N;H1;+0:2]-[N;H1;+0:3]',],
+      'pKa': [None],
+      'Description': 'Bond cleavage'},
+    5: {'Templates': ['[P;+0:1]=[#8;H0;+1:5]-[#6;+0:6].[#7,#8,#16;H0;-1:4]>>[P;+0:1]=[#8;H0;+0:5].[#6;+0:6]-[#7,#8,#16;H0;+0:4]',],
      'pKa': [None],
      'Description': 'SN2 type reaction'}}}},
 
