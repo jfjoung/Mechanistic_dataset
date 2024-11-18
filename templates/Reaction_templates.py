@@ -2134,7 +2134,7 @@ class_reaction_templates={
 
  ('Pinner reaction',): {'Reaction': {'Reagent': ['[#6]-[C]#[N]',], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[#6:1]#[#7:2]>>[#6:1]#[#7;H1;+1:2]',],
-     'pKa': [{'A': -10}],
+     'pKa': [{'A': -6}],
      'Description': 'Protonation of nitrile'},
                          #Acidic condition pKa < -10
     1: {'Templates': ['[#6:1]#[#7;H1;+1:2].[#8;H1:3]>>[#8;H1;+1:3]-[#6:1]=[#7;H1;+0:2]',
