@@ -228,9 +228,9 @@ class_reaction_templates={
      'Description': 'Protonation of amide anion'}}},
 
     'Acidic condition': {'Reagent': ['[#7]-[C](=[#8])-[#8]',],  'Exclude_reagent': None,
-    'Stages': {0: {'Templates': ['[#8;+0:3]-[#6:2](=[#8:1])-[#7;+0:8]>>[#8;H1;+1:3]-[#6:2](=[#8:1])-[#7;+0:8]',
+    'Stages': {0: {'Templates': [
                                '[#8;+0:3]-[#6:2](=[#8;H0;+0:1])-[#7;+0:8]>>[#8;+0:3]-[#6:2](=[#8;H1;+1:1])-[#7;+0:8]',],
-     'pKa': [{'A': 0.001}, {'A': -6}],
+     'pKa': [{'A': 0.001}],
      'Description': 'Protonation of ester or carbonyl oxygen'},
     1: {'Templates': ['[C;+0:4]-[O;H1;+1:3]-[C:2](=[O:1])-[N;+0:8](-[#6:7])>>[C;+1:4].[O;H1;+0:3]-[C:2](=[O:1])-[N;+0:8](-[#6:7])',
                    '[C;+0:4]-[O;H0;+0:3]-[C:2](=[O;H1;+1:1])-[N;+0:8](-[#6:7])>>[C;+1:4].[O;H0;+0:3]=[C:2](-[O;H1;+0:1])-[N;+0:8](-[#6:7])',],
@@ -246,9 +246,10 @@ class_reaction_templates={
      'pKa': [None],
      'Description': 'Proton exchange'},
     4: {'Templates': ['[C;+1:1]-[C;H3;+0:2]>>[C;+0:1]=[C;H2;+0:2]',
-                     '[C;+1:1].[Cl,Br,I,O;-1:2]>>[C;+0:1]-[Cl,Br,I,O;+0:2]',],
-     'pKa': [{'B': -30}, None],
-     'Description': 'E1 or SN1 type reaction',}
+                     # '[C;+1:1].[Cl,Br,I,O;-1:2]>>[C;+0:1]-[Cl,Br,I,O;+0:2]',
+                     ],
+     'pKa': [{'B': -30}], #, None],
+     'Description': 'E1 type reaction',}
               }}},
 
 
