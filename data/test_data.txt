@@ -1,1 +1,1 @@
-Cl[Si](CC)(CC)CC.CO.C1=CC=CC=N1>>CC[Si](CC)(OC)CC O-TES protection
+O=C(OC(C)(C)C)C.C[Si](C)(I)C.O>>O=C(O)C CO2H-tBu deprotection

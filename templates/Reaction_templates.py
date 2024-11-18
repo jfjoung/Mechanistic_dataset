@@ -2201,7 +2201,7 @@ class_reaction_templates={
  ('CO2H-Me deprotection',
   'CO2H-Et deprotection',
   'CO2H-tBu deprotection',
-  'Ester hydrolysis',): {'Deprotection with OH-': {'Reagent': ['[O;H1;-1]','[O]=[C]-[O]-[C]',], 'Exclude_reagent': None,
+  'Ester hydrolysis',): {'Deprotection with OH-': {'Reagent': ['[O;H1;-1]','[O]=[C]-[O]-[C]',], 'Exclude_reagent': ['[Si]-[I]'],
                                                   'Reactive_site': '[#6:4]-[#8;H0;+0:1]-[#6;H0;+0:2]=[#8:3]',
    'Stages': {0: {'Templates': ['[#8;H1;-1:5].[#6:4]-[#8;H0;+0:1]-[#6;H0;+0:2]=[#8:3]>>[#6:4]-[#8;H0;+0:1]-[#6;H0;+0:2]([#8;D1;H1;+0:5])-[#8;H0;-1:3]',
       '[Li,Na,K:9][O;H1;+0:5].[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]=[O:3]>>[Li,Na,K;H0;+1:9].[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]([#8;D1;H1;+0:5])-[O;H0;-1:3]',],
@@ -2210,7 +2210,7 @@ class_reaction_templates={
     1: {'Templates': ['[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]([#8;+0:5])-[O;H0;-1:3]>>[O;H0;+0:3]=[C;H0;+0:2]-[#8;+0:5].[#6:4]-[O;H0;-1:1]',],
      'pKa': [None],
      'Description': 'Alkoxide leaves'}}},
-  'Deprotection with Alkali hydroxide': {'Reagent': ['[Li,Na,K][O;H1]',], 'Exclude_reagent': None,
+  'Deprotection with Alkali hydroxide': {'Reagent': ['[Li,Na,K][O;H1]',], 'Exclude_reagent': ['[Si]-[I]',],
    'Stages': {0: {'Templates': ['[#8;H1;-1:5].[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]=[O:3]>>[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]([#8;D1;H1;+0:5])-[O;H0;-1:3]',
       '[Li,Na,K:9][O;H1;+0:5].[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]=[O:3]>>[Li,Na,K;H0;+1:9].[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]([#8;D1;H1;+0:5])-[O;H0;-1:3]',],
      'pKa': [None, None],
@@ -2218,7 +2218,8 @@ class_reaction_templates={
     1: {'Templates': ['[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]([#8;+0:5])-[O;H0;-1:3]>>[O;H0;+0:3]=[C;H0;+0:2]-[#8;+0:5].[#6:4]-[O;H0;-1:1]',],
      'pKa': [None],
      'Description': 'Alkoxide leaves'}}},
-  'Deprotection with water': {'Reagent': ['[O;H2]',], 'Exclude_reagent': None,
+
+  'Deprotection with water': {'Reagent': ['[O;H2]',], 'Exclude_reagent': ['[Si]-[I]','[Li,Na,K][O;H1]','[O;H0;-1]','[O;H1;-1]'],
    'Stages': {0: {'Templates': ['[#8;H2;+0:5].[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]=[O:3]>>[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]([#8;H2;+1:5])-[O;H0;-1:3]',],
      'pKa': [None],
      'Description': 'Water addition'},
@@ -2227,7 +2228,23 @@ class_reaction_templates={
      'Description': 'Deprotonation'},
     2: {'Templates': ['[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]([#8;+0:5])-[O;H0;-1:3]>>[O;H0;+0:3]=[C;H0;+0:2]-[#8;+0:5].[#6:4]-[O;H0;-1:1]',],
      'pKa': [None],
-     'Description': 'Alkoxide leaves'}}}},
+     'Description': 'Alkoxide leaves'}}},
+     
+  'Deprotection with TMSI': {'Reagent': ['[Si]-[I]',], 'Exclude_reagent': None,
+   'Stages': {
+       0: {'Templates': ['[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]=[O:3].[Si:5]-[I:6]>>[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]=[O;+1:3]-[Si:5].[I;-1:6]',],
+     'pKa': [None],
+     'Description': 'Ester and TMSI reaction'},
+    1: {'Templates': ['[#6:4]-[O;H0;+0:1]-[C;H0;+0:2]=[O;+1:3]-[Si:5].[I;-1:6]>>[I;+0:6]-[#6:4].[O;H0;+0:1]=[C;H0;+0:2]-[O;+0:3]-[Si:5]',],
+     'pKa': [None],
+     'Description': 'Iodide attack'},
+     2: {'Templates': ['[O;H0;+0:1]=[C;H0;+0:2]-[O;+0:3]-[Si:5].[O;H2;+0:6]>>[O;H0;+0:1]=[C;H0;+0:2]-[O;H1;+0:3].[Si:5]-[O;H1;+0:6]',
+                       '[O;H0;+0:1]=[C;H0;+0:2]-[O;+0:3]-[Si:5].[O;H1;+0:6]>>[O;H0;+0:1]=[C;H0;+0:2]-[O;H1;+0:3].[Si:5]-[O;H0;+0:6]',],
+     'pKa': [None, None],
+     'Description': 'Quench'},
+     
+     }}
+     },
 
   ('Carboxylic acid to acid chloride',): {'SOCl2 or POCl3': {'Reagent': ['O=[S,P](-[Cl])-[Cl]','[O]=[C]-[O]',], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[C:1](-[O;H1;+0:2])=[O;D1:3].[S,P:4](=[O;H0;+0:5])-[Cl:6]>>[C:1](=[O;H1;+1:2])-[O:3]-[S,P:4](-[O;-;H0:5])-[Cl:6]',],
