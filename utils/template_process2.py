@@ -126,45 +126,46 @@ class Template_process:
 
             if num_match == len(patterns):
                 template_reactant_dict[templ] = templ_mol_pair
-            else:
-                if self.args.stoichiometry and num_match == len(patterns) - 1:
-                    # print(num_match, 'templ', templ)
-                    # print(reactant_node)
-                    # print('templ_mol_pair', [pat for pat in templ_mol_pair.keys()])
-                    for pat in patterns: 
-                        possible_reactant_list = []
-                        if pat not in templ_mol_pair.keys():
-                            # print('Pat :', Chem.MolToSmarts(pat))
-                            for mol in reactant_node['mol']:
-                                if mol and mol.GetSubstructMatch(pat):
-                                    # print('After adding Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
-                                    new_smi = Chem.MolToSmiles(mol)
-                                    # print('new_smi', new_smi)
-                                    max_atom_map = get_max_atom_map(Chem.MolFromSmiles(reactant_node['smiles_w_mapping'], sanitize=False)) + 1
 
-                                    new_mol = Chem.MolFromSmiles(new_smi, sanitize=False)
-                                    new_mol = remove_atom_map(new_mol)
+        if self.args.stoichiometry and template_reactant_dict == {}:
+            # print(num_match, 'templ', templ)
+            # print(reactant_node)
+            # print('templ_mol_pair', [pat for pat in templ_mol_pair.keys()])
+            for idx, templ in enumerate(self.template_list):
+                for pat in patterns: 
+                    possible_reactant_list = []
+                    if pat not in templ_mol_pair.keys():
+                        # print('Pat :', Chem.MolToSmarts(pat))
+                        for mol in reactant_node['mol']:
+                            if mol and mol.GetSubstructMatch(pat):
+                                # print('After adding Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
+                                new_smi = Chem.MolToSmiles(mol)
+                                # print('new_smi', new_smi)
+                                max_atom_map = get_max_atom_map(Chem.MolFromSmiles(reactant_node['smiles_w_mapping'], sanitize=False)) + 1
 
-                                    for atom in new_mol.GetAtoms():
-                                        atom.SetIsotope(max_atom_map)
-                                        max_atom_map+=1
+                                new_mol = Chem.MolFromSmiles(new_smi, sanitize=False)
+                                new_mol = remove_atom_map(new_mol)
 
-                                    smiles_w_isotope = '.'.join([node['smiles_w_isotope'], Chem.MolToSmiles(new_mol)])
-                                    smiles_w_mapping = Chem.MolToSmiles(isotope_to_atommap(Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)))
-                                    mol = Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)
+                                for atom in new_mol.GetAtoms():
+                                    atom.SetIsotope(max_atom_map)
+                                    max_atom_map+=1
 
-                                    node['smiles_w_isotope'] = smiles_w_isotope
-                                    node['smiles_w_mapping'] = smiles_w_mapping
-                                    node['smiles'] = get_plain_smiles(Chem.MolFromSmiles(smiles_w_mapping, sanitize=False))
-                                    node['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in smiles_w_isotope.split('.')]
-                                    num_match += 1
-                                    # print('nnew smi', Chem.MolToSmiles(new_mol))
-                                    possible_reactant_list.append(new_mol)
-                                    # print('possible_reactant_list', possible_reactant_list)
-                                    templ_mol_pair[pat] = possible_reactant_list
-                    
-                    if num_match == len(patterns):
-                        template_reactant_dict[templ] = templ_mol_pair
+                                smiles_w_isotope = '.'.join([node['smiles_w_isotope'], Chem.MolToSmiles(new_mol)])
+                                smiles_w_mapping = Chem.MolToSmiles(isotope_to_atommap(Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)))
+                                mol = Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)
+
+                                node['smiles_w_isotope'] = smiles_w_isotope
+                                node['smiles_w_mapping'] = smiles_w_mapping
+                                node['smiles'] = get_plain_smiles(Chem.MolFromSmiles(smiles_w_mapping, sanitize=False))
+                                node['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in smiles_w_isotope.split('.')]
+                                num_match += 1
+                                # print('nnew smi', Chem.MolToSmiles(new_mol))
+                                possible_reactant_list.append(new_mol)
+                                # print('possible_reactant_list', possible_reactant_list)
+                                templ_mol_pair[pat] = possible_reactant_list
+            
+                if num_match == len(patterns):
+                    template_reactant_dict[templ] = templ_mol_pair
 
         temple_combi_dict = {}
         # print('template_reactant_dict', template_reactant_dict)
