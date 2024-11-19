@@ -3228,9 +3228,9 @@ class_reaction_templates={
                         '[N;H1;+0:1]-[c:2](-[F,Cl,Br,I,O:3])-[a;-1:4]>>[N;H1;+0:1]-[c:2]:[a;+0:4].[F,Cl,Br,I,O;-1:3]',],
           'pKa':[None],
           'Description': 'Elimination'},
-      3:{'Templates':['[N;H1;+1:1]-[c:2]:[a;+0:4].[F,Cl,Br,I,O;-1:3]>>[N;H0;+0:1]-[c:2]:[a;+0:4].[F,Cl,Br,I,O;H1;+0:3]',
-                      '[N;H2;+1:1]-[c:2]:[a;+0:4].[F,Cl,Br,I,O;-1:3]>>[N;H1;+0:1]-[c:2]:[a;+0:4].[F,Cl,Br,I,O;H1;+0:3]',],
-                      'pKa':[None, None, ],
+      3:{'Templates':['[N;H1;+1:1]-[c:2]:[a;+0:4]>>[N;H0;+0:1]-[c:2]:[a;+0:4]',
+                      '[N;H2;+1:1]-[c:2]:[a;+0:4]>>[N;H1;+0:1]-[c:2]:[a;+0:4]',],
+                      'pKa':[{'B': 4.63}, {'B': 4.63}, ],
                       'Description':'Proton transfer'}
       }},
       },
