@@ -2605,7 +2605,7 @@ class_reaction_templates={
      }}
      },
 
-  ('Carboxylic acid to acid chloride',): {'SOCl2 or POCl3': {'Reagent': ['O=[S,P](-[Cl])-[Cl]','[O]=[C]-[O]',], 'Exclude_reagent': None,
+  ('Carboxylic acid to acid chloride',): {'SOCl2 or POCl3': {'Reagent': ['O=[S,P](-[Cl])-[Cl]','[O]=[C]-[O]',], 'Exclude_reagent': ['[C][N]([C]=[O])[C]'],
    'Stages': {0: {'Templates': ['[C:1](-[O;H1;+0:2])=[O;D1:3].[S,P:4](=[O;H0;+0:5])-[Cl:6]>>[C:1](=[O;H1;+1:2])-[O:3]-[S,P:4](-[O;-;H0:5])-[Cl:6]',],
      'pKa': [None],
      'Description': 'Nucleophilic attack on chloride source'},
@@ -2621,6 +2621,33 @@ class_reaction_templates={
     4: {'Templates': ['[C:1](-[Cl;+0:2])(=[O;H1;+1:3]).[Cl;-:4]>>[C:1](-[Cl;+0:2])(=[O;H0;+0:3]).[Cl;H1;+0:4]',],
      'pKa': [None],
      'Description': 'Deprotonation'}}},
+
+     'Reaction using DMF/SOCl2': {'Reagent': ['[O]=[C]-[O]','[Cl,Br]-[S](=[O])-[Cl,Br]','[C][N]([C]=[O])[C]'], 'Exclude_reagent': None,
+   'Stages': {
+       0: {'Templates': ['[C:1][N:2]([C:3]=[O:4])[C:5].[S:6]-[Cl,Br:7]>>[C:1][N;+1:2](=[C:3]-[O:4]-[S:6])[C:5].[Cl,Br;-1:7]',],
+     'pKa': [None],
+     'Description': 'Reaction of DMF and SOCl2'},
+
+       1: {'Templates': ['[C:1][N;+1:2](=[C:3]-[O:4]-[S:5](=[O:6])(-[Cl,Br:7]))[C:8].[Cl,Br;-1:9]>>[C:1][N;+1:2](=[C:3]-[Cl,Br;+0:9])[C:8].[O:4]=[S:5]=[O:6].[Cl,Br;-1:7]',],
+     'pKa': [None],
+     'Description': 'Vilsmeier-Haack reagent formation'},
+       
+       2: {'Templates': ['[C:1](-[O;H1;+0:2])(=[O;H0;+0:3])>>[C:1](-[O;H0;-1:2])(=[O;H0;+0:3])',],
+     'pKa': [{'B': 4.74}],
+     'Description': 'Deprotonation of carboxylic acid'},
+
+    3: {'Templates': ['[C:10](-[O;H0;-1:11])(=[O;H0;+0:12]).[C:1][N;+1:2](=[C:3]-[Cl,Br;+0:9])[C:8]>>[C:1][N;+1:2](=[C:3]-[#8;H0;+0:11]-[#6:10](=[O;H0;+0:12]))[C:8].[Cl,Br;-1:9]',
+                      '[C:10](-[O;H1;+0:11])(=[O;H0;+0:12]).[C:1][N;+1:2](=[C:3]-[Cl,Br;+0:9])[C:8]>>[C:1][N;+1:2](=[C:3]-[#8;H1;+1:11]-[#6:10](=[O;H0;+0:12]))[C:8].[Cl,Br;-1:9]',],
+     'pKa': [None, None],
+     'Description': 'Addition'},
+    4: {'Templates': ['[C:1][N;+1:2](=[C:3]-[#8;H1;+1:11]-[#6:10](=[O;H0;+0:12]))[C:8]>>[C:1][N;+1:2](=[C:3]-[#8;H0;+0:11]-[#6:10](=[O;H0;+0:12]))[C:8]',],
+     'pKa': [{'B': -6}],
+     'Description': 'Deprotonation'},
+
+    5: {'Templates': ['[C:1][N;+1:2](=[C:3]-[#8;H0;+0:11]-[#6:10](=[O;H0;+0:12]))[C:8].[Cl,Br;-1:4]>>[C:1][N;+0:2](-[C:3]=[#8;H0;+0:11])[C:8].[#6:10](=[O;H0;+0:12])-[Cl,Br;+0:4]'],
+     'pKa': [None],
+     'Description': 'Nucleophilic substitution'}}},
+
     'PCl5': {'Reagent': ['ClP(Cl)(Cl)(Cl)Cl','[O]=[C]-[O]',], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[C:1](-[O;H1;+0:2])=[O;H0:3].[P:4]-[Cl:5]>>[C:1](=[O;H1;+1:2])-[O:3]-[P:4].[Cl;-:5]',],
      'pKa': [None],
