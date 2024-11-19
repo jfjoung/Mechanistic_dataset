@@ -2494,7 +2494,11 @@ class_reaction_templates={
      'Stages':{0: {'Templates': ['[S;H1;+0:1]>>[S;H0;-1:1]',],
       'pKa' : [{'B':10}],
       'Description' : 'Deprotonation'},
-      1: {'Templates' : ['[S;H0;-1:1].[C:2]-[F,Cl,Br,I:3]>>[S;H0;+0:1]-[C:2].[F,Cl,Br,I;-1:3]',],
+
+      1: {'Templates' : ['[F,Cl,Br,I;-1:1].[C:2]-[F,Cl,Br,I:3]>>[F,Cl,Br,I;+0:1]-[C:2].[F,Cl,Br,I;-1:3]',],
+      'pKa': [None],
+      'Description':'Finkelstein reactions'},
+      2: {'Templates' : ['[S;H0;-1:1].[C:2]-[F,Cl,Br,I:3]>>[S;H0;+0:1]-[C:2].[F,Cl,Br,I;-1:3]',],
       'pKa': [None],
       'Description':'Substitution'}}},
 
@@ -3182,11 +3186,11 @@ class_reaction_templates={
                                                                       '[O:1]=[C:2]-[O:3]-[C:4](-[O;H1;+0:5])-[#7;H2;+0:6]>>[O:1]=[C:2]-[O;H0;-1:3].[C:4](=[O;H1;+1:5])-[#7;H2;+0:6]',],
                                                           'pKa':[None,None,None],
                                                           'Description':'Tetrahedral intermediate collapse'},
-                                                      3:{'Templates':['[O:1]=[C:2]-[O;H0;-1:3].[C:4](=[O;H1;+1:5])-[#7;H0;+0:6]>>[O:1]=[C:2]-[O;H1;+0:3].[C:4](=[O;H0;+0:5])-[#7;H0;+0:6]',
-                                                                      '[O:1]=[C:2]-[O;H0;-1:3].[C:4](=[O;H1;+1:5])-[#7;H1;+0:6]>>[O:1]=[C:2]-[O;H1;+0:3].[C:4](=[O;H0;+0:5])-[#7;H1;+0:6]',
-                                                                      '[O:1]=[C:2]-[O;H0;-1:3].[C:4](=[O;H1;+1:5])-[#7;H2;+0:6]>>[O:1]=[C:2]-[O;H1;+0:3].[C:4](=[O;H0;+0:5])-[#7;H2;+0:6]',],
-                                                          'pKa':[None,None,None],
-                                                          'Description':'Proton transfer'}}}},
+                                                      3:{'Templates':['[C:4]=[O;H1;+1:5]>>[C:4]=[O;H0;+0:5]',],
+                                                          'pKa':[{'B': 0.001}],
+                                                          'Description':'Proton transfer'}
+                                                          
+                                                          }}},
 ('Tetrazole synthesis',):{'Cycloaddition':{'Reagent':['[#6]#[#7]',],'Exclude_reagent':None,
                                           'Stages':{0:{'Templates':['[#6:1]#[#7;H0:2].[N;H0;-1:3]=[N;H0;+1:4]=[N;H0;-1:5]>>[#6:1]1=[#7;H0;+0:2]-[#7;H0;-1:5]-[#7;H0;+0:4]=[#7;H0;+0:3]1',
                                                                     '[#6:1]#[#7;H0:2].[N;H0;-1:3]=[N;H0;+1:4]=[N;H0;-1:5]>>[#6:1]1=[#7;H0;+0:2]-[#7;H0;-1:3]-[#7;H0;+0:4]=[#7;H0;+0:5]1',],
