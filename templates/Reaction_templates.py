@@ -2266,7 +2266,8 @@ class_reaction_templates={
 
 
  ('Darzens chlorination',
-  'Darzens bromination',): {'Reaction': {'Reagent': ['[#6]-[O]','[Cl,Br]-[S](=[O])-[Cl,Br]',], 'Exclude_reagent': None,
+  'Darzens bromination',): {
+      'Reaction': {'Reagent': ['[#6]-[O]','[Cl,Br]-[S](=[O])-[Cl,Br]',], 'Exclude_reagent': ['[C][N]([C]=[O])[C]'],
    'Stages': {0: {'Templates': ['[#6X4][#8;H1:1]>>[#8;H0;-1:1]',],
      'pKa': [{'B': 14}],
      'Description': 'Deprotonation of alcohol'},
@@ -2280,6 +2281,32 @@ class_reaction_templates={
     3: {'Templates': ['[*:5]-[O;H0;+0:1]-[S,P;+0:3](-[Cl;+0:6])=[O;+0:2].[Cl,Br;-1:4]>>[*:5]-[Cl,Br;+0:4].[O;H0;+0:1]=[S,P;+0:3]=[O;+0:2].[Cl;-1:6]',
       '[*:5]-[O;H0;+0:1]-[S,P;+0:3](=[O;+0:6])=[O;+0:2].[Cl,Br;-1:4]>>[*:5]-[Cl,Br;+0:4].[O;H0;-1:1]-[S,P;+0:3](=[O;+0:6])=[O;+0:2]',],
      'pKa': [None, None],
+     'Description': 'Nucleophilic substitution'}}},
+
+     'Reaction using DMF/SOCl2': {'Reagent': ['[#6]-[O]','[Cl,Br]-[S](=[O])-[Cl,Br]','[C][N]([C]=[O])[C]'], 'Exclude_reagent': None,
+   'Stages': {
+       0: {'Templates': ['[C:1][N:2]([C:3]=[O:4])[C:5].[S:6]-[Cl,Br:7]>>[C:1][N;+1:2](=[C:3]-[O:4]-[S:6])[C:5].[Cl,Br;-1:7]',],
+     'pKa': [None],
+     'Description': 'Reaction of DMF and SOCl2'},
+
+       1: {'Templates': ['[C:1][N;+1:2](=[C:3]-[O:4]-[S:5](=[O:6])(-[Cl,Br:7]))[C:8].[Cl,Br;-1:9]>>[C:1][N;+1:2](=[C:3]-[Cl,Br;+0:9])[C:8].[O:4]=[S:5]=[O:6].[Cl,Br;-1:7]',],
+     'pKa': [None],
+     'Description': 'Vilsmeier-Haack reagent formation'},
+       
+       2: {'Templates': ['[#6X4][#8;H1:1]>>[#8;H0;-1:1]',],
+     'pKa': [{'B': 14}],
+     'Description': 'Deprotonation of alcohol'},
+
+    3: {'Templates': ['[#6:10]-[#8;H0;-1:11].[C:1][N;+1:2](=[C:3]-[Cl,Br;+0:9])[C:8]>>[C:1][N;+1:2](=[C:3]-[#8;H0;+0:11]-[#6:10])[C:8].[Cl,Br;-1:9]',
+                      '[#6:10]-[#8;H1;+0:11].[C:1][N;+1:2](=[C:3]-[Cl,Br;+0:9])[C:8]>>[C:1][N;+1:2](=[C:3]-[#8;H1;+1:11]-[#6:10])[C:8].[Cl,Br;-1:9]',],
+     'pKa': [None, None],
+     'Description': 'Addition'},
+    4: {'Templates': ['[C:1][N;+1:2](=[C:3]-[#8;H1;+1:11]-[#6:10])[C:8]>>[C:1][N;+1:2](=[C:3]-[#8;H0;+0:11]-[#6:10])[C:8]',],
+     'pKa': [{'B': -6}],
+     'Description': 'Deprotonation'},
+
+    5: {'Templates': ['[C:1][N;+1:2](=[C:3]-[#8;H0;+0:11]-[#6:10])[C:8].[Cl,Br;-1:4]>>[C:1][N;+0:2](-[C:3]=[#8;H0;+0:11])[C:8].[#6:10]-[Cl,Br;+0:4]'],
+     'pKa': [None],
      'Description': 'Nucleophilic substitution'}}},
 
                            },
