@@ -1415,20 +1415,30 @@ class_reaction_templates={
      'pKa': [{'B': -6}, None],
      'Description': 'Proton exchange'}}}},
 
- ('Bromination',): {'Bromination on benzene': {'Reagent': ['O=C-[O;H1+0,H0-]','BrBr', '[c;H1]',], 'Exclude_reagent': None, #TODO: NEED Jordon's confirmation
-   'Stages': {0: {'Templates': ['[Br:1][Br:2].[O:3]=[C:4]-[O;H1;+0:5]>>[Br;H1;+0:1].[O:3]=[C:4]-[O;H0;+0:5][Br;H0:2]',
-      '[Br:1][Br:2].[O:3]=[C:4]-[O;H0;+0:5]-[Li,Na,K;+0:6]>>[Br;-1:1].[O:3]=[C:4]-[O;H0;+0:5][Br;H0:2].[Li,Na,K;+1:6]',],
-     'pKa': [None, None],
-     'Description': 'Complexation of bromine and acetic acid'},
+ ('Bromination',): {
+     
+   #   'Bromination on benzene': {'Reagent': ['O=C-[O;H1+0,H0-]','BrBr', '[c;H1]',], 'Exclude_reagent': None, 
+   # 'Stages': {0: {'Templates': ['[Br:1][Br:2].[O:3]=[C:4]-[O;H1;+0:5]>>[Br;H1;+0:1].[O:3]=[C:4]-[O;H0;+0:5][Br;H0:2]',
+   #    '[Br:1][Br:2].[O:3]=[C:4]-[O;H0;+0:5]-[Li,Na,K;+0:6]>>[Br;-1:1].[O:3]=[C:4]-[O;H0;+0:5][Br;H0:2].[Li,Na,K;+1:6]',],
+   #   'pKa': [None, None],
+   #   'Description': 'Complexation of bromine and acetic acid'},
 
-    1: {'Templates': ['[O:3]=[C:4]-[O:5][Br;H0:2].[c;+0:6]:[c;H1;+0:7]>>[c;+1:6]:[c;H1;+0:7][Br;H0:2].[O:3]=[C:4]-[O;H0;-1:5]',],
+   #  1: {'Templates': ['[O:3]=[C:4]-[O:5][Br;H0:2].[c;+0:6]:[c;H1;+0:7]>>[c;+1:6]:[c;H1;+0:7][Br;H0:2].[O:3]=[C:4]-[O;H0;-1:5]',],
+   #   'pKa': [None],
+   #   'Description': 'Bromination of aromatic ring'},
+
+   #  2: {'Templates': ['[c;+1:6]:[c;H1;+0:7][Br;H0:2]>>[c;+0:6]:[c;H0;+0:7][Br;H0:2]',],
+   #   'pKa': [{'B': -24.3}],
+   #   'Description': 'Deprotonation of aromatic ring'}}},
+
+'Bromination on benzene': {'Reagent': ['BrBr', '[c;H1]',], 'Exclude_reagent': None,
+   'Stages': {0: {'Templates': ['[Br:1][Br:2].[c;+0:6]:[c;H1;+0:7]>>[c;+1:6]:[c;H1;+0:7][Br;H0:2].[Br;H0;-1:1]',],
      'pKa': [None],
      'Description': 'Bromination of aromatic ring'},
 
-    2: {'Templates': ['[c;+1:6]:[c;H1;+0:7][Br;H0:2]>>[c;+0:6]:[c;H0;+0:7][Br;H0:2]',],
+    1: {'Templates': ['[c;+1:6]:[c;H1;+0:7][Br;H0:2]>>[c;+0:6]:[c;H0;+0:7][Br;H0:2]',],
      'pKa': [{'B': -24.3}],
      'Description': 'Deprotonation of aromatic ring'}}},
-
 
   'Bromination of alpha ketone': {'Reagent': ['O=C-[C;!H0]', 'BrBr',], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[C;+0:1]-[C:2]=[O;H0;+0:3]>>[C;+0:1]-[C;+0:2]=[O;H1;+1:3]',],
