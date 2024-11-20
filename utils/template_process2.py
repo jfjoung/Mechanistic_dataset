@@ -131,7 +131,12 @@ class Template_process:
             # print(num_match, 'templ', templ)
             # print(reactant_node)
             # print('templ_mol_pair', [pat for pat in templ_mol_pair.keys()])
+            max_atom_map = get_max_atom_map(Chem.MolFromSmiles(node['smiles_w_mapping'], sanitize=False)) + 1
             for idx, templ in enumerate(self.template_list):
+                rxn = AllChem.ReactionFromSmarts(templ)
+                patterns = [rmol for rmol in rxn.GetReactants()]
+                templ_mol_pair = {}
+                num_match = 0
                 for pat in patterns: 
                     possible_reactant_list = []
                     if pat not in templ_mol_pair.keys():
@@ -141,7 +146,6 @@ class Template_process:
                                 # print('After adding Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
                                 new_smi = Chem.MolToSmiles(mol)
                                 # print('new_smi', new_smi)
-                                max_atom_map = get_max_atom_map(Chem.MolFromSmiles(reactant_node['smiles_w_mapping'], sanitize=False)) + 1
 
                                 new_mol = Chem.MolFromSmiles(new_smi, sanitize=False)
                                 new_mol = remove_atom_map(new_mol)
@@ -163,6 +167,7 @@ class Template_process:
                                 possible_reactant_list.append(new_mol)
                                 # print('possible_reactant_list', possible_reactant_list)
                                 templ_mol_pair[pat] = possible_reactant_list
+                                break
             
                 if num_match == len(patterns):
                     template_reactant_dict[templ] = templ_mol_pair
@@ -179,6 +184,7 @@ class Template_process:
                                 for combination in itertools.product(*reactant_dict.values())
                                 for permutation in itertools.permutations(combination)
                                 ]
+
             temple_combi_dict[templ] = rmol_combinations
 
         return temple_combi_dict, node
