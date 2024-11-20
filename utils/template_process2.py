@@ -127,6 +127,8 @@ class Template_process:
             if num_match == len(patterns):
                 template_reactant_dict[templ] = templ_mol_pair
 
+        # print(template_reactant_dict)
+
         if self.args.stoichiometry and template_reactant_dict == {}:
             # print(num_match, 'templ', templ)
             # print(reactant_node)
@@ -139,6 +141,17 @@ class Template_process:
                 num_match = 0
                 for pat in patterns: 
                     possible_reactant_list = []
+
+                    for mol in node['mol']:
+                        mol.UpdatePropertyCache(strict=False)
+                    # print(Chem.MolToSmiles(mol))
+                    if mol and mol.GetSubstructMatch(pat): # and mol_node.smiles not in possible_reactant_smiles_list:
+                        possible_reactant_list.append(mol)
+                        # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
+
+                        if possible_reactant_list:
+                            num_match += 1
+                            templ_mol_pair[pat] = possible_reactant_list
                     if pat not in templ_mol_pair.keys():
                         # print('Pat :', Chem.MolToSmarts(pat))
                         for mol in reactant_node['mol']:

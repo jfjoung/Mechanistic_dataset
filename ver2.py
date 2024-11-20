@@ -232,6 +232,7 @@ class Reaction_Network:
                                 G.nodes[self.node_id]['smiles'] = get_plain_smiles(isotope_to_atommap(Chem.MolFromSmiles(prod_spec_smi, sanitize=False)))
                                 G.nodes[self.node_id]['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in prod_spec_smi.split('.')]
                                 G.nodes[self.node_id]['type'] = 'mol_node'
+                                # print(G.nodes[self.node_id]['smiles'])
 
                                 G.add_edge(f'rxn {rxn_node_count}', self.node_id)
 
