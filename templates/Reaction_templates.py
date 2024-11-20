@@ -1725,29 +1725,87 @@ class_reaction_templates={
      'Description': 'Proton exchange'}}}},
 
 
-     ('Amide to amine reduction',): {'Reaction': {'Reagent': ['[Al,B;!H0]','[O]=[C]-[N]',], 'Exclude_reagent': None,
+     ('Amide to amine reduction',): {'Reaction': {'Reagent': ['[Al,B]','[O]=[C]-[N]',], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[Li,Na:1][Al,B;H1;+0:2]>>[Li,Na;+1:1].[Al,B;H1;-1:2]',
                                '[Li,Na:1][Al,B;H2;+0:2]>>[Li,Na;+1:1].[Al,B;H2;-1:2]',
                                '[Li,Na:1][Al,B;H3;+0:2]>>[Li,Na;+1:1].[Al,B;H3;-1:2]',
-                               '[Li,Na:1][Al,B;H4;+0:2]>>[Li,Na;+1:1].[Al,B;H4;-1:2]',],
+                               '[Li,Na:1][Al,B;H4;+0:2]>>[Li,Na;+1:1].[Al,B;H4;-1:2]',
+                               '[Al;+3:1].[#1;-1:2].[#1;-1:3].[#1;-1:4].[#1;-1:5]>>[Al;-1:1](-[#1;+0:2])(-[#1;+0:3])(-[#1;+0:4])(-[#1;+0:5])'
+                               ],
      'pKa': [None],
-     'Description': 'Preparation of Borohydride or Alumanuide'},
+     'Description': 'First preparation of Borohydride or Alumanuide'},
 
-    1: {'Templates': ['[Al,B;!$([Al,B]~[O]);H4;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H3;-1:2]',
-      '[Al,B;!$([Al,B]~[O]);H3;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H2;-1:2]',
-      '[Al,B;!$([Al,B]~[O]);H2;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H1;-1:2]',
-      '[Al,B;!$([Al,B]~[O]);H1;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H0;-1:2]',],
+     1: {'Templates': ['[Li,Na:1][Al,B;H1;+0:2]>>[Li,Na;+1:1].[Al,B;H1;-1:2]',
+                               '[Li,Na:1][Al,B;H2;+0:2]>>[Li,Na;+1:1].[Al,B;H2;-1:2]',
+                               '[Li,Na:1][Al,B;H3;+0:2]>>[Li,Na;+1:1].[Al,B;H3;-1:2]',
+                               '[Li,Na:1][Al,B;H4;+0:2]>>[Li,Na;+1:1].[Al,B;H4;-1:2]',
+                               '[Al;+3:1].[#1;-1:2].[#1;-1:3].[#1;-1:4].[#1;-1:5]>>[Al;-1:1](-[#1;+0:2])(-[#1;+0:3])(-[#1;+0:4])(-[#1;+0:5])'
+                               ],
+     'pKa': [None],
+     'Description': 'Second preparation of Borohydride or Alumanuide'},
+
+     2: {'Templates': ['[Li,Na:1][Al,B;H1;+0:2]>>[Li,Na;+1:1].[Al,B;H1;-1:2]',
+                               '[Li,Na:1][Al,B;H2;+0:2]>>[Li,Na;+1:1].[Al,B;H2;-1:2]',
+                               '[Li,Na:1][Al,B;H3;+0:2]>>[Li,Na;+1:1].[Al,B;H3;-1:2]',
+                               '[Li,Na:1][Al,B;H4;+0:2]>>[Li,Na;+1:1].[Al,B;H4;-1:2]',
+                               '[Al;+3:1].[#1;-1:2].[#1;-1:3].[#1;-1:4].[#1;-1:5]>>[Al;-1:1](-[#1;+0:2])(-[#1;+0:3])(-[#1;+0:4])(-[#1;+0:5])'
+                               ],
+     'pKa': [None],
+     'Description': 'Third Preparation of Borohydride or Alumanuide'},
+
+   3: {'Templates': ['[Al,B;-1:2]-[H:3].[H:4]-[#7:5]-[#6;+0:6]=[O;+0:7]>>[Al,B;+0:2].[H:3]-[H:4].[#7:5]=[#6;+0:6]-[O;-1:7]',],
+     'pKa': [None],
+     'Description': 'Amide deprotonation'},
+
+   4: {'Templates': ['[Al,B;+0:2].[#7:5]=[#6;+0:6]-[O;-1:7]>>[#7:5]=[#6;+0:6]-[O;+0:7]-[Al,B;-1:2]',],
+     'pKa': [None],
+     'Description': 'Lewis acid-base reaction'},
+
+5: {'Templates': ['[Al,B;!$([Al,B]~[O]);H4;-1:1].[#7:5]=[#6;+0:6]-[O;+0:7]-[Al,B;-1:2]>>[Al,B;H3;+0:1].[#7;-1:5]-[#6;H1;+0:6]-[O;+0:7]-[Al,B;-1:2]',
+                     '[Al,B;!$([Al,B]~[O]);H3;-1:1].[#7:5]=[#6;+0:6]-[O;+0:7]-[Al,B;-1:2]>>[Al,B;H2;+0:1].[#7;-1:5]-[#6;H1;+0:6]-[O;+0:7]-[Al,B;-1:2]',
+                  '[Al,B;!$([Al,B]~[O]);H2;-1:1].[#7:5]=[#6;+0:6]-[O;+0:7]-[Al,B;-1:2]>>[Al,B;H1;+0:1].[#7;-1:5]-[#6;H1;+0:6]-[O;+0:7]-[Al,B;-1:2]',
+                  '[Al,B;!$([Al,B]~[O]);H1;-1:1].[#7:5]=[#6;+0:6]-[O;+0:7]-[Al,B;-1:2]>>[Al,B;H0;+0:1].[#7;-1:5]-[#6;H1;+0:6]-[O;+0:7]-[Al,B;-1:2]',],
      'pKa': [None, None, None, None],
      'Description': 'Hydride transfer'},
-    2: {'Templates': ['[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H3;-1:2].[Li,Na,K;+1:1]>>[#7;+1:6]=[#6;H1;+0:4].[Li,Na,K;+0:1][O;H0;+0:5]-[Al,B;H3;-1:2]',],
+
+6: {'Templates': ['[#7;-1:5]-[#6;H1;+0:6]-[O;+0:7]-[Al,B;-1:2].[Li,Na;+1:1]>>[#7;+0:5]=[#6;H1;+0:6].[Li,Na;+0:1]-[O;+0:7]-[Al,B;-1:2]',
+                  # '[#7;-1:5]-[#6;H1;+0:6]-[O;+0:7]-[Al,B;-1:2]>>[#7;+0:5]=[#6;H1;+0:6].[O;-1:7]-[Al,B;-1:2]',
+                  ],
      'pKa': [None],
-     'Description': 'Oxygen leaves'},
-    3: {'Templates': ['[Al,B;!$([Al,B]~[O]);H4;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[#7;+0:6]-[#6;H2;+0:4].[Al,B;H3;+0:2]',
-                     '[Al,B;!$([Al,B]~[O]);H3;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[#7;+0:6]-[#6;H2;+0:4].[Al,B;H2;+0:2]',
-                     '[Al,B;!$([Al,B]~[O]);H2;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[#7;+0:6]-[#6;H2;+0:4].[Al,B;H1;+0:2]',
-                     '[Al,B;!$([Al,B]~[O]);H1;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[#7;+0:6]-[#6;H2;+0:4].[Al,B;H0;+0:2]',],
+     'Description': 'Aluminum salt leaving'},
+
+7: {'Templates': ['[Al,B;!$([Al,B]~[O]);H4;-1:2].[#7;+0:5]=[#6;H1;+0:6]>>[Al,B;!$([Al,B]~[O]);H3;+0:2].[#7;-1:5]-[#6;H2;+0:6]',
+'[Al,B;!$([Al,B]~[O]);H3;-1:2].[#7;+0:5]=[#6;H1;+0:6]>>[Al,B;!$([Al,B]~[O]);H2;+0:2].[#7;-1:5]-[#6;H2;+0:6]',
+'[Al,B;!$([Al,B]~[O]);H2;-1:2].[#7;+0:5]=[#6;H1;+0:6]>>[Al,B;!$([Al,B]~[O]);H1;+0:2].[#7;-1:5]-[#6;H2;+0:6]',
+'[Al,B;!$([Al,B]~[O]);H1;-1:2].[#7;+0:5]=[#6;H1;+0:6]>>[Al,B;!$([Al,B]~[O]);H0;+0:2].[#7;-1:5]-[#6;H2;+0:6]',
+],
      'pKa': [None, None, None, None],
-     'Description': 'Additional hydride transfer'}}}},
+     'Description': 'Second hydride transfer'},
+8: {'Templates': ['[#7;H0;-1:5]-[#6;H2;+0:6]>>[#7;H1;+0:5]-[#6;H2;+0:6]',
+                  '[#7;H1;-1:5]-[#6;H2;+0:6]>>[#7;H2;+0:5]-[#6;H2;+0:6]',
+                  '[#7;H2;-1:5]-[#6;H2;+0:6]>>[#7;H3;+0:5]-[#6;H2;+0:6]',],
+     'pKa': [{'A': 37}, {'A': 37}, {'A': 37}],
+     'Description': 'Workup'},
+
+    # 1: {'Templates': ['[Al,B;!$([Al,B]~[O]);H4;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H3;-1:2]',
+    #   '[Al,B;!$([Al,B]~[O]);H3;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H2;-1:2]',
+    #   '[Al,B;!$([Al,B]~[O]);H2;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H1;-1:2]',
+    #   '[Al,B;!$([Al,B]~[O]);H1;-1:2].[#7:6]-[#6;+0:4](=[O;+0:5])>>[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H0;-1:2]',],
+    #  'pKa': [None, None, None, None],
+    #  'Description': 'Hydride transfer'},
+    # 2: {'Templates': ['[#7:6]-[#6;H1;+0:4]-[O;H0;+0:5]-[Al,B;H3;-1:2].[Li,Na,K;+1:1]>>[#7;+1:6]=[#6;H1;+0:4].[Li,Na,K;+0:1][O;H0;+0:5]-[Al,B;H3;-1:2]',],
+    #  'pKa': [None],
+    #  'Description': 'Oxygen leaves'},
+    # 3: {'Templates': ['[Al,B;!$([Al,B]~[O]);H4;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[#7;+0:6]-[#6;H2;+0:4].[Al,B;H3;+0:2]',
+    #                  '[Al,B;!$([Al,B]~[O]);H3;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[#7;+0:6]-[#6;H2;+0:4].[Al,B;H2;+0:2]',
+    #                  '[Al,B;!$([Al,B]~[O]);H2;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[#7;+0:6]-[#6;H2;+0:4].[Al,B;H1;+0:2]',
+    #                  '[Al,B;!$([Al,B]~[O]);H1;-1:2].[#7;+1:6]=[#6;H1;+0:4]>>[#7;+0:6]-[#6;H2;+0:4].[Al,B;H0;+0:2]',],
+    #  'pKa': [None, None, None, None],
+    #  'Description': 'Additional hydride transfer'}}},
+     
+     
+     
+     }}},
 
 
  ('Alcohol + amine condensation',): {'Mitsunobu style reaction': {'Reagent': ['C-N=N-C','[P]','[#6]-[O]','[N]',], 'Exclude_reagent': None,
@@ -1808,23 +1866,28 @@ class_reaction_templates={
      'Description': 'Deprotonation of protonated amine'}}}},
 
  ('Friedel-Crafts acylation',): {'Reaction': {'Reagent': ['[Al,Fe]','[O]=[C]-[Cl]',], 'Exclude_reagent': None,
-   'Stages': {0: {'Templates':['[Al,Fe;+3:1].[Cl;-1:2].[Cl;-1:3].[Cl;-1:4]>>[Al,Fe:1](-[Cl;+0:2])(-[Cl;+0:3])-[Cl;+0:4]',],  #added this because all of the templates seemed to have AlCl3 ionically written
+   'Stages': {0: {'Templates':['[Al,Fe;+3:1].[Cl;-1:2].[Cl;-1:3].[Cl;-1:4]>>[Al,Fe;+0:1](-[Cl;+0:2])(-[Cl;+0:3])-[Cl;+0:4]',],  #added this because all of the templates seemed to have AlCl3 ionically written
                   'pKa':[None],
-                  'Description':'Interconversion between ionic and covalent form'},
-                  
-   1: {'Templates': ['[Al,Fe:1](-[Cl:2])(-[Cl:3])-[Cl:4].[Cl:5]-[C:6]=[O:7]>>[Cl:5]-[C:6]=[O;+1:7]-[Al,Fe;-1:1](-[Cl:2])(-[Cl:3])-[Cl:4]',],
+                  'Description':'First Interconversion between ionic and covalent form'},
+1: {'Templates':['[Al,Fe;+3:1].[Cl;-1:2].[Cl;-1:3].[Cl;-1:4]>>[Al,Fe;+0:1](-[Cl;+0:2])(-[Cl;+0:3])-[Cl;+0:4]',],  #added this because all of the templates seemed to have AlCl3 ionically written
+                  'pKa':[None],
+                  'Description':'Second Interconversion between ionic and covalent form'},
+   2: {'Templates': ['[Al,Fe;+0:1](-[Cl:2])(-[Cl:3])-[Cl:4].[Cl:5]-[C:6]=[O:7]>>[Cl:5]-[C:6]=[O;+1:7]-[Al,Fe;-1:1](-[Cl:2])(-[Cl:3])-[Cl:4]',],
       'pKa': [None],
       'Description': 'Carbonyl activation'},
-   2: {'Templates': ['[Al,Fe;+0:8](-[Cl:9])(-[Cl:10])-[Cl:11].[Cl:5]-[C:6]=[O;+1:7]-[Al,Fe;-1:1](-[Cl:2])(-[Cl:3])-[Cl:4]>>[Al,Fe;-1:8](-[Cl:9])(-[Cl:10])(-[Cl:11])-[Cl;+1:5]-[C:6]=[O;+1:7]-[Al,Fe;-1:1](-[Cl:2])(-[Cl:3])-[Cl:4]',],
+   3: {'Templates': ['[Al,Fe;+0:8](-[Cl:9])(-[Cl:10])-[Cl:11].[Cl:5]-[C:6]=[O;+1:7]-[Al,Fe;-1:1](-[Cl:2])(-[Cl:3])-[Cl:4]>>[Al,Fe;-1:8](-[Cl:9])(-[Cl:10])(-[Cl:11])-[Cl;+1:5]-[C:6]=[O;+1:7]-[Al,Fe;-1:1](-[Cl:2])(-[Cl:3])-[Cl:4]',],
       'pKa': [None],
       'Description': 'Lewis acid activation'},
-    3: {'Templates': ['[Al,Fe;-1:8](-[Cl:9])(-[Cl:10])(-[Cl:11])-[Cl;+1:5]-[C:6]=[O;+1:7]-[Al,Fe;-1:1](-[Cl:2])(-[Cl:3])-[Cl:4]>>[O;+0:7]=[C;+1:6].[Cl;+0:5]-[Al,Fe;-1:8](-[Cl:9])(-[Cl:10])-[Cl:11].[Al,Fe;+0:1](-[Cl:2])(-[Cl:3])-[Cl:4]',],
+    4: {'Templates': ['[Al,Fe;-1:8](-[Cl:9])(-[Cl:10])(-[Cl:11])-[Cl;+1:5]-[C:6]=[O;+1:7]-[Al,Fe;-1:1](-[Cl:2])(-[Cl:3])-[Cl:4]>>[O;+0:7]=[C;+1:6].[Cl;+0:5]-[Al,Fe;-1:8](-[Cl:9])(-[Cl:10])-[Cl:11].[Al,Fe;+0:1](-[Cl:2])(-[Cl:3])-[Cl:4]',],
         'pKa': [None],
         'Description': 'AlCl4 leaves'},
-    4: {'Templates': ['[O:7]=[C;+1:6].[a;+0:8]:[c;H1;+0:9]>>[a;+1:8]-[c;H1;+0:9]-[C;+0:6]=[O:7]',],
-     'pKa': [None],
+    5: {'Templates': ['[O:7]=[C;+1:6].[a;+0:8]:[c;H1;+0:9]>>[a;+1:8]:[c;H1;+0:9]-[C;+0:6]=[O:7]',
+                      '[O:7]=[C;+1:6].[*;+0:8]=[C;H1;+0:9]>>[*;+1:8]-[C;H1;+0:9]-[C;+0:6]=[O:7]',],
+     'pKa': [None,None,None],
      'Description': 'Addition to aromatic ring'},
-    5: {'Templates': ['[a;+1:8]-[c;H1;+0:9]-[C;+0:6]=[O:7].[Cl;+0:5]-[Al,Fe;-1:1]([Cl;+0:2])([Cl;+0:3])-[Cl;+0:4]>>[a;+0:8]:[c;H0;+0:9]-[C;+0:6]=[O:7].[Cl;H1;+0:5].[Al,Fe;+0:1]([Cl:2])([Cl:3])-[Cl:4]',],
+   6: {'Templates': ['[a;+1:8]-[c;H1;+0:9]-[C;+0:6]=[O:7].[Cl;+0:5]-[Al,Fe;-1:1]([Cl;+0:2])([Cl;+0:3])-[Cl;+0:4]>>[a;+0:8]:[c;H0;+0:9]-[C;+0:6]=[O:7].[Cl;H1;+0:5].[Al,Fe;+0:1]([Cl:2])([Cl:3])-[Cl:4]',
+                     '[*;+1:8]-[C;H1;+0:9]-[C;+0:6]=[O:7].[Cl;+0:5]-[Al,Fe;-1:1]([Cl;+0:2])([Cl;+0:3])-[Cl;+0:4]>>[*;+0:8]=[C;H0;+0:9]-[C;+0:6]=[O:7].[Cl;H1;+0:5].[Al,Fe;+0:1]([Cl:2])([Cl:3])-[Cl:4]',
+                     ],
      'pKa': [None],
      'Description': 'Proton exchange'}
      }}},
@@ -3254,7 +3317,7 @@ class_reaction_templates={
                                                               'Description':'Elimination'}}}}, # not sure why this isn't parsing
 
 
-('Carbamate + amine reaction',):{'Neutral':{'Reagent':['[O]-[C](=[O])-[#7]','[#7]',],'Exclude_reagent':None,
+('Carbamate + amine reaction',):{'Neutral':{'Reagent':['[O]-[C](=[O])-[#7]','[#7]',],'Exclude_reagent':['[Cl]-[C](=[O])'],
                                                   'Stages':{0:{'Templates':['[O:1]-[C:2](=[O:3])-[#7:4].[#7;H1;+0:5]>>[O:1]-[C:2](-[#7;H1;+1:5])(-[O;H0;-1:3])-[#7:4]',
                                                                             '[O:1]-[C:2](=[O:3])-[#7:4].[#7;H2;+0:5]>>[O:1]-[C:2](-[#7;H2;+1:5])(-[O;H0;-1:3])-[#7:4]',
                                                                             '[O:1]-[C:2](=[O:3])-[#7:4].[#7;H3;+0:5]>>[O:1]-[C:2](-[#7;H3;+1:5])(-[O;H0;-1:3])-[#7:4]',],
@@ -3269,7 +3332,34 @@ class_reaction_templates={
                                                                             '[O;H0;-1:1].[#7;H2;+1:5]-[C:2](=[O;H0;+0:3])-[#7:4]>>[O;H1;+0:1].[#7;H1;+0:5]-[C:2](=[O;H0;+0:3])-[#7:4]',
                                                                             '[O;H0;-1:1].[#7;H3;+1:5]-[C:2](=[O;H0;+0:3])-[#7:4]>>[O;H1;+0:1].[#7;H2;+0:5]-[C:2](=[O;H0;+0:3])-[#7:4]',],
                                                                             'pKa':[None,None,None],
-                                                                            'Description':'Deprotonation'}}}},
+                                                                            'Description':'Deprotonation'}}},
+                                                                            
+                                                                            
+              # 'Acidic condition': {'Reagent': ['[O]-[C](=[O])-[#7]','[#7]','[Cl]-[C](=[O])'],  'Exclude_reagent': None,
+              #     'Stages': {0: {'Templates': [
+              #                               '[#8;+0:3]-[#6:2](=[#8;H0;+0:1])-[#7;+0:8]>>[#8;+0:3]-[#6:2](=[#8;H1;+1:1])-[#7;+0:8]',],
+              #     'pKa': [{'A': 0.001}],
+              #     'Description': 'Protonation of ester or carbonyl oxygen'},
+              #     1: {'Templates': ['[C;+0:4]-[O;H1;+1:3]-[C:2](=[O:1])-[N;+0:8](-[#6:7])>>[C;+1:4].[O;H1;+0:3]-[C:2](=[O:1])-[N;+0:8](-[#6:7])',
+              #                   '[C;+0:4]-[O;H0;+0:3]-[C:2](=[O;H1;+1:1])-[N;+0:8](-[#6:7])>>[C;+1:4].[O;H0;+0:3]=[C:2](-[O;H1;+0:1])-[N;+0:8](-[#6:7])',],
+              #                   'pKa': [None, None],
+              #     'Description': 'Carbocation leaves'},
+
+              #     2: {'Templates': ['[#6:2](=[#8;H0;+0:1])(-[#8;H1;+0:5])-[#7;+0:8]>>[#6:2](=[#8;H0;+0:1])(=[#8;H1;+1:5]).[#7;-1:8]',],
+              #     'pKa': [None],
+              #     'Description': 'HOCO leaves'},
+
+              #     3: {'Templates': ['[#6:2](=[#8;H0;+0:1])(=[#8;H1;+1:5]).[#7;H0;-1:8]>>[#6:2](=[#8;H0;+0:1])(=[#8;H0;+0:5]).[#7;H1;+0:8]',
+              #                     '[#6:2](=[#8;H0;+0:1])(=[#8;H1;+1:5]).[#7;H1;-1:8]>>[#6:2](=[#8;H0;+0:1])(=[#8;H0;+0:5]).[#7;H2;+0:8]',],
+              #     'pKa': [None],
+              #     'Description': 'Proton exchange'},
+              #     4: {'Templates': ['[C;+1:1]-[C;H3;+0:2]>>[C;+0:1]=[C;H2;+0:2]',
+              #                     '[C;+1:1].[Cl,Br,I;-1:2]>>[C;+0:1]-[Cl,Br,I;+0:2]',
+              #                     ],
+              #     'pKa': [{'B': -30}, None],
+              #     'Description': 'E1 / SN1 type reaction',}}},
+
+                            },
 
 ('O-Ac deprotection',):{'Base-catalyzed':{'Reagent':['[O]-[C](=[O])-[C]',],'Exclude_reagent':None,
                                          'Stages':{0:{'Templates':['[O;H1;+0:5]>>[O;H0;-1:5]',

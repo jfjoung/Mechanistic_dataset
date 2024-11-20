@@ -107,7 +107,6 @@ class Reaction_Network:
         G.nodes[self.node_id]['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in smiles_w_isotope.split('.')]
         # print('Mol', [Chem.MolToSmiles(mol) for mol in G.nodes[self.node_id]['mol']])
         G.nodes[self.node_id]['type'] = 'mol_node'
-        
         # self.print_graph()
 
     def print_graph(self):
@@ -151,6 +150,9 @@ class Reaction_Network:
                     G.nodes[node][key] = value
 
                 # print('template_reactant_dict', template_reactant_dict)
+                # print('smiles_w_mapping',G.nodes[node]['smiles_w_mapping'])
+                # print('smiles_w_isotope',G.nodes[node]['smiles_w_isotope'])
+                # print(G.nodes[node]['smiles'])
 
                 for templ, reactants in template_reactant_dict.items():
                     # print(len(reactants))
@@ -204,7 +206,7 @@ class Reaction_Network:
                             smi_isotope_reactant = set(G.nodes[node]['smiles_w_isotope'].split('.'))
                             reactant_smi = set([Chem.MolToSmiles(mol) for mol in reactant]) #
                             spectator_smi = smi_isotope_reactant - set([Chem.MolToSmiles(mol) for mol in reactant])
-                            # print('reactant_smi', reactant_smi)
+                            # print('spectator_smi', spectator_smi)
                             prod_spec_smi = '.'.join(list(spectator_smi)+[prod_smi])
                             # print(prod_spec_smi)
 
