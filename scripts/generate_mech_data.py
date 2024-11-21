@@ -51,7 +51,7 @@ def reagent_matching_for_single_reaction(reaction, class_key):
     reactions: list of reactions
     '''
     reactants, agents, products = reaction['reaction_smiles'].split(">")
-    mols = [Chem.MolFromSmiles(smi) for smi in reactants.split(".") + agents.split(".")]
+    mols = [Chem.MolFromSmiles(smi, sanitize=False) for smi in reactants.split(".") + agents.split(".")]
     reaction['conditions'] = []
     class_key = get_class_key(class_key)
     if class_key in Reaction_templates.class_reaction_templates:
@@ -71,8 +71,10 @@ def reagent_matching_for_single_reaction(reaction, class_key):
 
                 for patt in cond_mols:
                     for mol in mols:
+                        mol.UpdatePropertyCache(strict=False)
                         if mol.GetSubstructMatch(patt):
                             matched_reagents.append(mol)
+                            # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
                             break
                 for patt in exclude_cond_mols:
                     for mol in mols:
