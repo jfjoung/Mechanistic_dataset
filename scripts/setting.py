@@ -13,7 +13,7 @@ class Args:
         self.full = False  # Determines whether to return overall reaction SMARTS instead of elementary reaction SMARTS.
         self.end = True  # Adds reactions that generate a product from an already existing product.
         self.plain = False  # Generates reaction SMARTS without atom mapping numbers.
-        self.explicit_H = True  # Explicitly represents hydrogens in the reaction SMARTS.
+        self.explicit_H = False  # Explicitly represents hydrogens in the reaction SMARTS.
         self.reagent = False  # Places non-participating chemical species between '>>' in Reaction SMARTS formatted as Reactants > Reagents > Products.
         self.sanitize = False # Saniztie the SMILES when remapping
         self.remapping = True  # Remaps the atom mapping in Reaction SMARTS to start from 1.
@@ -23,7 +23,7 @@ class Args:
         self.debug = True  # Records reactions with errors for debugging purposes.
         self.all_info = False  # Saves all reactions, including the reaction network.
         self.stat = True  # Generates statistics for the reactions.
-        self.rxn_class = 'Azido to amino' # Specifies a particular reaction class to extract elementary reactions from.
+        self.rxn_class = 'Olefin metathesis' # Specifies a particular reaction class to extract elementary reactions from.
         self.exclude_rxn = ['SEM protection', 'Menshutkin reaction', 'Staudinger reduction','Negishi coupling','Prilezhaev epoxidation', 'N-Bn deprotection', 'Hydroxy to bromo', 'Urea Schotten-Baumann', 'Carboxylic acid + sulfonamide condensation', 'Appel bromination', 'Transamidation', 'Diels-Alder cycloaddition']
         self.process = 32  # Number of processors to use in multiprocessing.
         self.rxn_numbering = True # Puts reaction numbering at the end of SMILES

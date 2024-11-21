@@ -59,19 +59,23 @@ class Reaction_Network:
 
         rmol = Chem.MolFromSmiles(rsmi, sanitize=False)
         rmol = remove_atom_map(rmol)
-        pmol = Chem.MolFromSmiles(psmi, sanitize=False)
-        pmol = remove_atom_map(pmol)
+        pmols = [Chem.MolFromSmiles(smi, sanitize=False) for smi in psmi.split('.')]
+        # pmol = Chem.MolFromSmiles(psmi, sanitize=False)
+        # pmol = remove_atom_map(pmol)
+        
+        if len(pmols) > 1:  #TODO: If products are multiple, it needs to pick the major product.
+            pmol_dict = {}
+            for p in pmols:
+                pmol_dict[p] = p.GetNumHeavyAtoms()
+            pmol = max(pmol_dict, key=pmol_dict.get)
+            pmol = remove_atom_map(pmol)
+        else: 
+            pmol = pmols[0]
+            pmol = remove_atom_map(pmol)
+
         self.pmol = pmol
         self.psmi = Chem.MolToSmiles(pmol)
         
-
-        # if len(pmol) > 1:  #TODO: If products are multiple, it needs to pick the major product.
-        #     pmol_dict = {}
-        #     for p in pmol:
-        #         pmol_dict[p] = p.GetNumHeavyAtoms()
-        #     pmol = max(pmol_dict, key=pmol_dict.get)
-        # else: pmol = pmol[0]
-
 
         if args.explicit_H:
             self.ps.removeHs = False
@@ -140,7 +144,6 @@ class Reaction_Network:
 
         for step in range(self.length):
             
-            # print(elementary_step)
             frontier_nodes = [node for node in G if G.out_degree(node) == 0]
             # print(step, frontier_nodes)
             for node in frontier_nodes:
@@ -422,6 +425,7 @@ def generate_elementary_reaction(input):
 
     # try:
     rxn_dict = reagent_matching_for_single_reaction(rxn_dict, label)
+    # print(rxn_dict)
     if not rxn_dict['conditions']:
         statistics = {'No templates' : 1}
         return rxn, []
