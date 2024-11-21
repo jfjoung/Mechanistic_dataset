@@ -254,8 +254,10 @@ class Template_process:
 
     def template_enumeration(self, node):
         """Enumerate templates to balance proton and allow unimolecular reaction"""
+   
         if self.args.proton:
             self.proton_balanced_reaction(node)
+
         if self.args.uni_rxn:
             self.uni_molecular_reaction()
 

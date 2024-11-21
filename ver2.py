@@ -74,7 +74,7 @@ class Reaction_Network:
             pmol = remove_atom_map(pmol)
 
         self.pmol = pmol
-        self.psmi = Chem.MolToSmiles(pmol)
+        self.psmi = Chem.MolToSmiles(pmol, isomericSmiles=False)
         
 
         if args.explicit_H:
@@ -273,7 +273,7 @@ class Reaction_Network:
             # print(node_id)
             # print(G.nodes[node_id]['smiles'])
 
-            smi = [Chem.MolToSmiles(Chem.MolFromSmiles(smi,self.ps)) for smi in G.nodes[node_id]['smiles'].split('.')]
+            smi = [Chem.MolToSmiles(Chem.MolFromSmiles(smi,self.ps), isomericSmiles=False) for smi in G.nodes[node_id]['smiles'].split('.')]
             # print(smi)
             if psmi in smi:
                 product_nodes.append(node_id)

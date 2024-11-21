@@ -1823,7 +1823,7 @@ class_reaction_templates={
         'pKa': [None],
         'Description': 'Bromination of aromatic ring'},
 
-    2: {'Templates': ['[Br;D1:3][Fe;-1:4]([Br;D1:5])([Br;D1:6])[Br;H1;D1;+0:1].[*;a;+1:7]:[c;H1;+0:8]-[Br;H0:2]>>[Br:3][Fe;+0:4]([Br:5])[Br:6].[Br;H1;+0:1].[*;a;+0:7]:[c;H0;+0:8]-[Br;H0:2]',],
+    2: {'Templates': ['[Br;D1:3][Fe;-1:4]([Br;D1:5])([Br;D1:6])[Br;H0;D1;+0:1].[*;a;+1:7]:[c;H1;+0:8]-[Br;H0:2]>>[Br:3][Fe;+0:4]([Br:5])[Br:6].[Br;H1;+0:1].[*;a;+0:7]:[c;H0;+0:8]-[Br;H0:2]',],
      'pKa': [None],
      'Description': 'Proton exchange'}}},
 
@@ -1841,7 +1841,7 @@ class_reaction_templates={
      'Description': 'Proton exchange'},
      3: {'Templates': ['[N;-1;H0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+1:7]:[c;H1;+0:8]-[Br,Cl,I;H0:1]>>[N;H1;+0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+0:7]:[c;H0;+0:8]-[Br,Cl,I;H0:1]',
                       '[N;H1;+0:2]([C:3]=[O;H1;+1:4])[C:5]=[O:6]>>[N;H1;+0:2]([C:3]=[O;H0;+0:4])[C:5]=[O:6]',],
-     'pKa': [{'B': 0.001}],
+     'pKa': [None, {'B': 0.001}],
      'Description': 'Deprotonation'},}},},
 
  ('Chlorination',): {'NCS': {'Reagent': ['ClN(C=O)C=O',], 'Exclude_reagent': None,
@@ -1859,7 +1859,7 @@ class_reaction_templates={
      'Description': 'Proton exchange'},
      3: {'Templates': ['[N;-1;H0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+1:7]:[c;H1;+0:8]-[Br,Cl,I;H0:1]>>[N;H1;+0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+0:7]:[c;H0;+0:8]-[Br,Cl,I;H0:1]',
                       '[N;H1;+0:2]([C:3]=[O;H1;+1:4])[C:5]=[O:6]>>[N;H1;+0:2]([C:3]=[O;H0;+0:4])[C:5]=[O:6]',],
-     'pKa': [{'B': 0.001}],
+     'pKa': [None, {'B': 0.001}],
      'Description': 'Deprotonation'},}},
 
   'Using FeCl3 or AlCl3': {'Reagent': ['Cl[Fe,Al](Cl)Cl', 'ClCl',], 'Exclude_reagent': None,
@@ -1986,7 +1986,7 @@ class_reaction_templates={
      'Description': 'Proton exchange'},
      3: {'Templates': ['[N;-1;H0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+1:7]:[c;H1;+0:8]-[Br,Cl,I;H0:1]>>[N;H1;+0:2]([C:3]=[O:4])[C:5]=[O:6].[*;a;+0:7]:[c;H0;+0:8]-[Br,Cl,I;H0:1]',
                       '[N;H1;+0:2]([C:3]=[O;H1;+1:4])[C:5]=[O:6]>>[N;H1;+0:2]([C:3]=[O;H0;+0:4])[C:5]=[O:6]',],
-     'pKa': [{'B': 0.001}],
+     'pKa': [None, {'B': 0.001}],
      'Description': 'Deprotonation'},
      
      }},
@@ -2366,7 +2366,7 @@ class_reaction_templates={
 # Based on the mechanism described in https://chem.libretexts.org/Bookshelves/Inorganic_Chemistry/Supplemental_Modules_and_Websites_(Inorganic_Chemistry)/Catalysis/Catalyst_Examples/Heck_Reaction. ##
 'Reaction with Pd(OR)2 and amine agent': {'Reagent': ['[O][Pd;+0][O]', '[N;+0]-[C;!H0]',], 'Exclude_reagent': None,
 'Stages': {0: {'Templates': [
-  '[O:2]-[Pd;+0:1]-[O:3].[N;+0:4]-[C;!H0:5]>>[O:2]-[Pd;+0:1]-[N;+1:4]-[C;!H0:5].[O;-1:3]',],
+  '[O:2]-[Pd;+0:1]-[O:3].[N;+0:4]-[C:5]>>[O:2]-[Pd;+0:1]-[N;+1:4]-[C:5].[O;-1:3]',],
              'pKa': [None],
              'Description': 'Amine coordination'},
          1: {'Templates': [
@@ -2715,7 +2715,8 @@ class_reaction_templates={
      'pKa': [None, None, None],
      'Description': 'Termination'}}}},
 
- ('Wittig olefination',): {'Reaction': {'Reagent': ['[C]=[O]','[P]',], 'Exclude_reagent': None,
+ ('Wittig olefination',
+  'Aza-Wittig reaction'): {'Reaction': {'Reagent': ['[C]=[O]','[P]',], 'Exclude_reagent': None,
    'Stages': {0: {'Templates': ['[P;+1:1]-[*;-1:2].[#6:3]=[#8:4]>>[P;+0:1]1-[*:2]-[#6:3]-[#8:4]1',
       '[P;+0:1]=[*:2].[#6:3]=[#8:4]>>[P;+0:1]1-[*:2]-[#6:3]-[#8:4]1',],
      'pKa': [None, None],
@@ -3675,9 +3676,8 @@ class_reaction_templates={
                                                                   '[O:1]-[C:2](-[O;H0;-1:3])(-[O;H1;+0:5])-[C;H3:4]>>[O;H0;-1:1].[O;H0;+0:3]=[C:2](-[O;H1;+0:5])-[C;H3:4]',],
                                                       'pKa':[None,None],
                                                       'Description':'Tetrahedral intermediate collapse'},
-                                                  3:{'Templates':['[O;H0;-1:1]>>[O;H1;+0:1]',
-                                                                  '[O;H0;-1:1].[O;H1;+0:5]>>[O;H1;+0:1].[O;H0;-1:5]',],
-                                                                  'pKa':[{'B':15},None],
+                                                  3:{'Templates':['[O;H0;-1:1]>>[O;H1;+0:1]',],
+                                                                  'pKa':[{'A':15}],
                                                                   'Description':'Protonation'}}}},
 
 ('Knorr pyrazole synthesis',):{'Reaction':{'Reagent':['[O]=[C]-[C]-[C]=[O]','[N]-[N]',],'Exclude_reagent':None,
@@ -4373,5 +4373,94 @@ class_reaction_templates={
      'Description': 'Cyclo-reversion'},}},
      },
 
+('Michaelis-Arbuzov reaction',): {'Reaction': {'Reagent': ['[P]',], 'Exclude_reagent': None,
+   'Stages': {0: {'Templates': ['[P;D3;+0:1].[*:2]-[Cl,Br,I,O&$([O]-S);H0;+0:3]>>[P;+1:1]-[*:2].[Cl,Br,I,O&$([O]-S);H0;-1:3]',],
+     'pKa': [None],
+     'Description': 'Sn2 type phosphorus attack'},
+    1: {'Templates': ['[P;+1:1]-[O:2]-[*:3].[Cl,Br,I,O&$([O]-S);H0;-1:4]>>[P;+0:1]=[O:2].[*:3]-[Cl,Br,I,O&$([O]-S);H0;+0:4]',],
+     'pKa': [None],
+     'Description': 'Sn2 type leaving group attack'},
+     
+     }},
+     },
 
+('Arndt-Eistert reaction',): {'Reaction': {'Reagent': ['[Cl]-[C]=[O]','[CH2]=[N+]=[N-]'], 'Exclude_reagent': None,
+   'Stages': {0: {'Templates': ['[Cl:1]-[C:2]=[O:3].[C;H2:4]=[N;+1:5]=[N;-1:6]>>[Cl;-1:1].[O:3]=[C:2]-[C;H2:4]-[N;+1:5]#[N;+0:6]',],
+     'pKa': [None],
+     'Description': 'Sn2 type CNN attack'},
+    1: {'Templates': ['[O:3]=[C:2]-[C;H2:4]-[N;+1:5]#[N;+0:6]>>[O:3]=[C:2]-[C;H1:4]=[N;+1:5]=[N;-1:6]',],
+     'pKa': [{'B':-10}],
+     'Description': 'Deprotonation'},
+     
+     }},
+     },
+
+
+( 'Ireland-Claisen rearrangement',): {'Reaction': {'Reagent': ['[#6]=[#6]-[#6]-[#8]-[#6](=[#8])-[#6]','[Si]-[Cl]'], 'Exclude_reagent': None,
+   'Stages': {
+    0: {'Templates': ['[#8:1]=[#6:2]-[#6;H2:3]-[#6:4]=[#8:5]>>[#8;-1:1]-[#6:2]=[#6;H1;+0:3]-[#6:4]=[#8:5]',
+                      '[#8:1]=[#6:2]-[#6;H1:3]-[#6:4]=[#8:5]>>[#8;-1:1]-[#6:2]=[#6;H0;+0:3]-[#6:4]=[#8:5]',
+                               '[#8:1]=[#6:2](-[!#8:4])-[#6;H3:3]>>[#8;-1:1]-[#6:2](-[!#8:4])=[#6;H2;+0:3]',
+                               '[#8:1]=[#6:2]-[#6;H2:3]>>[#8;-1:1]-[#6:2]=[#6;H1;+0:3]',
+                               '[#8:1]=[#6:2]-[#6;H1:3]>>[#8;-1:1]-[#6:2]=[#6;H0;+0:3]',],
+     'pKa': [{'B': 6},{'B': 6},{'B': 14}, {'B': 14}, {'B': 14}],
+     'Description': 'Deprotonation of alpha position carbon'},
+    1: {'Templates': ['[#8;-1:1]-[#6:2]=[#6;H1;+0:3].[Si:4]-[Cl:5]>>[Si:4]-[#8;+0:1]-[#6:2]=[#6;H1;+0:3].[Cl;-1:5]',],
+     'pKa': [None],
+     'Description': 'Reaction with Si-Cl'},
+
+    2: {'Templates': ['[C:1]=[C:2][C:3][O:4][C:5]=[C:6]>>[O:4]=[C:5]-[C:6]-[C:1]-[C:2]=[C:3]',],
+     'pKa': [None],
+     'Description': 'Claisen rearrangement'},
+    3: {'Templates': ['[Si:4]-[#8;+0:1].[O;-1:2]>>[Si:4]-[O;+0:2].[#8;-1:1]',],
+     'pKa': [None],
+     'Description': 'Sn2 type reaction'},
+    4: {'Templates': ['[#6:2](=[#8:3])-[#8;-1;H0:1]>>[#6:2](=[#8:3])-[#8;+0;H1:1]',],
+     'pKa': [{'A': 4.74}],
+     'Description': 'Sn2 type reaction'},
+               
+ }},
+     },
+( 'Johnson-Claisen rearrangement',
+ 'Eschenmoser-Claisen rearrangement',): {'Reaction': {'Reagent': ['[#6]=[#6]-[#6]-[O]','[O]-[C](-[O])-[O,#7]'], 'Exclude_reagent': None,
+   'Stages': {
+    0: {'Templates': ['[O:1]-[C:2](-[O,#7:3])-[O;H0;+0:4]-[*:5]>>[O:1]-[C:2](-[O,#7:3])-[O;H1;+1:4]-[*:5]',],
+     'pKa': [{'A': 5}],
+     'Description': 'Alcohol protonation under mild condition'},
+    1: {'Templates': ['[O;+0:1]-[C:2]-[O;H1;+1:3]>>[O;+1:1]=[C:2].[O;H1;+0:3]',
+                      '[N;+0:1]-[C:2]-[O;H1;+1:3]>>[N;+1:1]=[C:2].[O;H1;+0:3]',],
+     'pKa': [None, None],
+     'Description': 'First Alcohol leaving'},
+    2: {'Templates': ['[O;+1:1]=[C:2].[O;H1;+0:3]>>[O;+0:1]-[C:2]-[O;H1;+1:3]',
+                      '[N;+1:1]=[C:2].[O;H1;+0:3]>>[N;+0:1]-[C:2]-[O;H1;+1:3]',],
+     'pKa': [None],
+     'Description': 'Alcohol attack'},
+    3: {'Templates': ['[O;+0:1]-[C:2]-[O;H1;+1:3]>>[O;+0:1]-[C:2]-[O;H0;+0:3]',
+                      '[N;+0:1]-[C:2]-[O;H1;+1:3]>>[N;+0:1]-[C:2]-[O;H0;+0:3]',],
+     'pKa': [{'B': 4}, {'B': 4}],
+     'Description': 'Alcohol deprotonation'},
+    4: {'Templates': ['[O;+0:1]-[C:2]-[O;H0;+0:3]>>[O;+0:1]-[C:2]-[O;H1;+1:3]',],
+     'pKa': [{'A': 5}],
+     'Description': 'Alcohol protonation'},
+    5: {'Templates': ['[O;+0:1]-[C:2]-[O;H1;+1:3]>>[O;+1:1]=[C:2].[O;H1;+0:3]',
+                      '[N;+0:1]-[C:2]-[O;H1;+1:3]>>[N;+1:1]=[C:2].[O;H1;+0:3]',],
+     'pKa': [None, None],
+     'Description': 'Second alcohol leaving'},
+    6: {'Templates': ['[O;+1:1]=[C:2]-[C;H3:3]>>[O;+0:1]-[C:2]=[C;H2:3]',
+                      '[O;+1:1]=[C:2]-[C;H2:3]>>[O;+0:1]-[C:2]=[C;H1:3]',
+                      '[O;+1:1]=[C:2]-[C;H1:3]>>[O;+0:1]-[C:2]=[C;H0:3]',
+                      '[N;+1:1]=[C:2]-[C;H3:3]>>[N;+0:1]-[C:2]=[C;H2:3]',
+                      '[N;+1:1]=[C:2]-[C;H2:3]>>[N;+0:1]-[C:2]=[C;H1:3]',
+                      '[N;+1:1]=[C:2]-[C;H1:3]>>[N;+0:1]-[C:2]=[C;H0:3]',],
+     'pKa': [{'B': -2}, {'B': -2}, {'B': -2}, {'B': -2}, {'B': -2}, {'B': -2}],
+     'Description': 'Enol formation'},
+    7: {'Templates': ['[C:1]=[C:2][C:3][O:4][C:5]=[C:6]>>[O:4]=[C:5]-[C:6]-[C:1]-[C:2]=[C:3]',
+                      ],
+     'pKa': [None],
+     'Description': 'Claisen rearrangement'},    
+               
+ }},
+     },
+
+     
 }
