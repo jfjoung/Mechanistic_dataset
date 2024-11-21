@@ -54,8 +54,8 @@ class Reaction_Network:
         else:
             rsmi = reactants
 
-        ps = Chem.SmilesParserParams()
-        ps.sanitize = False
+        self.ps = Chem.SmilesParserParams()
+        self.ps.sanitize = False
 
         rmol = Chem.MolFromSmiles(rsmi, sanitize=False)
         rmol = remove_atom_map(rmol)
@@ -74,7 +74,7 @@ class Reaction_Network:
 
 
         if args.explicit_H:
-            ps.removeHs = False
+            self.ps.removeHs = False
             rmol.UpdatePropertyCache(strict=False)
             rmol = Chem.AddHs(rmol, explicitOnly=False)
 
@@ -134,6 +134,9 @@ class Reaction_Network:
         G = self.rxn_network
         # print(self.reaction_smiles)
         # print(self.reaction_condition)
+        # if 'Pd with H2' == self.reaction_condition:
+        #     print(self.reaction_smiles)
+        #     raise
 
         for step in range(self.length):
             
@@ -261,13 +264,13 @@ class Reaction_Network:
         frontier_nodes = [node for node in G if G.out_degree(node) == 0]
         product_nodes = []
 
-        psmi =  Chem.MolToSmiles(Chem.MolFromSmiles(self.psmi,sanitize=False))
+        psmi =  Chem.MolToSmiles(Chem.MolFromSmiles(self.psmi,self.ps))
         # print('psmi', psmi)
         for node_id in frontier_nodes:
             # print(node_id)
             # print(G.nodes[node_id]['smiles'])
 
-            smi = [Chem.MolToSmiles(Chem.MolFromSmiles(smi,sanitize=False)) for smi in G.nodes[node_id]['smiles'].split('.')]
+            smi = [Chem.MolToSmiles(Chem.MolFromSmiles(smi,self.ps)) for smi in G.nodes[node_id]['smiles'].split('.')]
             # print(smi)
             if psmi in smi:
                 product_nodes.append(node_id)
