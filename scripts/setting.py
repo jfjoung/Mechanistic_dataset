@@ -18,13 +18,14 @@ class Args:
         self.sanitize = False # Saniztie the SMILES when remapping
         self.remapping = True  # Remaps the atom mapping in Reaction SMARTS to start from 1.
         # self.data = './data/test_data.txt'  # Path to the file containing overall reactions.
+        # self.verbosity = True  # Sets the logging.
         self.data = './data/uspto_train.txt'  # Path to the file containing overall reactions.
+        self.verbosity = False
         self.save = './results/uspto_fix.txt'  # Path to the file where results will be saved.
         self.debug = True  # Records reactions with errors for debugging purposes.
         self.all_info = False  # Saves all reactions, including the reaction network.
         self.stat = True  # Generates statistics for the reactions.
-        self.rxn_class = 'Cyclic Beckmann rearrangement' # Specifies a particular reaction class to extract elementary reactions from.
+        self.rxn_class = 'Baylis-Hillman reaction' # Specifies a particular reaction class to extract elementary reactions from.
         self.exclude_rxn = ['SEM protection', 'Menshutkin reaction', 'Staudinger reduction','Negishi coupling','Prilezhaev epoxidation', 'N-Bn deprotection', 'Hydroxy to bromo', 'Urea Schotten-Baumann', 'Carboxylic acid + sulfonamide condensation', 'Appel bromination', 'Transamidation', 'Diels-Alder cycloaddition']
         self.process = 32  # Number of processors to use in multiprocessing.
         self.rxn_numbering = True # Puts reaction numbering at the end of SMILES
-        self.verbosity = False  # Sets the logging.

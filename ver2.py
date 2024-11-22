@@ -145,7 +145,8 @@ class Reaction_Network:
         for step in range(self.length):
             
             frontier_nodes = [node for node in G if G.out_degree(node) == 0]
-            # print(step, frontier_nodes)
+            if self.args.verbosity:
+                print(step, frontier_nodes)
             for node in frontier_nodes:
                 elementary_step = self.stage[step]
                 template = template_process2.Template_process(elementary_step, self.args)
@@ -154,8 +155,8 @@ class Reaction_Network:
                 template_reactant_dict, new_node = template.find_reactants(G.nodes[node], G.nodes[0])
                 for key, value in new_node.items():
                     G.nodes[node][key] = value
-
-                # print('template_reactant_dict', template_reactant_dict)
+                if self.args.verbosity: 
+                    print('template_reactant_dict', template_reactant_dict)
                 # print('smiles_w_mapping',G.nodes[node]['smiles_w_mapping'])
                 # print('smiles_w_isotope',G.nodes[node]['smiles_w_isotope'])
                 # print(G.nodes[node]['smiles'])
@@ -238,7 +239,9 @@ class Reaction_Network:
                                 G.nodes[self.node_id]['smiles'] = get_plain_smiles(isotope_to_atommap(Chem.MolFromSmiles(prod_spec_smi, sanitize=False)))
                                 G.nodes[self.node_id]['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in prod_spec_smi.split('.')]
                                 G.nodes[self.node_id]['type'] = 'mol_node'
-                                # print(G.nodes[self.node_id]['smiles'])
+                                if self.args.verbosity:
+                                    print(G.nodes[self.node_id]['smiles'])
+                                    # print(G.nodes[self.node_id]['smiles_w_mapping'])
 
                                 G.add_edge(f'rxn {rxn_node_count}', self.node_id)
 
