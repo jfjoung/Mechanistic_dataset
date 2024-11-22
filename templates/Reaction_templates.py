@@ -1704,7 +1704,7 @@ class_reaction_templates={
     3: {'Templates': ['[O;H1;+0:1]-[C;-1:2]=[O;+0:5].[Cl;H0;-1:8]>>[O;H0;+0:1]=[C;+0:2]=[O;+0:5].[Cl;H1;+0:8]',],
           'pKa': [None],
           'Description': 'Deprotonation'},
-              }}},
+              }},
 
      'Reaction using DMF/SOCl2': {'Reagent': ['[#6]-[O]','[Cl,Br]-[S](=[O])-[Cl,Br]','[C][N]([C]=[O])[C]'], 'Exclude_reagent': None,
    'Stages': {
@@ -1730,7 +1730,7 @@ class_reaction_templates={
 
     5: {'Templates': ['[C:1][N;+1:2](=[C:3]-[#8;H0;+0:11]-[#6:10])[C:8].[Cl,Br;-1:4]>>[C:1][N;+0:2](-[C:3]=[#8;H0;+0:11])[C:8].[#6:10]-[Cl,Br;+0:4]'],
      'pKa': [None],
-     'Description': 'Nucleophilic substitution'}}},
+     'Description': 'Nucleophilic substitution'}}}},
 
 
  ('Iodination',): {'Using NIS': {'Reagent': ['IN(C=O)C=O',], 'Exclude_reagent': None,
@@ -4054,5 +4054,44 @@ class_reaction_templates={
      }},
      },
 
+('Bamford-Stevens reaction',): {'Reaction': {'Reagent': ['[#7]-[#7]-[S]',], 'Exclude_reagent': None,
+   'Stages': {0: {'Templates':['[#7:1]-[#7;H1:2]-[S;+0:3]=[O:4]>>[#7:1]-[#7;-1;H0:2]-[S;+0:3]=[O:4]',],
+              'pKa':[{'B': 9}],
+              'Description':'Deprotonation'},
+
+            1: {'Templates':['[#7:1]-[#7;-1;H0:2]-[S;+0:3]=[O:4]>>[#7;+1:1]=[#7;-1;H0:2].[S;+0:3]-[O;-1:4]',],
+              'pKa':[None],
+              'Description':'Dissociation'},
+            2: {'Templates':['[C;H3:4]-[#6;H0:3]=[#7;+1:1]=[#7;-1;H0:2]>>[C;H3:4]-[#6;H0:3].[#7;+0:1]#[#7;+0;H0:2]',
+                             '[C;H2:4]-[#6;H0:3]=[#7;+1:1]=[#7;-1;H0:2]>>[C;H2:4]-[#6;H0:3].[#7;+0:1]#[#7;+0;H0:2]',
+                             '[C;H1:4]-[#6;H0:3]=[#7;+1:1]=[#7;-1;H0:2]>>[C;H1:4]-[#6;H0:3].[#7;+0:1]#[#7;+0;H0:2]',],
+              'pKa':[None],
+              'Description':'N2 evolution'},
+            3: {'Templates':['[C;H3:4]-[#6;H0:3]>>[C;H2:4]=[#6;H1:3]',
+                             '[C;H2:4]-[#6;H0:3]>>[C;H1:4]=[#6;H1:3]',
+                             '[C;H1:4]-[#6;H0:3]>>[C;H0:4]=[#6;H1:3]',],
+              'pKa':[None],
+              'Description':'Rearrangement'},
+     }},
+     },
+
+('Baylis-Hillman reaction',
+ 'Aza-Baylis-Hillman reaction'): {'Reaction': {'Reagent': ['[#6]=[#6]-[#6]=[#8]',], 'Exclude_reagent': None,
+   'Stages': {0: {'Templates':['[#6:1]=[#6:2]-[#6:3]=[#8:4].[#7;D3;+0:5]>>[#7;+1:5]-[#6;+0:1]-[#6:2]=[#6:3]-[#8;-1:4]',
+                               ],
+              'pKa':[None],
+              'Description':'Addition'},
+
+            1: {'Templates':['[#6;+0:1]-[#6:2]=[#6:3]-[#8;-1:4].[#6;H1:5]=[#8:6]>>[#6;+0:1]-[#6:2](-[#6;H1:5]-[#8;-1:6])-[#6:3]=[#8;+0:4]',],
+              'pKa':[None],
+              'Description':'Dissociation'},
+            2: {'Templates':['[#6;+0:1]-[#6;H1:2](-[#6;H1:5]-[#8;H0;-1:6])-[#6:3]=[#8;+0:4]>>[#6;+0:1]-[#6;H0:2](-[#6;H1:5]-[#8;H1;+0:6])=[#6:3]-[#8;-1:4]',],
+              'pKa':[None],
+              'Description':'Proton transfer'},
+            3: {'Templates':['[#7;+1:7]-[#6;+0:1]-[#6;H0:2](-[#6;H1:5]-[#8;H1;+0:6])=[#6:3]-[#8;-1:4]>>[#7;+0:7].[#6;+0:1]=[#6;H0:2](-[#6;H1:5]-[#8;H1;+0:6])-[#6:3]=[#8;+0:4]',],
+              'pKa':[None],
+              'Description':'Proton transfer'},
+     }},
+     },
 
 }

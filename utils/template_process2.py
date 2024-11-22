@@ -204,14 +204,22 @@ class Template_process:
     
     def deduplicate_reactants(self, reactant_dict):
         from collections import defaultdict
+        
+        # Group keys by identical value lists
         grouped_keys = defaultdict(list)
         for key, value_list in reactant_dict.items():
             grouped_keys[tuple(value_list)].append(key)
+        
         result_dict = {}
         for value_list, keys in grouped_keys.items():
             unique_values = list(value_list)  # Unique values (n)
             m = len(keys)  # Number of keys
             n = len(unique_values)  # Number of unique values
+            
+            # If there is only one key, assign the entire value list
+            if m == 1:
+                result_dict[keys[0]] = unique_values
+                continue
             
             # Step 3: Assign unique values to keys
             for i, key in enumerate(keys[:min(m, n)]):
