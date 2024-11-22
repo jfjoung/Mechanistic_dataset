@@ -75,6 +75,7 @@ class Reaction_Network:
 
         self.pmol = pmol
         self.psmi = Chem.MolToSmiles(pmol, isomericSmiles=False)
+        # print('self.psmi', self.psmi)
         
 
         if args.explicit_H:
@@ -82,8 +83,17 @@ class Reaction_Network:
             rmol.UpdatePropertyCache(strict=False)
             rmol = Chem.AddHs(rmol, explicitOnly=False)
 
-            hpmol = Chem.MolFromSmiles(psmi, sanitize=False)
-            hpmol = remove_atom_map(hpmol)
+            hpmols = [Chem.MolFromSmiles(smi, sanitize=False) for smi in psmi.split('.')]
+
+            if len(hpmols) > 1:  #TODO: If products are multiple, it needs to pick the major product.
+                pmol_dict = {}
+                for p in pmols:
+                    pmol_dict[p] = p.GetNumHeavyAtoms()
+                hpmol = max(pmol_dict, key=pmol_dict.get)
+                hpmol = remove_atom_map(hpmol)
+            else: 
+                hpmol = hpmols[0]
+                hpmol = remove_atom_map(hpmol)
             hpmol = Chem.AddHs(hpmol, explicitOnly=False)
             self.pmol = hpmol
             self.psmi = Chem.MolToSmiles(hpmol)
@@ -269,15 +279,16 @@ class Reaction_Network:
         G = self.rxn_network
         frontier_nodes = [node for node in G if G.out_degree(node) == 0]
         product_nodes = []
+        self.ps.sanitize = True
 
-        psmi =  Chem.MolToSmiles(Chem.MolFromSmiles(self.psmi,self.ps))
+        psmi =  Chem.MolToSmiles(Chem.MolFromSmiles(self.psmi,self.ps), isomericSmiles=False,canonical=True)
         # print('psmi', psmi)
         for node_id in frontier_nodes:
             # print(node_id)
             # print(G.nodes[node_id]['smiles'])
 
-            smi = [Chem.MolToSmiles(Chem.MolFromSmiles(smi,self.ps), isomericSmiles=False) for smi in G.nodes[node_id]['smiles'].split('.')]
-            # print(smi)
+            smi = [Chem.MolToSmiles(Chem.MolFromSmiles(smi,self.ps), isomericSmiles=False, canonical=True) for smi in G.nodes[node_id]['smiles'].split('.')]
+            # print(psmi, smi)
             if psmi in smi:
                 product_nodes.append(node_id)
 

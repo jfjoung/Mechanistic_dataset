@@ -144,43 +144,44 @@ class Template_process:
 
                     for mol in node['mol']:
                         mol.UpdatePropertyCache(strict=False)
-                    # print(Chem.MolToSmiles(mol))
-                    if mol and mol.GetSubstructMatch(pat): # and mol_node.smiles not in possible_reactant_smiles_list:
-                        possible_reactant_list.append(mol)
-                        # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
+                        # print(Chem.MolToSmiles(mol))
+                        if mol and mol.GetSubstructMatch(pat): # and mol_node.smiles not in possible_reactant_smiles_list:
+                            possible_reactant_list.append(mol)
+                            # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
 
-                        if possible_reactant_list:
-                            num_match += 1
-                            templ_mol_pair[pat] = possible_reactant_list
-                    if pat not in templ_mol_pair.keys():
-                        # print('Pat :', Chem.MolToSmarts(pat))
-                        for mol in reactant_node['mol']:
-                            if mol and mol.GetSubstructMatch(pat):
-                                # print('After adding Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
-                                new_smi = Chem.MolToSmiles(mol)
-                                # print('new_smi', new_smi)
-
-                                new_mol = Chem.MolFromSmiles(new_smi, sanitize=False)
-                                new_mol = remove_atom_map(new_mol)
-
-                                for atom in new_mol.GetAtoms():
-                                    atom.SetIsotope(max_atom_map)
-                                    max_atom_map+=1
-
-                                smiles_w_isotope = '.'.join([node['smiles_w_isotope'], Chem.MolToSmiles(new_mol)])
-                                smiles_w_mapping = Chem.MolToSmiles(isotope_to_atommap(Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)))
-                                mol = Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)
-
-                                node['smiles_w_isotope'] = smiles_w_isotope
-                                node['smiles_w_mapping'] = smiles_w_mapping
-                                node['smiles'] = get_plain_smiles(Chem.MolFromSmiles(smiles_w_mapping, sanitize=False))
-                                node['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in smiles_w_isotope.split('.')]
+                            if possible_reactant_list:
                                 num_match += 1
-                                # print('nnew smi', Chem.MolToSmiles(new_mol))
-                                possible_reactant_list.append(new_mol)
-                                # print('possible_reactant_list', possible_reactant_list)
                                 templ_mol_pair[pat] = possible_reactant_list
-                                break
+                        if pat not in templ_mol_pair.keys():
+                            # print('Pat :', Chem.MolToSmarts(pat))
+                            for mol in reactant_node['mol']:
+                                mol.UpdatePropertyCache(strict=False)
+                                if mol and mol.GetSubstructMatch(pat):
+                                    # print('After adding Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
+                                    new_smi = Chem.MolToSmiles(mol)
+                                    # print('new_smi', new_smi)
+
+                                    new_mol = Chem.MolFromSmiles(new_smi, sanitize=False)
+                                    new_mol = remove_atom_map(new_mol)
+
+                                    for atom in new_mol.GetAtoms():
+                                        atom.SetIsotope(max_atom_map)
+                                        max_atom_map+=1
+
+                                    smiles_w_isotope = '.'.join([node['smiles_w_isotope'], Chem.MolToSmiles(new_mol)])
+                                    smiles_w_mapping = Chem.MolToSmiles(isotope_to_atommap(Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)))
+                                    mol = Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)
+
+                                    node['smiles_w_isotope'] = smiles_w_isotope
+                                    node['smiles_w_mapping'] = smiles_w_mapping
+                                    node['smiles'] = get_plain_smiles(Chem.MolFromSmiles(smiles_w_mapping, sanitize=False))
+                                    node['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in smiles_w_isotope.split('.')]
+                                    num_match += 1
+                                    # print('nnew smi', Chem.MolToSmiles(new_mol))
+                                    possible_reactant_list.append(new_mol)
+                                    # print('possible_reactant_list', possible_reactant_list)
+                                    templ_mol_pair[pat] = possible_reactant_list
+                                    break
             
                 if num_match == len(patterns):
                     template_reactant_dict[templ] = templ_mol_pair
