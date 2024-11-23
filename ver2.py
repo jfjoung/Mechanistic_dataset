@@ -286,8 +286,11 @@ class Reaction_Network:
         for node_id in frontier_nodes:
             # print(node_id)
             # print(G.nodes[node_id]['smiles'])
-
-            smi = [Chem.MolToSmiles(Chem.MolFromSmiles(smi,self.ps), isomericSmiles=False, canonical=True) for smi in G.nodes[node_id]['smiles'].split('.')]
+            try:
+                smi = [Chem.MolToSmiles(Chem.MolFromSmiles(smi,self.ps), isomericSmiles=False, canonical=True) for smi in G.nodes[node_id]['smiles'].split('.')]
+            except Exception as e:
+                # print(e)
+                continue
             # print(psmi, smi)
             if psmi in smi:
                 product_nodes.append(node_id)
