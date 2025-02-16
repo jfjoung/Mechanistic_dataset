@@ -64,3 +64,5 @@ kekulization.py
 scripts/setting.py
 run.py
 labeling.ipynb
+check_sequences.ipynb
+example.ipynb

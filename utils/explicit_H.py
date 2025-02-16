@@ -20,9 +20,13 @@ def parse_smarts(smarts):
     return atom_dict
 
 def clean_hydrogen_notation(atom):
-    atom = re.sub(r'H(\d+)', '', atom)
+    # print('1', atom)
+    atom = re.sub(r'H(?!0)(\d+)', '', atom)
+    # print('2', atom)
     atom = re.sub(r'H(?!0)', '', atom)
+    # print('3', atom)
     atom = re.sub(r';{2,}', ';', atom).replace(';:', ':').replace(';,', ';')
+    # print('4', atom)
     return atom
 
 def update_smarts_with_hydrogen_mapping(smarts, atom_dict):
@@ -200,5 +204,9 @@ if __name__ == '__main__':
 
     # Test case 8
     smarts8 = '[*:2]-[O;H0:3]-[Pd:1]-[#6;H2:4].[H:5][H:6]>>[*:2]-[O;H0:3]-[H:5].[H:6]-[#6;H2:4].[Pd:1]'
+    smarts8, added_h_mappings8 = modify_explicit_H(smarts8)
+    print(smarts8)
+    
+    smarts8 = '[Br;D0;H0;+0:1].[C;D1;H3;+0:2]-[#6:3]=[#6:4]>>[Br;H1;+0:1].[C;D1;H2;+0:2]-[#6:3]=[#6:4]'
     smarts8, added_h_mappings8 = modify_explicit_H(smarts8)
     print(smarts8)

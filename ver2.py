@@ -1,25 +1,14 @@
 
-# reactant >> major product
-
-# 0. atom mapping , (if needs, explict H)
-
-# 1. template application
-#    - if there is aicd/base --> change the template
-
-# 2. check the validity, remove atom mapping, and then deduplicate
-# 3. check the major product in the node
-# 4. 
-# Standard libraries
-
 import os
 import logging
 import json
 import pickle
-from multiprocessing import Pool
+from multiprocessing import Pool, Value
 
 # Third-party libraries
 from rdkit import Chem, RDLogger
 from rdkit.Chem import AllChem
+from rdkit.Chem.rdMolDescriptors import CalcMolFormula
 import networkx as nx
 from tqdm import tqdm
 
@@ -31,6 +20,8 @@ from utils.template_process2 import remove_atom_map, isotope_to_atommap, get_pla
 
 # Disable RDKit warnings
 RDLogger.DisableLog('rdApp.*')
+
+# NUM = 0
 
 class Reaction_Network:
     def __init__(self, rxn_dict, idx, args):
@@ -94,6 +85,7 @@ class Reaction_Network:
             else: 
                 hpmol = hpmols[0]
                 hpmol = remove_atom_map(hpmol)
+            hpmol.UpdatePropertyCache(strict=False)
             hpmol = Chem.AddHs(hpmol, explicitOnly=False)
             self.pmol = hpmol
             self.psmi = Chem.MolToSmiles(hpmol)
@@ -144,19 +136,22 @@ class Reaction_Network:
         self.stage = templ_dict['Stages']
         self.length = len(self.stage)
 
+    def combine_mol(self,mol_list):
+        if len(mol_list) == 1:
+            return Chem.MolToSmiles(mol_list[0])
+        else:
+            smiles = '.'.join([Chem.MolToSmiles(mol) for mol in mol_list])
+            return smiles
+        
     def run_reaction(self):
         G = self.rxn_network
-        # print(self.reaction_smiles)
-        # print(self.reaction_condition)
-        # if 'Pd with H2' == self.reaction_condition:
-        #     print(self.reaction_smiles)
-        #     raise
 
         for step in range(self.length):
-            
             frontier_nodes = [node for node in G if G.out_degree(node) == 0]
             if self.args.verbosity:
                 print(step, frontier_nodes)
+            if len(frontier_nodes) > self.args.num_combination:
+                continue
             for node in frontier_nodes:
                 elementary_step = self.stage[step]
                 template = template_process2.Template_process(elementary_step, self.args)
@@ -175,12 +170,14 @@ class Reaction_Network:
                     # print(len(reactants))
 
                     if len(reactants) > self.args.num_combination:
-                        raise ValueError('Too many combinations')
+                        continue
+                        # raise ValueError('Too many combinations')
                     rxn = AllChem.ReactionFromSmarts(templ)
 
                     for reactant in reactants:
-                        # print('reactants', [Chem.MolToSmiles(mol) for mol in reactant])   
-                        # print(reactant)
+
+                        combined_reactant = self.combine_mol(reactant)
+                        reactant_formula = CalcMolFormula(Chem.MolFromSmiles(combined_reactant, self.ps))
 
                         rmols = [mol for mol in reactant]
                         # print(rmols)
@@ -206,8 +203,16 @@ class Reaction_Network:
 
                             if self.args.verbosity: 
                                 logging.info(f'{templ} were used')
+
+                            # from rdkit.Chem.rdMolDescriptors import CalcMolFormula
+                            # [prod.UpdatePropertyCache(strict=False) for prod in outcome]
+                            # print([CalcMolFormula(prod) for prod in outcome])
                                 
                             prod_smi = '.'.join([Chem.MolToSmiles(prod) for prod in outcome]) #
+
+                            prod_mol = Chem.MolFromSmiles(prod_smi, self.ps)
+                            prod_mol.UpdatePropertyCache(strict=False)
+                            product_formula = CalcMolFormula(prod_mol)
                             product_isotopes = [atom.GetIsotope() for mol in outcome for atom in mol.GetAtoms()]
                             # print('product_isotopes', product_isotopes)
 
@@ -215,6 +220,9 @@ class Reaction_Network:
                             if len(product_isotopes) != len(set_product_isotopes):
                                 continue
                             if set_product_isotopes != reactant_isotopes:
+                                continue
+
+                            if reactant_formula != product_formula:
                                 continue
 
                             # print('product_isotopes', product_isotopes)
@@ -249,9 +257,10 @@ class Reaction_Network:
                                 G.nodes[self.node_id]['smiles'] = get_plain_smiles(isotope_to_atommap(Chem.MolFromSmiles(prod_spec_smi, sanitize=False)))
                                 G.nodes[self.node_id]['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in prod_spec_smi.split('.')]
                                 G.nodes[self.node_id]['type'] = 'mol_node'
+
                                 if self.args.verbosity:
                                     print(G.nodes[self.node_id]['smiles'])
-                                    # print(G.nodes[self.node_id]['smiles_w_mapping'])
+
 
                                 G.add_edge(f'rxn {rxn_node_count}', self.node_id)
 
@@ -372,12 +381,26 @@ class Reaction_Network:
         # self.print_graph()
 
     def get_rxn(self):
-        # G = 
 
+        global NUM
+        
         elem_rxn = []
-        for G in self.pruned_graphs:
+        root_dict ={}
+        # NUM += 1
 
+
+        for G in self.pruned_graphs[:self.args.max_pathways]:
+            with NUM.get_lock():
+                if G.nodes[0]['smiles'] in root_dict:
+                    num_rxn = root_dict[G.nodes[0]['smiles']]
+                else:
+                    NUM.value += 1
+                    root_dict[G.nodes[0]['smiles']] = NUM.value
+                    num_rxn = NUM.value
+ 
             rxn_node_indices = sorted(idx for idx, data in G.nodes(data=True) if data.get('type') == 'rxn_node')
+            if len(rxn_node_indices) >= self.args.num_reaction_node:
+                continue
             for r_node in rxn_node_indices:
                 # Get parent nodes (predecessors)
                 parent_node = list(G.predecessors(r_node))[0]
@@ -389,7 +412,7 @@ class Reaction_Network:
 
                 if args.rxn_numbering:
                     des = G.nodes[r_node]['rxn_node']['description']
-                    rxn_smi = f'{rxn_smi}|{self.reaction_class}|{self.reaction_condition}|{des}'
+                    rxn_smi = f'{rxn_smi}|{self.reaction_class}|{self.reaction_condition}|{des}|{num_rxn}'
 
                 elem_rxn.append(rxn_smi)
 
@@ -401,7 +424,7 @@ class Reaction_Network:
 
                         if args.rxn_numbering:
                             des = 'End of reaction'
-                            rxn_smi = f'{rxn_smi}|{self.reaction_class}|{self.reaction_condition}|{des}'
+                            rxn_smi = f'{rxn_smi}|{self.reaction_class}|{self.reaction_condition}|{des}|{num_rxn}'
 
                         elem_rxn.append(rxn_smi)
                     except:
@@ -486,9 +509,17 @@ def generate_mechdata_multiprocess(args):
     save_dir_path=os.path.dirname(args.save)
     os.makedirs(save_dir_path, exist_ok=True)
 
-    p = Pool(args.process)
+    # def initializer():
+    #     global NUM
+
+    def init(arg):
+        global NUM
+        NUM = arg
+
+    NUM = Value('i', 0)
+    
+    p = Pool(args.process, initializer=init, initargs=(NUM, ))
     num_generated_rxn=0
-    num_used_rxn = 0
 
     with open(args.data, 'r') as file:
         lines = file.readlines()
@@ -509,13 +540,14 @@ def generate_mechdata_multiprocess(args):
             if results is not None:
                 rxn, elem_rxns = results
                 if elem_rxns:
-                    num_used_rxn += 1
+                    # num_used_rxn += 1
                     if args.all_info:
                         pickle.dump(elem_rxns, fout, protocol=pickle.HIGHEST_PROTOCOL)
                     else:
                         num_generated_rxn += len(elem_rxns)
                         if args.rxn_numbering:
-                            fout.write(f'|{num_used_rxn}\n'.join(elem_rxns) + f'|{num_used_rxn}\n')
+                            # fout.write(f'|{num_used_rxn}\n'.join(elem_rxns) + f'|{num_used_rxn}\n')
+                            fout.write('\n'.join(elem_rxns) + '\n')
                         else:
                             fout.write('\n'.join(elem_rxns) + '\n')
 
@@ -536,18 +568,11 @@ def generate_mechdata_multiprocess(args):
     # if not args.debug:
     #     os.remove(debug_file_path)
 
-    logging.info(f'In total, {num_used_rxn} overall reactions were utilized')
-    logging.info(f'{num_generated_rxn} elementary steps were generated')
-    logging.info(f'Mechanistic dataset generation is done')
+    # logging.info(f'In total, {num_used_rxn} overall reactions were utilized')
+    # logging.info(f'{num_generated_rxn} elementary steps were generated')
+    # logging.info(f'Mechanistic dataset generation is done')
 
 
 if __name__ == '__main__':
     args=Args()
-
-    # with open(args.data, 'r') as file:
-    #     lines = file.readlines()
-    #     iterables = [(line, args) for line in lines]
-
-    # print(generate_elementary_reaction(iterables[0]))
     generate_mechdata_multiprocess(args)
-

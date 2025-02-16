@@ -1,1 +1,6 @@
-[CH3:23][OH:24].[CH:12]([CH2:13][CH2:14][C:15]([OH:16])=[O:17])=[O:22].[CH:18]1([NH2:19])[CH2:20][CH2:21]1.[Cl:1][c:2]1[cH:3][c:4]([Cl:5])[cH:6][cH:7][c:8]1[CH2:9][N+:10]#[C-:11]>>[Cl:1][c:2]1[cH:3][c:4]([Cl:5])[cH:6][cH:7][c:8]1[CH2:9][NH:10][C:11]([C@@H:12]1[CH2:13][CH2:14][C:15](=[O:17])[N:19]1[CH:18]1[CH2:20][CH2:21]1)=[O:16] Ugi reaction
+NC1CC1.OC(CC)=O.N1=CC=CC=C1>>CCC(NC1CC1)=O Carboxylic acid + amine condensation
+NC1CC1.OC(CC)=O.N1=CC=CC=C1>C1(CCCCC1)N=C=NC2CCCCC2>CCC(NC1CC1)=O Carboxylic acid + amine condensation
+NC1CC1.OC(CC)=O.N1=CC=CC=C1>F[P-](F)(F)(F)(F)F.N1(CCCC1)[P+](ON2C3=C(N=N2)C=CC=C3)(N4CCCC4)N5CCCC5>CCC(NC1CC1)=O Carboxylic acid + amine condensation
+NC1CC1.OC(CC)=O.N1=CC=CC=C1>CN(/C(ON1N=NC2=CC=CN=C12)=[N+](C)\C)C.F[P-](F)(F)(F)(F)F>CCC(NC1CC1)=O Carboxylic acid + amine condensation
+NC1CC1.OC(CC)=O.N1=CC=CC=C1>C1(CCCCC1)N=C=NC2CCCCC2.ON1N=NC2=CC=CC=C21>CCC(NC1CC1)=O Carboxylic acid + amine condensation
+NC1CC1.OC(CC)=O.N1=CC=CC=C1>O=C(N1C=NC=C1)N2C=CN=C2>CCC(NC1CC1)=O Carboxylic acid + amine condensation

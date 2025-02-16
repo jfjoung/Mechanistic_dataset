@@ -58,6 +58,7 @@ def reagent_matching_for_single_reaction(reaction, class_key):
         class_data = Reaction_templates.class_reaction_templates[class_key]
 
         for cond_name, cond_data in class_data.items():
+            # print(cond_name)
             if cond_data['Reagent'] or cond_data['Exclude_reagent']:
                 cond_mols = []
                 if cond_data['Reagent']:
@@ -70,14 +71,18 @@ def reagent_matching_for_single_reaction(reaction, class_key):
                 exclude = False
 
                 for patt in cond_mols:
+                    patt.UpdatePropertyCache(strict=False)
                     for mol in mols:
                         mol.UpdatePropertyCache(strict=False)
+                        # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
                         if mol.GetSubstructMatch(patt):
                             matched_reagents.append(mol)
                             # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
                             break
                 for patt in exclude_cond_mols:
+                    patt.UpdatePropertyCache(strict=False)
                     for mol in mols:
+                        mol.UpdatePropertyCache(strict=False)
                         if mol.GetSubstructMatch(patt):
                             exclude = True
                             break
