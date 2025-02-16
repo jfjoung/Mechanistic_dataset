@@ -55,5 +55,5 @@ bash run/generate_mechanism_data.sh
 
 2. with python script
 ```shell
-python run.py
+python ver2.py
 ```
