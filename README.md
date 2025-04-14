@@ -57,3 +57,21 @@ bash run/generate_mechanism_data.sh
 ```shell
 python ver2.py
 ```
+---
+
+## Step 4 - Visualize reaction templates
+
+If you want to interactively **browse and visualize the reaction templates** (reaction class, mechanism, SMARTS for each step),  
+you can open the Colab notebook below:
+
+<a href="https://colab.research.google.com/github/jfjoung/Mechanistic_dataset/blob/main/Mechanistic_dataset_visualization.ipynb" target="_blank">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+This notebook allows you to:
+- Select a reaction class and mechanism from dropdown menus
+- View allowed and excluded reaction SMARTS for each mechanism
+- Visualize each elementary reaction template
+- Choose how atom features (like H count or charge) are shown in the molecule view
+
+
