@@ -349,7 +349,8 @@ class_reaction_templates={
      'Description': 'Deprotonation of carboxylic acid'},
     1: {'Templates': ['[#8;H0;-1:1].[C:3]-[I;+0:2]>>[#8;H0;+0:1][C:3].[I;-1:2]',],
      'pKa': [None],
-     'Description': 'Nucleophilic substitution'}}},
+     'Description': 'Nucleophilic substitution'}}},\
+     
   'Methanol': {'Reagent': ['[CH3]-[OH]','[O]=[C]-[O]',], 'Exclude_reagent': None,
                                  # Acidic condition
    'Stages': {0: {'Templates': ['[O;H0;+0:1]=[C;H0;+0:2]>>[O;H1;+1:1]=[C;H0;+0:2]',
