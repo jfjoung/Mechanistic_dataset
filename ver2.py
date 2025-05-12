@@ -164,7 +164,7 @@ class Reaction_Network:
                     print('template_reactant_dict', template_reactant_dict)
                 # print('smiles_w_mapping',G.nodes[node]['smiles_w_mapping'])
                 # print('smiles_w_isotope',G.nodes[node]['smiles_w_isotope'])
-                print(G.nodes[node]['smiles'])
+                # print(G.nodes[node]['smiles'])
 
                 for templ, reactants in template_reactant_dict.items():
                     # print(len(reactants))
@@ -237,6 +237,8 @@ class Reaction_Network:
 
                             plain_smiles = get_plain_smiles(Chem.MolFromSmiles(prod_spec_smi, sanitize=False))
                             # print('plain_smiles', plain_smiles)
+                            if self.args.verbosity: 
+                                print('plain_smiles:', plain_smiles)
 
                             matching_nodes = [idx for idx in G.nodes 
                                             if G.nodes[idx].get('type') == 'mol_node' and G.nodes[idx].get('smiles') == plain_smiles
