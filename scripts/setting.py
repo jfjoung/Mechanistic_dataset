@@ -27,4 +27,4 @@ class Args:
         self.exclude_rxn = ['SEM protection', 'Menshutkin reaction', 'Staudinger reduction','Negishi coupling','Prilezhaev epoxidation', 'N-Bn deprotection', 'Hydroxy to bromo', 'Urea Schotten-Baumann', 'Carboxylic acid + sulfonamide condensation', 'Appel bromination', 'Transamidation', 'Diels-Alder cycloaddition']
         self.process = 32  # Number of processors to use in multiprocessing.
         self.rxn_numbering = True # Puts reaction numbering at the end of SMILES
-        self.verbosity = False  # Sets the logging.
+        self.verbosity = True  # Sets the logging.
