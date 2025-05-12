@@ -1,1 +1,1 @@
-NC1CC1.OC(CC)=O.N2=CC=CC=C2>O=C(N1C=CN=C1)N2C=NC=C2>CCC(NC1CC1)=O Carboxylic acid + amine condensation
+NC1CC1.OC(CC)=O.N2=CC=CC=C2>CN(C)/C(ON1N=NC2=CC=CN=C12)=[N+](C)\C.F[P-](F)(F)(F)(F)F>CCC(NC1CC1)=O Carboxylic acid + amine condensation
