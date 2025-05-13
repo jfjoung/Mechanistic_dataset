@@ -355,8 +355,8 @@ class_reaction_templates={
                                  # Acidic condition
    'Stages': {0: {'Templates': ['[O;H0;+0:1]=[C;H0;+0:2]>>[O;H1;+1:1]=[C;H0;+0:2]',
                                #Basic condition
-                               '[O;H1;+0:1]-[C;H0;+0:2]>>[O;H0;-1:1]-[C;H0;+0:2]',],
-     'pKa': [{'A': -6}, {'B': 15.5}],
+                               '[O;H1;+0:1]-[C;+0:2]>>[O;H0;-1:1]-[C;+0:2]',],
+     'pKa': [{'A': -6}, {'B': 14}],
      'Description': 'Protonation of carbonyl or deprotonation of alcohol'},
 
                      #Acidic condition
@@ -366,20 +366,31 @@ class_reaction_templates={
                      ],
      'pKa': [None, None],
      'Description': 'Alcohol addition to carbonyl'},
-                         #Acidic condition
-    2: {'Templates': ['[O;H1;+0:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H1;+1:4]-[#6;+0:5]>>[O;H1;+0:1]-[C;H0;+0:2](-[O;H2;+1:3])-[O;H0;+0:4]-[#6;+0:5]',
-                       #Basic condition
-                     '[O;H0;-1:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H0;+0:4]-[#6;+0:5]>>[O;H1;+0:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H0;+0:4]-[#6;+0:5]',
-                     ],
-     'pKa': [None, {'A': 15.5}],
-     'Description': 'Protonation or deprotonation of complex'},
+    #                      #Acidic condition
+    # 2: {'Templates': ['[O;H1;+0:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H1;+1:4]-[#6;+0:5]>>[O;H1;+0:1]-[C;H0;+0:2](-[O;H2;+1:3])-[O;H0;+0:4]-[#6;+0:5]',
+    #                    #Basic condition
+    #                  '[O;H0;-1:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H0;+0:4]-[#6;+0:5]>>[O;H1;+0:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H0;+0:4]-[#6;+0:5]',
+    #                  ],
+    #  'pKa': [None, {'A': 15.5}],
+    #  'Description': 'Protonation or deprotonation of complex'},
 
-    3: {'Templates': ['[O;H1;+0:1]-[C;H0;+0:2](-[O;H2;+1:3])-[O;H0;+0:4]-[#6;+0:5]>>[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[O;H2;+0:3]',
+                       #Acidic condition
+    2: {'Templates': ['[O;H1;+0:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H1;+1:4]-[#6;+0:5]>>[O;H1;+0:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H0;+0:4]-[#6;+0:5]',
+                     ],
+     'pKa': [{'B': -7}],
+     'Description': 'Deprotonation of tetrahedral intermediate'},
+
+    3: {'Templates': ['[O;H1;+0:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H0;+0:4]-[#6;+0:5]>>[O;H1;+0:1]-[C;H0;+0:2](-[O;H2;+1:3])-[O;H0;+0:4]-[#6;+0:5]',
+                     ],
+     'pKa': [{'A': 0.0001}],
+     'Description': 'Protonation of tetrahedral intermediate'},
+
+    4: {'Templates': ['[O;H1;+0:1]-[C;H0;+0:2](-[O;H2;+1:3])-[O;H0;+0:4]-[#6;+0:5]>>[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[O;H2;+0:3]',
                      '[O;H1;+0:1]-[C;H0;+0:2](-[O;H1;+0:3])-[O;H0;+0:4]-[#6;+0:5]>>[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[O;H1;-1:3]'
                      ],
      'pKa': [None, None],
      'Description': 'Water or hydroxide ion leaving'},
-    4: {'Templates': ['[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5]>>[O;H0;+0:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5]',
+    5: {'Templates': ['[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5]>>[O;H0;+0:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5]',
                      '[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[O;H1;-1:3]>>[O;H0;+0:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[O;H2;+0:3]'
                      ],
      'pKa': [{'B': -6}, None],
