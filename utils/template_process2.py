@@ -138,6 +138,7 @@ class Template_process:
             # print(self.template_list)
             # print(node['smiles'])
             for idx, templ in enumerate(self.template_list):
+                # print(templ)
                 rxn = AllChem.ReactionFromSmarts(templ)
                 patterns = [rmol for rmol in rxn.GetReactants()]
                 templ_mol_pair = {}
@@ -189,6 +190,7 @@ class Template_process:
                                 templ_mol_pair[pat] = possible_reactant_list
                                 break
             
+                # print('num_match', num_match)
                 if num_match == len(patterns):
                     template_reactant_dict[templ] = templ_mol_pair
 
