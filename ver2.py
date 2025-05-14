@@ -156,12 +156,17 @@ class Reaction_Network:
                 elementary_step = self.stage[step]
                 template = template_process2.Template_process(elementary_step, self.args)
 
-                template.template_enumeration(G.nodes[node])
+                template.template_enumeration(G.nodes[node], G.nodes[0])
                 template_reactant_dict, new_node = template.find_reactants(G.nodes[node], G.nodes[0])
                 for key, value in new_node.items():
                     G.nodes[node][key] = value
                 if self.args.verbosity: 
                     print('template_reactant_dict', template_reactant_dict)
+                    # for templ, mol_pairs in template_reactant_dict.items():
+                    #     print(f"Template: {templ}")
+                    #     for mol_list in mol_pairs:
+                    #         smiles_list = [Chem.MolToSmiles(mol) for mol in mol_list]
+                    #         print("  Reactants as SMILES:", smiles_list)
                 # print('smiles_w_mapping',G.nodes[node]['smiles_w_mapping'])
                 # print('smiles_w_isotope',G.nodes[node]['smiles_w_isotope'])
                 # print(G.nodes[node]['smiles'])

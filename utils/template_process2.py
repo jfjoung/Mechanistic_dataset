@@ -2,6 +2,7 @@ from templates import AcidBase_lookup
 import itertools
 import logging
 import networkx as nx
+from copy import deepcopy
 from rdkit import Chem, RDLogger
 from rdkit.Chem import AllChem
 from utils.exceptions import *
@@ -102,7 +103,7 @@ class Template_process:
 
         template_reactant_dict = {} #Get every reactant for each template
         for idx, templ in enumerate(self.template_list):
-            # print(templ)
+            # print('Find reactant!',templ)
             rxn = AllChem.ReactionFromSmarts(templ)
             patterns = [rmol for rmol in rxn.GetReactants()] #Get reactants as described in the templates
 
@@ -138,7 +139,7 @@ class Template_process:
             # print(self.template_list)
             # print(node['smiles'])
             for idx, templ in enumerate(self.template_list):
-                # print(templ)
+                # print('Find reactant!',templ)
                 rxn = AllChem.ReactionFromSmarts(templ)
                 patterns = [rmol for rmol in rxn.GetReactants()]
                 templ_mol_pair = {}
@@ -269,19 +270,25 @@ class Template_process:
 
     #     return new_reactant_smiles
 
-    def template_enumeration(self, node):
+    def template_enumeration(self, node, reactant_node):
         """Enumerate templates to balance proton and allow unimolecular reaction"""
+        # print('1', self.template_list)
    
         if self.args.proton:
-            self.proton_balanced_reaction(node)
+            self.proton_balanced_reaction(node, reactant_node)
+            # print('2', self.template_list)
 
         if self.args.uni_rxn:
             self.uni_molecular_reaction()
+            # print('3', self.template_list)
 
         if self.args.explicit_H:
             self.get_explcit_H_template()
+            # print('4', self.template_list)
 
-    def proton_balanced_reaction(self, G):
+        # print('5', self.template_list)
+
+    def proton_balanced_reaction(self, G, reactant_node):
         pKa_list = self.pKa_list
         templ_list = self.template_list
         if pKa_list == [None]*len(pKa_list):
@@ -303,11 +310,11 @@ class Template_process:
             if A:
                 filtered_data = [d for d in AcidBase_lookup.Acid_base if 'A' in d['role'] and d['pKa'] <= A]
                 sorted_data = sorted(filtered_data, key=lambda x: x['pKa'])
-                possible_acid_base = find_acid_base(G, sorted_data, 'A')
+                possible_acid_base = find_acid_base(G, reactant_node, sorted_data, 'A', self.args.stoichiometry)
             if B:
                 filtered_data = [d for d in AcidBase_lookup.Acid_base if 'B' in d['role'] and d['pKa'] >= B]
                 sorted_data = sorted(filtered_data, key=lambda x: x['pKa'], reverse=True)
-                possible_acid_base = find_acid_base(G, sorted_data, 'B')
+                possible_acid_base = find_acid_base(G, reactant_node, sorted_data, 'B', self.args.stoichiometry)
             if not possible_acid_base: continue
 
             for acid_base in possible_acid_base:
@@ -361,9 +368,15 @@ class Template_process:
 
         self.template_list = new_templ_list
 
-def find_acid_base(node, filtered_list, ab_condition):
+def find_acid_base(node, reactant_node, filtered_list, ab_condition, stoichiometry=False):
     possible_acid_base=[]
     # print(filtered_list)
+    mols = node['mol'].copy()
+    rmols = reactant_node['mol']
+    if stoichiometry:
+        mols+=rmols
+    # print('mols in acid_base', [Chem.MolToSmiles(mol) for mol in mols])
+    # print(mols)
 
     for acid_base in filtered_list:
         if ab_condition=='A':
@@ -375,10 +388,6 @@ def find_acid_base(node, filtered_list, ab_condition):
 
         patt = Chem.MolFromSmarts(reactant)
         patt.UpdatePropertyCache(strict=False)
-
-        mols = node['mol']
-        # print('mols in acid_base', [Chem.MolToSmiles(mol) for mol in mols])
-        # print(mols)
 
         for mol in mols:
             mol.UpdatePropertyCache(strict=False)
