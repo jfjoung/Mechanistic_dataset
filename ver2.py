@@ -214,6 +214,8 @@ class Reaction_Network:
                             # print([CalcMolFormula(prod) for prod in outcome])
                                 
                             prod_smi = '.'.join([Chem.MolToSmiles(prod) for prod in outcome]) #
+                            # if self.args.verbosity:
+                            #     print('prod_smi', prod_smi)
 
                             prod_mol = Chem.MolFromSmiles(prod_smi, self.ps)
                             prod_mol.UpdatePropertyCache(strict=False)
