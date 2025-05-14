@@ -1698,78 +1698,111 @@ class_reaction_templates={
      'Description': 'Hydride transfer'}}}},
 
  ('Sulfanyl to sulfonyl',): {'Reaction using peroxide': {'Reagent': ['[O]-[O]','[S]',], 'Exclude_reagent': None,
-   'Stages': {0: {'Templates': [
-       '[S;D2;H0;+0:1].[O;H1;+0:2]-[O;H1;+0:3]>>[S;H0;+0:1]=[O;H1;+1:2].[O;H1;-1:3]', #H2O2
+   'Stages': {
+    #    0: {'Templates': [
+    #    '[S;D2;H0;+0:1].[O;H1;+0:2]-[O;H1;+0:3]>>[S;H0;+0:1]=[O;H1;+1:2].[O;H1;-1:3]', #H2O2
+    #    '[S;D2;H0;+0:1].[#8:3]=[#6:4]-[#8:5]-[#8;H1:6]>>[S;H0;+0:1]=[#8;H0:6].[#8;H1:3]-[#6:4]=[#8:5]',
+    #   '[S;D2;H0;+0:1].[#8:3]=[#6:4]-[#8:5]-[#8;H0;-1:6]>>[S;H0;+0:1]=[#8;H0:6].[#8;H0;-1:3]-[#6:4]=[#8:5]',
+    #   ],
+    #  'pKa': [None, None, None],
+    #  'Description': 'Oxidation'},
+    0: {'Templates': [
+       '[S;D2;H0;+0:1].[O;H1;+0:2]-[O;H1;+0:3]>>[S;H0;-1:1]-[O;H1;+1:2]-[O;H1;+0:3]', #H2O2
        '[S;D2;H0;+0:1].[#8:3]=[#6:4]-[#8:5]-[#8;H1:6]>>[S;H0;+0:1]=[#8;H0:6].[#8;H1:3]-[#6:4]=[#8:5]',
       '[S;D2;H0;+0:1].[#8:3]=[#6:4]-[#8:5]-[#8;H0;-1:6]>>[S;H0;+0:1]=[#8;H0:6].[#8;H0;-1:3]-[#6:4]=[#8:5]',
       ],
      'pKa': [None, None, None],
-     'Description': 'Oxidation'},
-    1: {'Templates': ['[S;H0;+0:1]=[O;H1;+1:2]>>[S;H0;+0:1]=[O;H0;+0:2]',],
+     'Description': 'Nucleophilic attack'},
+
+    1: {'Templates': ['[S;H0;-1:1]-[O;H1;+1:2]-[O;H1;+0:3]>>[S;H0;+0:1]=[O;H1;+1:2].[O;H1;-1:3]',],
+     'pKa': [None],
+     'Description': 'Hydroxide ion leaving'},
+
+    2: {'Templates': ['[S;H0;+0:1]=[O;H1;+1:2]>>[S;H0;+0:1]=[O;H0;+0:2]',],
      'pKa': [{'B': -10}],
      'Description': 'Deprotonation of S=OH'},
 
-    2: {'Templates': [ '[S;D3;H0;+0:1].[O;H1;+0:2]-[O;H1;+0:3]>>[S;H0;+0:1]=[O;H1;+1:2].[O;H1;-1:3]', #H2O2
+    # 3: {'Templates': [ '[S;D3;H0;+0:1].[O;H1;+0:2]-[O;H1;+0:3]>>[S;H0;+0:1]=[O;H1;+1:2].[O;H1;-1:3]', #H2O2
+    #    '[S;D3;H0;+0:1].[#8:3]=[#6:4]-[#8:5]-[#8;H1:6]>>[S;H0;+0:1]=[#8;H0:6].[#8;H1:3]-[#6:4]=[#8:5]',
+    #   '[S;D3;H0;+0:1].[#8:3]=[#6:4]-[#8:5]-[#8;H0;-1:6]>>[S;H0;+0:1]=[#8;H0:6].[#8;H0;-1:3]-[#6:4]=[#8:5]',],
+    #  'pKa': [None, None, None],
+    #  'Description': 'Additional oxidation'},
+    3: {'Templates': [
+       '[S;D3;H0;+0:1].[O;H1;+0:2]-[O;H1;+0:3]>>[S;H0;-1:1]-[O;H1;+1:2]-[O;H1;+0:3]', #H2O2
        '[S;D3;H0;+0:1].[#8:3]=[#6:4]-[#8:5]-[#8;H1:6]>>[S;H0;+0:1]=[#8;H0:6].[#8;H1:3]-[#6:4]=[#8:5]',
-      '[S;D3;H0;+0:1].[#8:3]=[#6:4]-[#8:5]-[#8;H0;-1:6]>>[S;H0;+0:1]=[#8;H0:6].[#8;H0;-1:3]-[#6:4]=[#8:5]',],
+      '[S;D3;H0;+0:1].[#8:3]=[#6:4]-[#8:5]-[#8;H0;-1:6]>>[S;H0;+0:1]=[#8;H0:6].[#8;H0;-1:3]-[#6:4]=[#8:5]',
+      ],
      'pKa': [None, None, None],
      'Description': 'Additional oxidation'},
-    3: {'Templates': ['[S;H0;+0:1]=[O;H1;+1:2]>>[S;H0;+0:1]=[O;H0;+0:2]',],
+
+    4: {'Templates': ['[S;H0;-1:1]-[O;H1;+1:2]-[O;H1;+0:3]>>[S;H0;+0:1]=[O;H1;+1:2].[O;H1;-1:3]',],
+     'pKa': [None],
+     'Description': 'Hydroxide ion leaving'},
+
+    5: {'Templates': ['[S;H0;+0:1]=[O;H1;+1:2]>>[S;H0;+0:1]=[O;H0;+0:2]',],
      'pKa': [{'B': -10}],
      'Description': 'Deprotonation of S-OH'}}}},
 
  ('N-Cbz deprotection',): {'Acidic condition': {'Reagent': ['[N]-[C](=[O])-[O]',], 'Exclude_reagent': ['[Pd]'],
-   'Stages': {0: {'Templates': ['[O;H0:1]=[C:2]-[O:3]>>[O;H1;+1:1]=[C:2]-[O:3]',],
-     'pKa': [{'A': 0.001}],
+   'Stages': {
+       
+    0: {'Templates': ['[O;H0:1]=[C:2]-[O;H0;+0:3]>>[O;H0;+0:1]=[C:2]-[O;H1;+1:3]',],
+     'pKa': [{'A': 5}],
      'Description': 'Proton exchange'},
-    1: {'Templates': ['[O;H1;+1:1]=[C:2]-[O:3]-[C:5].[Cl,Br,I;H0;-1:4]>>[O;H1;+0:1]-[C:2]=[O:3].[C:5]-[Cl,Br,I;H0;+0:4]',
-                      '[O;H1;+1:1]=[C:2]-[O:3]-[C:5]>>[O;H1;+0:1]-[C:2]=[O:3].[C;+1:5]',],
+    1: {'Templates': ['[O;H0;+0:1]=[C:2]-[O;H1;+1:3]-[C:5].[Cl,Br,I;H0;-1:4]>>[O;H0;+0:1]=[C:2]-[O;H1;+0:3].[C:5]-[Cl,Br,I;H0;+0:4]',
+                      '[O;H0;+0:1]=[C:2]-[O;H1;+1:3]-[C:5].[O;H0;-1:9]-[S:3](=[O:8])([#6:10])=[O:11]>>[O;H0;+0:1]=[C:2]-[O;H1;+0:3].[C:5]-[O;H0;-1:9]-[S:3](=[O:8])([#6:10])=[O:11]',
+                      ],
      'pKa': [None, None],
-     'Description': 'Sn2 / Sn1 type reaction'},
-    2: {'Templates': ['[#6;+1:1]-[C;H3;+0:2]>>[#6;+0:1]=[C;H2;+0:2]',
-                      '[#6;+1:1].[Cl,Br,I;-1:2]>>[#6;+0:1]-[Cl,Br,I;+0:2]', 
-                      '[#6;+1:1].[Cl,Br,I;+0;H1:2]>>[#6;+0:1]-[Cl,Br,I;+1;H1:2]', ],
-                  'pKa': [{'B': -30}, None, None],
-                  'Description': 'E1 / Sn1 type reaction',},
-  3: {'Templates': ['[#6;+0:1]-[Cl,Br,I;+1;H1:2]>>[#6;+0:1]-[Cl,Br,I;+0;H0:2]', ],
-                  'pKa': [{'B': -10}],
-                  'Description': 'E1 / Sn1 type reaction',},
-   4: {'Templates': ['[O;H1;+0:1]-[C:2](-[#7;+0;H2:4])=[O:3]>>[O;H1;+0:1]-[C:2](-[#7;+1;H3:4])=[O:3]',
-                      '[O;H1;+0:1]-[C:2](-[#7;+0;H1:4])=[O:3]>>[O;H1;+0:1]-[C:2](-[#7;+1;H2:4])=[O:3]',
-                      '[O;H1;+0:1]-[C:2](-[#7;+0;H0:4])=[O:3]>>[O;H1;+0:1]-[C:2](-[#7;+1;H1:4])=[O:3]',],
-     'pKa': [{'A':-0.3}, {'A':-0.3}, {'A':-0.3}],
-     'Description': 'Protonation of amide'},
-    5: {'Templates': ['[O;H1;+0:1]-[C:2]=[O:3]>>[O;H0;-1:1]-[C:2]=[O:3]',],
-     'pKa': [{'B': 4.73}],
-     'Description': 'Deprotonation of carboxylic acid'},
+     'Description': 'Sn2 reaction'},
 
-    6: {'Templates': ['[O;H1;+0:1]-[C:2](-[#7;+1:4])=[O:3]>>[#7;+0:4].[O;H1;+1:1]=[C:2]=[O:3]',
-                      '[O;H0;-1:1]-[C:2](-[#7;+1:4])=[O:3]>>[#7;+0:4].[O;H0;+0:1]=[C:2]=[O:3]',
+   2: {'Templates': ['[#7;H1;+0:1]-[#6:2](=[#8:4])-[#8;H1;+0:3]>>[#7;H2;+1:1]-[#6:2](=[#8:4])-[#8;H1;+0:3]',
+                      '[#7;H0;+0:1]-[#6:2](=[#8:4])-[#8;H1;+0:3]>>[#7;H1;+1:1]-[#6:2](=[#8:4])-[#8;H1;+0:3]',],
+     'pKa': [ {'A':-0.3}, {'A':-0.3}],
+     'Description': 'Protonation of amide'},
+
+   3: {'Templates': ['[O;H1;+0:1]-[C:2]=[O:3]>>[O;H0;-1:1]-[C:2]=[O:3]',],
+     'pKa': [{'B': -10}],
+     'Description': 'Deprotonation of carboxylic acid (pKa threshold is set to be very low)'}, 
+
+   4: {'Templates': ['[O;H0;-1:1]-[C:2](-[#7;+1:4])=[O:3]>>[#7;+0:4].[O;H0;+0:1]=[C:2]=[O:3]',
                       ],
-     'pKa': [None, None],
+     'pKa': [None],
      'Description': 'CO2 evolution'},
-    7: {'Templates': ['[O;H1;+1:1]=[C:2]=[O:3]>>[O;H0;+0:1]=[C:2]=[O:3]',
-                      ],
-     'pKa': [{'B': -10},],
-     'Description': 'CO2 deprotonation'},
      }},
 
      'Pd with H2': {'Reagent': ['[Pd;+0]', '[H]-[H]','[#7,#8]-[C]-[c]',], 'Exclude_reagent': None,
-   'Stages': {0: {'Templates': ['[Pd;+0:1].[*:2]-[O:3]-[#6:4]>>[*:2]-[O:3]-[Pd;+0:1]-[#6:4]',
-                                '[Pd;+0:1].[*:2]-[#7;H0:3]-[#6:4]>>[*:2]-[#7;H0:3]-[Pd;+0:1]-[#6:4]',
-                                '[Pd;+0:1].[*:2]-[#7;H1:3]-[#6:4]>>[*:2]-[#7;H1:3]-[Pd;+0:1]-[#6:4]',],
-     'pKa': [None, None, None],
+   'Stages': {
+    
+    0: {'Templates': ['[Pd;+0:1].[#6:2]-[O:3]-[#6:4](=[O:5])-[#7:6]>>[#6:2]-[Pd;+0:1]-[O:3]-[#6:4](=[O:5])-[#7:6]',],
+                        # '[Pd;+0:1].[*:2]-[#7;H0:3]-[#6:4]>>[*:2]-[#7;H0:3]-[Pd;+0:1]-[#6:4]',
+                        # '[Pd;+0:1].[*:2]-[#7;H1:3]-[#6:4]>>[*:2]-[#7;H1:3]-[Pd;+0:1]-[#6:4]',],
+     'pKa': [None],
      'Description': 'Adsorption of ether on Pd'},
-    1: {'Templates': ['[*:2]-[O,#7:3]-[Pd;+0:1]-[#6:4].[#1:5]-[#1:6]>>[*:2]-[O,#7:3]-[Pd;+0:1](-[#1:5])(-[#1:6])-[#6:4]',],
-     'pKa': [None, None, None],
+    1: {'Templates': ['[#6:2]-[Pd;+0:1]-[O:3].[#1:5]-[#1:6]>>[#6:2]-[Pd;+0:1](-[#1:5])(-[#1:6])-[O:3]',],
+     'pKa': [None],
      'Description': 'H2 Coordination'},
-    2: {'Templates': ['[*:2]-[O,N:3]-[Pd;+0:1](-[#1:5])(-[#1:6])-[#6:4]>>[Pd;+0:1](-[#1:5])-[#6:4].[*:2]-[O,N:3]-[#1:6]',],
-     'pKa': [None, None, None],
+    2: {'Templates': ['[#6:2]-[Pd;+0:1](-[#1:5])(-[#1:6])-[O:3]>>[#6:2]-[Pd;+0:1]-[#1:5].[#1:6]-[O:3]',],
+     'pKa': [None],
      'Description': 'Hydrogenation of alcohol/amine'},
-    3: {'Templates': ['[Pd;+0:1](-[#1:5])-[#6:4]>>[Pd;+0:1].[#1:5]-[#6:4]',],
-     'pKa': [None, None, None],
+    3: {'Templates': ['[#6:2]-[Pd;+0:1]-[#1:5]>>[#6:2]-[#1:5].[Pd;+0:1]',],
+     'pKa': [None],
+     'Description': 'Hydrogenation of alcohol/amine'},
+    4: {'Templates': ['[Pd;+0:1](-[#1:5])-[#6:4]>>[Pd;+0:1].[#1:5]-[#6:4]',],
+     'pKa': [None],
      'Description': 'Hydrogenation of Bn'},
-  
+     5: {'Templates': ['[#7;H1;+0:1]-[#6:2](=[#8:4])-[#8;H1;+0:3]>>[#7;H2;+1:1]-[#6:2](=[#8:4])-[#8;H1;+0:3]',
+                      '[#7;H0;+0:1]-[#6:2](=[#8:4])-[#8;H1;+0:3]>>[#7;H1;+1:1]-[#6:2](=[#8:4])-[#8;H1;+0:3]',],
+     'pKa': [ {'A':-0.3}, {'A':-0.3}],
+     'Description': 'Protonation of amide'},
+
+   6: {'Templates': ['[O;H1;+0:1]-[C:2]=[O:3]>>[O;H0;-1:1]-[C:2]=[O:3]',],
+     'pKa': [{'B': -10}],
+     'Description': 'Deprotonation of carboxylic acid (pKa threshold is set to be very low)'}, 
+
+   7: {'Templates': ['[O;H0;-1:1]-[C:2](-[#7;+1:4])=[O:3]>>[#7;+0:4].[O;H0;+0:1]=[C:2]=[O:3]',
+                      ],
+     'pKa': [None],
+     'Description': 'CO2 evolution'},
      }},
      
      },
