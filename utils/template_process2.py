@@ -135,7 +135,7 @@ class Template_process:
             # print(reactant_node)
             # print('templ_mol_pair', [pat for pat in templ_mol_pair.keys()])
             max_atom_map = get_max_atom_map(Chem.MolFromSmiles(node['smiles_w_mapping'], sanitize=False)) + 1
-            added_mol = []
+            added_mols = []
             # print(self.template_list)
             # print(node['smiles'])
             for idx, templ in enumerate(self.template_list):
@@ -144,6 +144,7 @@ class Template_process:
                 patterns = [rmol for rmol in rxn.GetReactants()]
                 templ_mol_pair = {}
                 num_match = 0
+                added_smis = []
                 for pat in patterns: 
                     possible_reactant_list = []
                     # print('Pat :', Chem.MolToSmarts(pat))
@@ -153,7 +154,16 @@ class Template_process:
                         mol.UpdatePropertyCache(strict=False)
                         # print(Chem.MolToSmiles(mol))
                         if mol and mol.GetSubstructMatch(pat): # and mol_node.smiles not in possible_reactant_smiles_list:
-                            possible_reactant_list.append(mol)
+                            added = False
+
+                            for added_smi in added_smis:
+                                added_mol = Chem.MolFromSmiles(added_smi, sanitize=False)
+                                if added_mol.GetSubstructMatch(pat):
+                                    added = True
+                                    # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
+                                    break
+                            if not added:
+                                possible_reactant_list.append(mol)
                             # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
 
                             if possible_reactant_list:
@@ -163,9 +173,9 @@ class Template_process:
                         # print('Not matched pat :', Chem.MolToSmarts(pat))
                         for mol in reactant_node['mol']:
                             mol.UpdatePropertyCache(strict=False)
-                            if mol and mol.GetSubstructMatch(pat) and mol not in added_mol:
+                            if mol and mol.GetSubstructMatch(pat) and mol not in added_mols:
                                 # print('After adding Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
-                                added_mol.append(mol)
+                                added_mols.append(mol)
                                 new_smi = Chem.MolToSmiles(mol)
                                 # print('new_smi', new_smi)
 
@@ -176,6 +186,7 @@ class Template_process:
                                     atom.SetIsotope(max_atom_map)
                                     max_atom_map+=1
 
+                                added_smis.append(Chem.MolToSmiles(new_mol))
                                 smiles_w_isotope = '.'.join([node['smiles_w_isotope'], Chem.MolToSmiles(new_mol)])
                                 smiles_w_mapping = Chem.MolToSmiles(isotope_to_atommap(Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)))
                                 mol = Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)
