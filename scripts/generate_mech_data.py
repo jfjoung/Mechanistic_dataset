@@ -77,7 +77,7 @@ def reagent_matching_for_single_reaction(reaction, class_key):
                         # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
                         if mol.GetSubstructMatch(patt):
                             matched_reagents.append(mol)
-                            # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
+                            # print('Matched Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
                             break
                 for patt in exclude_cond_mols:
                     patt.UpdatePropertyCache(strict=False)
