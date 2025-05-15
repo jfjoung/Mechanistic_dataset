@@ -54,6 +54,7 @@ def reagent_matching_for_single_reaction(reaction, class_key):
     mols = [Chem.MolFromSmiles(smi, sanitize=False) for smi in reactants.split(".") + agents.split(".")]
     reaction['conditions'] = []
     class_key = get_class_key(class_key)
+    # print(class_key)
     if class_key in Reaction_templates.class_reaction_templates:
         class_data = Reaction_templates.class_reaction_templates[class_key]
 
