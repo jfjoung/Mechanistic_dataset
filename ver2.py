@@ -406,7 +406,6 @@ class Reaction_Network:
                     NUM.value += 1
                     root_dict[G.nodes[0]['smiles']] = NUM.value
                     num_rxn = NUM.value
- 
             rxn_node_indices = sorted(idx for idx, data in G.nodes(data=True) if data.get('type') == 'rxn_node')
             if len(rxn_node_indices) >= self.args.num_reaction_node:
                 continue
