@@ -161,7 +161,9 @@ class Reaction_Network:
                 for key, value in new_node.items():
                     G.nodes[node][key] = value
                 if self.args.verbosity: 
-                    print('template_reactant_dict', template_reactant_dict)
+                    print_plain_smiles = []
+                    if template_reactant_dict:
+                        print('template_reactant_dict', template_reactant_dict)
                     # for templ, mol_pairs in template_reactant_dict.items():
                     #     print(f"Template: {templ}")
                     #     for mol_list in mol_pairs:
@@ -244,8 +246,9 @@ class Reaction_Network:
 
                             plain_smiles = get_plain_smiles(Chem.MolFromSmiles(prod_spec_smi, sanitize=False))
                             # print('plain_smiles', plain_smiles)
-                            if self.args.verbosity: 
+                            if self.args.verbosity and plain_smiles not in print_plain_smiles: 
                                 print('plain_smiles:', plain_smiles)
+                                print_plain_smiles.append(plain_smiles)
 
                             matching_nodes = [idx for idx in G.nodes 
                                             if G.nodes[idx].get('type') == 'mol_node' and G.nodes[idx].get('smiles') == plain_smiles
