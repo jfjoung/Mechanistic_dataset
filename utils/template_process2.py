@@ -124,7 +124,7 @@ class Template_process:
                 if possible_reactant_list:
                     num_match += 1
                     templ_mol_pair[pat] = possible_reactant_list
-
+                    
             if num_match == len(patterns):
                 template_reactant_dict[templ] = templ_mol_pair
 
