@@ -7,7 +7,7 @@ class Args:
         self.stoichiometry = True  # Allows adding duplicated reactants to the flask if the stoichiometry of a reactant used more than once is recorded incorrectly.
         self.do_not_pruning = False  # Determines whether to prune the reaction network, leaving only those that produce the final product.
         self.max_pathways = 5  # Sets an upper limit on the number of catalytic cycles in the reaction network to prevent excessive computation time when converting to elementary reaction SMARTS.
-        self.num_reaction_node = 40  # Sets an upper limit on the number of reactions in the reaction network to prevent excessive computation time when converting to elementary reaction SMARTS.
+        self.num_reaction_node = 50  # Sets an upper limit on the number of reactions in the reaction network to prevent excessive computation time when converting to elementary reaction SMARTS.
         self.byproduct = True  # Adds byproducts generated in previous reactions when converting to elementary reaction SMARTS.
         self.spectator = True  # Adds all chemical species present in the flask at the current step when converting to elementary reaction SMARTS.
         self.full = False  # Determines whether to return overall reaction SMARTS instead of elementary reaction SMARTS.
@@ -23,7 +23,7 @@ class Args:
         self.debug = False  # Records reactions with errors for debugging purposes.
         self.all_info = False  # Saves all reactions, including the reaction network.
         self.stat = False  # Generates statistics for the reactions.
-        self.rxn_class = 'Nazarov cyclization' # Specifies a particular reaction class to extract elementary reactions from.
+        self.rxn_class = 'Paal-Knorr' # Specifies a particular reaction class to extract elementary reactions from.
         self.exclude_rxn =  [] #['SEM protection', 'Menshutkin reaction', 'Staudinger reduction','Negishi coupling','Prilezhaev epoxidation', 'N-Bn deprotection', 'Hydroxy to bromo', 'Urea Schotten-Baumann', 'Carboxylic acid + sulfonamide condensation', 'Appel bromination', 'Transamidation', 'Diels-Alder cycloaddition']
         self.process = 32  # Number of processors to use in multiprocessing.
         self.rxn_numbering = True # Puts reaction numbering at the end of SMILES

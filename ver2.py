@@ -312,10 +312,9 @@ class Reaction_Network:
             except Exception as e:
                 # print(e)
                 continue
-            # print(psmi, smi)
+
             if psmi in smi:
                 product_nodes.append(node_id)
-
 
         # patt = Chem.MolToSmiles(Chem.MolFromSmiles(self.psmi,sanitize=False))
         # patt.UpdatePropertyCache(strict=False)
