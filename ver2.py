@@ -479,14 +479,15 @@ def generate_elementary_reaction(input):
     if not rxn_dict['conditions']:
         statistics = {'No templates' : 1}
         return rxn, []
-    results = get_mechanistic_network(rxn_dict, args)
-    # except Exception as e:
-    #     print(e)
+    try:
+        results = get_mechanistic_network(rxn_dict, args)
+        return rxn, results
+    except Exception as e:
+        print(e)
     #     if args.verbosity:
     #         logging.info(f'{e}')
-    #     return rxn, []
+        return rxn, []
 
-    return rxn, results
 
 
 def get_mechanistic_network(rxn, args):
@@ -501,6 +502,7 @@ def get_mechanistic_network(rxn, args):
         reaction.run_reaction()
         reaction.find_product()
         if reaction.product_nodes:
+            # print('Product has been formed')
             elem_rxn = reaction.get_rxn()
             elem_rxns.append(elem_rxn)
 

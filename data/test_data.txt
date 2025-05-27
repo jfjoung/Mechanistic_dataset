@@ -1,0 +1,1 @@
+[OH-].Nc1ccc(B(O)O)cc1.Brc2ccc(C)cc2.O.Cl[Pd]Cl.C1=CCCC=CCC1>O7CCOCC7>Nc8ccc(c9ccc(C)cc9)cc8 Bromo Suzuki coupling
