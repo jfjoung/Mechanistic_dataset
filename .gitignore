@@ -46,6 +46,7 @@ old/
 run/
 ver2/
 results2/
+flower_ver2/
 *.csv
 *.json
 *.jsonl
