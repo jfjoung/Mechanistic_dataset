@@ -577,8 +577,8 @@ def generate_mechdata_multiprocess(args):
         #         json.dump(statistics, file, indent=4)
 
 
-    # if not args.debug:
-    #     os.remove(debug_file_path)
+    if not args.debug:
+        os.remove(debug_file_path)
 
     # logging.info(f'In total, {num_used_rxn} overall reactions were utilized')
     # logging.info(f'{num_generated_rxn} elementary steps were generated')
