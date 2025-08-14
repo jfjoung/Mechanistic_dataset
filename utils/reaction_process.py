@@ -1,4 +1,4 @@
-from utils import molecule_process,template_process
+from utils import molecule_process
 from utils.exceptions import *
 from templates import Reaction_templates
 import networkx as nx
@@ -86,71 +86,6 @@ class Reaction_Network:
         for edge in G.edges(data=True):
             print(edge)
 
-    def run_reaction(self, step):
-        elementary_step = self.stage[step]
-
-        template = template_process.Template_process(elementary_step, self.args)
-        template.template_enumeration(self.rxn_network)
-        templ_reactant_dict, problem_dict = template.find_reactants(self.rxn_network)
-
-        if self.args.stoichiometry and problem_dict and not templ_reactant_dict:
-            new_reactant_smiles = template.allow_duplicating_reactant(problem_dict, self.rxn_network)
-            self.add_duplicated_reactant(new_reactant_smiles)
-            templ_reactant_dict, _ = template.find_reactants(self.rxn_network)
-
-        if not templ_reactant_dict:
-            raise NoReactantError
-
-        G = self.rxn_network
-        for templ, reactants in templ_reactant_dict.items():
-            if len(reactants) > self.args.num_combination:
-                raise ValueError('Too many combinations')
-            rxn = AllChem.ReactionFromSmarts(templ)
-            for reactant in reactants:
-                rmols = [G.nodes[idx]['mol_node'].mol for idx in reactant]
-                try:
-                    outcomes = rxn.RunReactants(rmols)
-                except Exception as e:
-                    # print(e)
-                    continue
-
-                if not outcomes:
-                    continue
-                if self.args.verbosity:
-                    printing_rsmi = [G.nodes[idx]['mol_node'].__str__() for idx in reactant]
-                    logging.info(f'Reactants are {printing_rsmi}')
-
-                for outcome in outcomes:
-                    rxn_node = {'template': templ, 'description': template.description}
-                    if self.args.verbosity: 
-                        logging.info(f'{templ} were used')
-                    produced_molecule_idx = self.find_duplicated_outcomes(outcome)
-                    # print('produced_molecule_idx', produced_molecule_idx)
-                    
-                    if produced_molecule_idx:
-                        # Check if a connection already exists between ridx and pidx through an existing rxn_node
-                        connection_exists = False
-                        for rxnnode in [node for node, data in G.nodes(data=True) if data['type'] == 'rxn_node']:
-                            # Check if all reactants are connected to this rxn_node
-                            reactants_connected = all(rxnnode in G.successors(ridx) for ridx in reactant)
-                            
-                            # Check if all products are connected to this rxn_node
-                            products_connected = all(pidx in G.successors(rxnnode) for pidx in produced_molecule_idx)
-
-                            # If all reactants and products are connected through this rxn_node, set the flag
-                            if reactants_connected and products_connected:
-                                connection_exists = True
-                                break
-                        # If no existing rxn_node connects ridx and pidx, create a new rxn_node
-                        if not connection_exists:
-                            rxn_node_count = len([node for node, data in G.nodes(data=True) if data['type'] == 'rxn_node'])
-                            
-                            G.add_node(f'rxn {rxn_node_count}', rxn_node=rxn_node, type='rxn_node')
-                            for ridx in reactant:
-                                G.add_edge(ridx, f'rxn {rxn_node_count}')
-                            for pidx in produced_molecule_idx:
-                                G.add_edge(f'rxn {rxn_node_count}', pidx)
-
     def find_duplicated_outcomes(self, outcome):
         G = self.rxn_network
         produced_molecule_idx = []
@@ -201,13 +136,13 @@ class Reaction_Network:
         mol_node.index = i
         return i
 
-    def add_duplicated_reactant(self, smiles_List):
-        for rsmi in smiles_List:
-            rmol = Chem.MolFromSmiles(rsmi)
-            mol_node = molecule_process.Molecule_Node(rmol, self.args)
-            self.atom_map = mol_node.add_reactant(self.atom_map)
-            i = len([(idx, mol['mol_node']) for idx, mol in self.rxn_network.nodes(data=True) if mol['type'] == 'mol_node'])
-            self.rxn_network.add_node(i, mol_node=mol_node, type='mol_node')
+    # def add_duplicated_reactant(self, smiles_List):
+    #     for rsmi in smiles_List:
+    #         rmol = Chem.MolFromSmiles(rsmi)
+    #         mol_node = molecule_process.Molecule_Node(rmol, self.args)
+    #         self.atom_map = mol_node.add_reactant(self.atom_map)
+    #         i = len([(idx, mol['mol_node']) for idx, mol in self.rxn_network.nodes(data=True) if mol['type'] == 'mol_node'])
+    #         self.rxn_network.add_node(i, mol_node=mol_node, type='mol_node')
 
     def find_product(self):
         '''

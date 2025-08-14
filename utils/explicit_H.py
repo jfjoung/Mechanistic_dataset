@@ -1,8 +1,9 @@
 import re
 
 def parse_smarts(smarts):
-    atom_pattern = re.compile(r'\[([*#A-Za-z0-9,+;\-&!$()\[\]]*):(\d+)\]')
+    atom_pattern = re.compile(r'\[([*=#A-Za-z0-9,+;\-&!$()\[\]]*):(\d+)\]')
     atoms = atom_pattern.findall(smarts)
+    #print(atoms)
     atom_dict = {}
 
     for atom, mapping in atoms:
@@ -12,6 +13,8 @@ def parse_smarts(smarts):
                 h_count = int(h_count.group(1))
             else:
                 h_count = 1
+        elif atom == "#1" or atom == 'H': # edit
+            h_count = 1
         else:
             h_count = 0
 
@@ -64,6 +67,7 @@ def update_smarts_with_hydrogen_mapping(smarts, atom_dict):
     for mapping in atom_dict.keys():
         if mapping not in added_h_mappings:
             added_h_mappings[mapping] = None
+    
 
     return new_smarts, added_h_mappings
 
@@ -72,8 +76,11 @@ def detect_hydrogen_changes(reactant_dict, product_dict):
     total_lost = 0
     total_gained = 0
 
+    checked_atoms = set()
+
     for key in reactant_dict:
         if key in product_dict:
+            checked_atoms.add(key)
             r_h_count = reactant_dict[key]['h_count']
             p_h_count = product_dict[key]['h_count']
             if r_h_count > p_h_count:
@@ -82,6 +89,14 @@ def detect_hydrogen_changes(reactant_dict, product_dict):
             elif r_h_count < p_h_count:
                 hydrogen_changes['gained'][key] = p_h_count - r_h_count
                 total_gained += p_h_count - r_h_count
+        elif reactant_dict[key]['atom'] == "#1" or reactant_dict[key]['atom'] == "H":
+            total_lost += 1
+    
+    unchecked_atoms = set(product_dict) - checked_atoms
+
+    for key in unchecked_atoms:
+        if product_dict[key]['atom'] == "#1" or product_dict[key]['atom'] == "H":
+            total_gained += 1
 
     return hydrogen_changes, total_lost, total_gained
 
@@ -167,46 +182,50 @@ def modify_explicit_H(smarts):
     return f'{new_reactants}>{reagent}>{new_products}', added_h_mappings
 
 if __name__ == '__main__':
-    # Test case 1: No hydrogen change
-    smarts1 = '[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+1:4].[OH2;+0:5]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH2;+1:5]'
-    result1, added_h_mappings1 = modify_explicit_H(smarts1)
-    print(result1)
+    # # Test case 1: No hydrogen change
+    # smarts1 = '[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+1:4].[OH2;+0:5]>>[Cl,Br,I,O:2]-[Pd;+0:1]-[P;H0;+0:4]-[OH2;+1:5]'
+    # result1, added_h_mappings1 = modify_explicit_H(smarts1)
+    # print(result1)
 
-    # Test case 2: Hydrogen change
-    smarts2 = '[#7;H3;+0:1].[#8;H0:8]-[Pd:6]-[#6;+0:5]>>[#7;H2;+0:1]-[Pd:6]-[#6;+0:5].[#8;H1;+0:8]'
-    result2, added_h_mappings2 = modify_explicit_H(smarts2)
-    print(result2)
+    # # Test case 2: Hydrogen change
+    # smarts2 = '[#7;H3;+0:1].[#8;H0:8]-[Pd:6]-[#6;+0:5]>>[#7;H2;+0:1]-[Pd:6]-[#6;+0:5].[#8;H1;+0:8]'
+    # result2, added_h_mappings2 = modify_explicit_H(smarts2)
+    # print(result2)
 
-    # Test case 3
-    smarts3 = '[Cl,Br,I,O:2]-[Pd;H1;+0:1]>>[Cl,Br,I,O;H1:2].[Pd;H0;+0:1]'
-    result3, added_h_mappings3 = modify_explicit_H(smarts3)
-    print(result3)
+    # # Test case 3
+    # smarts3 = '[Cl,Br,I,O:2]-[Pd;H1;+0:1]>>[Cl,Br,I,O;H1:2].[Pd;H0;+0:1]'
+    # result3, added_h_mappings3 = modify_explicit_H(smarts3)
+    # print(result3)
 
-    # Test case 4
-    smarts4 = '[#8;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]'
-    result4, added_h_mappings4 = modify_explicit_H(smarts4)
-    print(result4)
+    # # Test case 4
+    # smarts4 = '[#8;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]'
+    # result4, added_h_mappings4 = modify_explicit_H(smarts4)
+    # print(result4)
 
-    # Test case 5: No hydrogen
-    smarts5 = '[Cl,Br,I,O$([O]-S):7]-[#6;+0:5].[Pd&!$([Pd]-I)&!$([Pd]-Br)&!$([Pd]-Cl):6]>>[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]'
-    result5, added_h_mappings5 = modify_explicit_H(smarts5)
-    print(result5)
+    # # Test case 5: No hydrogen
+    # smarts5 = '[Cl,Br,I,O$([O]-S):7]-[#6;+0:5].[Pd&!$([Pd]-I)&!$([Pd]-Br)&!$([Pd]-Cl):6]>>[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]'
+    # result5, added_h_mappings5 = modify_explicit_H(smarts5)
+    # print(result5)
 
-    # Test cast 6: Hydrogen on aromatic ring
-    smarts6 = '[*:1][O:2][N+:3]([O-:4])=[O:5].[*;a;+0:8]:[c;H1;+0:9]>>[*;a;+1:8]:[c;H1;+0:9]-[N+:3](-[O-:4])(=[O:5]).[*:1][O;H0;-1:2]'
-    result6, added_h_mappings6 = modify_explicit_H(smarts6)
-    print(result6)
+    # # Test cast 6: Hydrogen on aromatic ring
+    # smarts6 = '[*:1][O:2][N+:3]([O-:4])=[O:5].[*;a;+0:8]:[c;H1;+0:9]>>[*;a;+1:8]:[c;H1;+0:9]-[N+:3](-[O-:4])(=[O:5]).[*:1][O;H0;-1:2]'
+    # result6, added_h_mappings6 = modify_explicit_H(smarts6)
+    # print(result6)
 
-    # Test case 7
-    smarts7 = '[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[n&!$([#7]~[#7]);H0:100]1[c:99][c:98][c:97][c:96][c:95]1>>[O;H0;+0:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[n;+1&!$([#7]~[#7]);H1:100]1[c:99][c:98][c:97][c:96][c:95]1'
-    result7, added_h_mappings7 = modify_explicit_H(smarts7)
-    print(result7)
+    # # Test case 7
+    # smarts7 = '[O;H1;+1:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[n&!$([#7]~[#7]);H0:100]1[c:99][c:98][c:97][c:96][c:95]1>>[O;H0;+0:1]=[C;H0;+0:2]-[O;H0;+0:4]-[#6;+0:5].[n;+1&!$([#7]~[#7]);H1:100]1[c:99][c:98][c:97][c:96][c:95]1'
+    # result7, added_h_mappings7 = modify_explicit_H(smarts7)
+    # print(result7)
 
-    # Test case 8
-    smarts8 = '[*:2]-[O;H0:3]-[Pd:1]-[#6;H2:4].[H:5][H:6]>>[*:2]-[O;H0:3]-[H:5].[H:6]-[#6;H2:4].[Pd:1]'
-    smarts8, added_h_mappings8 = modify_explicit_H(smarts8)
-    print(smarts8)
+    # # Test case 8
+    # smarts8 = '[*:2]-[O;H0:3]-[Pd:1]-[#6;H2:4].[H:5][H:6]>>[*:2]-[O;H0:3]-[H:5].[H:6]-[#6;H2:4].[Pd:1]'
+    # smarts8, added_h_mappings8 = modify_explicit_H(smarts8)
+    # print(smarts8)
     
-    smarts8 = '[Br;D0;H0;+0:1].[C;D1;H3;+0:2]-[#6:3]=[#6:4]>>[Br;H1;+0:1].[C;D1;H2;+0:2]-[#6:3]=[#6:4]'
-    smarts8, added_h_mappings8 = modify_explicit_H(smarts8)
-    print(smarts8)
+    # smarts8 = '[Br;D0;H0;+0:1].[C;D1;H3;+0:2]-[#6:3]=[#6:4]>>[Br;H1;+0:1].[C;D1;H2;+0:2]-[#6:3]=[#6:4]'
+    # smarts8, added_h_mappings8 = modify_explicit_H(smarts8)
+    # print(smarts8)
+    smarts = "[#6&!$([#6]=O):1]-[#8;+0;H1:5].[F,Cl,Br,I,O$([O]-S):2]-[Pd:3]-[#6:4]"
+    parsed = parse_smarts(smarts)
+    print(parsed)
+    print(update_smarts_with_hydrogen_mapping("[#6&!$([#6]=O):1]-[#8;+0;H1:5].[F,Cl,Br,I,O$([O]-S):2]-[Pd:3]-[#6:4]",parsed))

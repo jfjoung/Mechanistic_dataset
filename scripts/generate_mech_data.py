@@ -54,12 +54,9 @@ def reagent_matching_for_single_reaction(reaction, class_key):
     mols = [Chem.MolFromSmiles(smi, sanitize=False) for smi in reactants.split(".") + agents.split(".")]
     reaction['conditions'] = []
     class_key = get_class_key(class_key)
-    # print(class_key)
     if class_key in Reaction_templates.class_reaction_templates:
         class_data = Reaction_templates.class_reaction_templates[class_key]
-
         for cond_name, cond_data in class_data.items():
-            # print(cond_name)
             if cond_data['Reagent'] or cond_data['Exclude_reagent']:
                 cond_mols = []
                 if cond_data['Reagent']:
@@ -75,20 +72,23 @@ def reagent_matching_for_single_reaction(reaction, class_key):
                     patt.UpdatePropertyCache(strict=False)
                     for mol in mols:
                         mol.UpdatePropertyCache(strict=False)
-                        # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
+                        #print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
                         if mol.GetSubstructMatch(patt):
                             matched_reagents.append(mol)
-                            # print('Matched Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
+                            #print('Matched Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
                             break
                 for patt in exclude_cond_mols:
                     patt.UpdatePropertyCache(strict=False)
                     for mol in mols:
                         mol.UpdatePropertyCache(strict=False)
                         if mol.GetSubstructMatch(patt):
+                            # print('Matched Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
+                            # print("Excluding")
                             exclude = True
                             break
                     if exclude: break
                 if not exclude and len(cond_mols) == len(matched_reagents):
+                    #logging.info(f"Matched: {cond_name}")
                     reaction['conditions'].append(cond_name)
             else:
                 reaction['conditions'].append(cond_name)
@@ -308,4 +308,3 @@ def generate_mechdata_multiprocess(args):
     logging.info(f'In total, {num_used_rxn} overall reactions were utilized')
     logging.info(f'{num_generated_rxn} elementary steps were generated')
     logging.info(f'Mechanistic dataset generation is done')
-

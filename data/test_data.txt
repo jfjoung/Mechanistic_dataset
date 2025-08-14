@@ -1,1 +1,1 @@
-[OH-].Nc1ccc(B(O)O)cc1.Brc2ccc(C)cc2.O.Cl[Pd]Cl.C1=CCCC=CCC1>O7CCOCC7>Nc8ccc(c9ccc(C)cc9)cc8 Bromo Suzuki coupling
+Br[c:6]1[cH:5][n:4][c:3]([O:2][CH3:1])[cH:8][cH:7]1.[CH2:9]=[CH:10][C:11]#[N:12].CCN(CC)CC.CN(C)C=O.c1ccc([P](c2ccccc2)c2ccccc2)cc1.c1ccc([P](c2ccccc2)c2ccccc2)cc1.Cl[Pd]Cl>>[CH3:1][O:2][c:3]1[cH:8][cH:7][c:6]([cH:5][n:4]1)[CH:9]=[CH:10][C:11]#[N:12].[CH3:1][O:2][c:3]1[cH:8][cH:7][c:6]([cH:5][n:4]1)[CH:9]=[CH:10][C:11]#[N:12] Bromo Heck reaction

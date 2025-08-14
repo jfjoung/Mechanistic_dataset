@@ -2,6 +2,8 @@ from templates import AcidBase_lookup
 import itertools
 import logging
 import networkx as nx
+from collections import defaultdict
+
 from copy import deepcopy
 from rdkit import Chem, RDLogger
 from rdkit.Chem import AllChem
@@ -26,6 +28,7 @@ def flatten_list(lst):
                 seen.add(item)
 
     return flattened
+
 def remove_atom_map(mol, isotope=False):
     '''
     Removing the atom mapping and isotope labeling if necessary
@@ -52,10 +55,17 @@ def get_plain_smiles(mol):
     '''
     Convert mol object to plain SMILES, no atom mapping and no isotope labeling
     '''
-    _mol = Chem.Mol(mol)
-    plain = Chem.MolToSmiles(remove_atom_map(_mol, isotope=True))# , isomericSmiles=False)
+    #_mol = Chem.Mol(mol)
+    plain = Chem.MolToSmiles(remove_atom_map(mol, isotope=True))# , isomericSmiles=False)
     return plain
-    
+
+def canonical_smarts(smarts):
+    '''
+    Converts smarts query to plain smiles
+    '''
+    mol = Chem.MolFromSmarts(smarts)
+    return get_plain_smiles(mol)
+
 def has_duplicate_atom(atom_map_list):
     new_map_list = flatten_list(atom_map_list)
     if len(new_map_list) != len(set(new_map_list)):
@@ -97,128 +107,120 @@ class Template_process:
         if len(self.template_list) > self.args.max_num_temp:
             raise TooManyTemplates
 
+
+    def duplicate_reactant(self, node, mol, max_atom_map):
+        new_smi = Chem.MolToSmiles(mol)
+        new_mol = Chem.MolFromSmiles(new_smi, sanitize=False)
+        new_mol = remove_atom_map(new_mol)
+
+        for atom in new_mol.GetAtoms():
+            atom.SetIsotope(max_atom_map)
+            max_atom_map+=1
+        
+        smiles_w_isotope = '.'.join([node['smiles_w_isotope'], Chem.MolToSmiles(new_mol)])
+        smiles_w_mapping = Chem.MolToSmiles(isotope_to_atommap(Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)))
+
+        node['smiles_w_isotope'] = smiles_w_isotope
+        node['smiles_w_mapping'] = smiles_w_mapping
+        node['smiles'] = get_plain_smiles(Chem.MolFromSmiles(smiles_w_mapping, sanitize=False))
+        node['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in smiles_w_isotope.split('.')]  
+
+        return (Chem.MolToSmiles(new_mol), new_mol, max_atom_map)
+
+
     def find_reactants(self, node, reactant_node):
-
         self.check_num_templates()
+        template_reactant_dict = {}
 
-        template_reactant_dict = {} #Get every reactant for each template
+        if self.args.verbosity:
+            logging.info(self.template_list)
+
         for idx, templ in enumerate(self.template_list):
-            # print('Find reactant!',templ)
-            rxn = AllChem.ReactionFromSmarts(templ)
-            patterns = [rmol for rmol in rxn.GetReactants()] #Get reactants as described in the templates
 
-            templ_mol_pair = {}  #Save the pattern - molecule pair
+            if self.args.verbosity:
+                logging.info(f'Finding reactants: {templ}')
+            rxn = AllChem.ReactionFromSmarts(templ)
+            patterns = [rmol for rmol in rxn.GetReactants()]
+
+            plain_patterns = [get_plain_smiles(pat) for pat in patterns]
+            # if self.args.verbosity:
+            #     logging.info(f"Plain Patterns: {plain_patterns}")
+
+            match_pool = defaultdict(list)
+            unmatched_patterns = []
+
+            for mol in node['mol']:
+                mol.UpdatePropertyCache(strict=False)
+
+            for i in range(len(patterns)):
+                pat = patterns[i]
+                pat.UpdatePropertyCache(strict=False)
+                matches = [mol for mol in node['mol'] if mol.GetSubstructMatch(pat)]
+                if not matches:
+                    unmatched_patterns.append(pat)
+                    #break
+                else:
+                    match_pool[plain_patterns[i]].append(matches)
+
+            if self.args.stoichiometry:
+                max_atom_map = get_max_atom_map(Chem.MolFromSmiles(node['smiles_w_mapping'], sanitize=False)) + 1
+                to_duplicate = []
+
+                for matches in match_pool.values():
+                    num_pat = len(matches) # number of reactants in template with the same pattern
+                    num_reactants = len(matches[0]) # number of reactants in the pool that match the pattern
+                    if num_reactants < num_pat:
+                        to_duplicate += [matches[0][0]] * (num_pat - num_reactants)                      
+
+                for pat in unmatched_patterns:
+                    for mol in reactant_node['mol']:
+                        mol.UpdatePropertyCache(strict = False)
+                        if mol and mol.GetSubstructMatch(pat):
+                            to_duplicate.append(mol)
+                            break
+                
+                if self.args.verbosity:
+                    logging.info(f"To duplicate: {[Chem.MolToSmiles(mol) for mol in to_duplicate]}")
+
+                for mol in to_duplicate:
+                    new_smi, new_mol, max_atom_map = self.duplicate_reactant(node, mol, max_atom_map)
+                
+            templ_mol_pair = {}
             num_match = 0
 
             for pat in patterns:
                 pat.UpdatePropertyCache(strict=False)
-                # print('Pat :', Chem.MolToSmarts(pat))
                 possible_reactant_list = []  #Save the matched reactant
+                if self.args.verbosity:
+                    logging.info(f"Finding Pat : {Chem.MolToSmarts(pat)}")
                 for mol in node['mol']:
                     mol.UpdatePropertyCache(strict=False)
-                    # print(Chem.MolToSmiles(mol))
+                    # if self.args.verbosity:
+                    #     logging.info(f"Current mol: {Chem.MolToSmiles(mol)}")
                     if mol and mol.GetSubstructMatch(pat): # and mol_node.smiles not in possible_reactant_smiles_list:
+                        #if mol not in possible_reactant_list:
                         possible_reactant_list.append(mol)
-                        # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
+                        if self.args.verbosity:
+                            logging.info(f'Mol : {Chem.MolToSmiles(mol)}    Pat : {Chem.MolToSmarts(pat)}')
 
                 if possible_reactant_list:
                     num_match += 1
                     templ_mol_pair[pat] = possible_reactant_list
-                    
+
             if num_match == len(patterns):
                 template_reactant_dict[templ] = templ_mol_pair
 
-        # print(template_reactant_dict)
-
-        if self.args.stoichiometry and template_reactant_dict == {}:
-            # print(num_match, 'templ', templ)
-            # print(reactant_node)
-            # print('templ_mol_pair', [pat for pat in templ_mol_pair.keys()])
-            max_atom_map = get_max_atom_map(Chem.MolFromSmiles(node['smiles_w_mapping'], sanitize=False)) + 1
-            added_mols = []
-            # print(self.template_list)
-            # print(node['smiles'])
-            for idx, templ in enumerate(self.template_list):
-                # print('Find reactant!',templ)
-                rxn = AllChem.ReactionFromSmarts(templ)
-                patterns = [rmol for rmol in rxn.GetReactants()]
-                templ_mol_pair = {}
-                num_match = 0
-                added_smis = []
-                for pat in patterns: 
-                    possible_reactant_list = []
-                    # print('Pat :', Chem.MolToSmarts(pat))
-
-                    for mol in node['mol']:
-                        # print(len(node['mol']))
-                        mol.UpdatePropertyCache(strict=False)
-                        # print(Chem.MolToSmiles(mol))
-                        if mol and mol.GetSubstructMatch(pat): # and mol_node.smiles not in possible_reactant_smiles_list:
-                            added = False
-
-                            for added_smi in added_smis:
-                                added_mol = Chem.MolFromSmiles(added_smi, sanitize=False)
-                                if added_mol.GetSubstructMatch(pat):
-                                    added = True
-                                    # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
-                                    break
-                            if not added:
-                                possible_reactant_list.append(mol)
-                            # print('Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
-
-                            if possible_reactant_list:
-                                num_match += 1
-                                templ_mol_pair[pat] = possible_reactant_list
-                    if pat not in templ_mol_pair.keys():
-                        # print('Not matched pat :', Chem.MolToSmarts(pat))
-                        for mol in reactant_node['mol']:
-                            mol.UpdatePropertyCache(strict=False)
-                            if mol and mol.GetSubstructMatch(pat) and mol not in added_mols:
-                                # print('After adding Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(pat))
-                                added_mols.append(mol)
-                                new_smi = Chem.MolToSmiles(mol)
-                                # print('new_smi', new_smi)
-
-                                new_mol = Chem.MolFromSmiles(new_smi, sanitize=False)
-                                new_mol = remove_atom_map(new_mol)
-
-                                for atom in new_mol.GetAtoms():
-                                    atom.SetIsotope(max_atom_map)
-                                    max_atom_map+=1
-
-                                added_smis.append(Chem.MolToSmiles(new_mol))
-                                smiles_w_isotope = '.'.join([node['smiles_w_isotope'], Chem.MolToSmiles(new_mol)])
-                                smiles_w_mapping = Chem.MolToSmiles(isotope_to_atommap(Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)))
-                                mol = Chem.MolFromSmiles(smiles_w_isotope, sanitize=False)
-
-                                node['smiles_w_isotope'] = smiles_w_isotope
-                                node['smiles_w_mapping'] = smiles_w_mapping
-                                node['smiles'] = get_plain_smiles(Chem.MolFromSmiles(smiles_w_mapping, sanitize=False))
-                                node['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in smiles_w_isotope.split('.')]
-                                num_match += 1
-                                # print('nnew smi', Chem.MolToSmiles(new_mol))
-                                possible_reactant_list.append(new_mol)
-                                # print('possible_reactant_list', possible_reactant_list)
-                                templ_mol_pair[pat] = possible_reactant_list
-                                break
-            
-                # print('num_match', num_match)
-                if num_match == len(patterns):
-                    template_reactant_dict[templ] = templ_mol_pair
-
         temple_combi_dict = {}
-        # print('template_reactant_dict', template_reactant_dict)
         for templ, reactant_dict in template_reactant_dict.items():
             reactant_dict = self.deduplicate_reactants(reactant_dict)
-            # print('reactant_dict', reactant_dict)
+            reactant_dict_vals = [v for v in reactant_dict.values() if v] # modified
             # rmol_combinations = [list(combination) for combination in itertools.product(*reactant_dict.values()) if
             #                     len(combination) == len(reactant_dict)]
             rmol_combinations = [
                                 list(permutation)
-                                for combination in itertools.product(*reactant_dict.values())
+                                for combination in itertools.product(*reactant_dict_vals)
                                 for permutation in itertools.permutations(combination)
                                 ]
-
             temple_combi_dict[templ] = rmol_combinations
 
         return temple_combi_dict, node
@@ -230,7 +232,6 @@ class Template_process:
         grouped_keys = defaultdict(list)
         for key, value_list in reactant_dict.items():
             grouped_keys[tuple(value_list)].append(key)
-        
         result_dict = {}
         for value_list, keys in grouped_keys.items():
             unique_values = list(value_list)  # Unique values (n)
@@ -294,7 +295,7 @@ class Template_process:
             # print('3', self.template_list)
 
         if self.args.explicit_H:
-            self.get_explcit_H_template()
+            self.get_explicit_H_template()
             # print('4', self.template_list)
 
         # print('5', self.template_list)
@@ -308,6 +309,7 @@ class Template_process:
             return
 
         new_rxn_template = []
+
         for pKa, templ in zip(pKa_list, templ_list):
 
             if not pKa:
@@ -317,15 +319,17 @@ class Template_process:
             A = pKa.get('A')
             B = pKa.get('B')
 
+            
             possible_acid_base = []
-            if A:
+            if A is not None:
                 filtered_data = [d for d in AcidBase_lookup.Acid_base if 'A' in d['role'] and d['pKa'] <= A]
                 sorted_data = sorted(filtered_data, key=lambda x: x['pKa'])
-                possible_acid_base = find_acid_base(G, reactant_node, sorted_data, 'A', self.args.stoichiometry)
-            if B:
+                possible_acid_base = find_acid_base(G, reactant_node, sorted_data, 'A', self.args.stoichiometry, self.args.strongest_only)
+            if B is not None:
                 filtered_data = [d for d in AcidBase_lookup.Acid_base if 'B' in d['role'] and d['pKa'] >= B]
                 sorted_data = sorted(filtered_data, key=lambda x: x['pKa'], reverse=True)
-                possible_acid_base = find_acid_base(G, reactant_node, sorted_data, 'B', self.args.stoichiometry)
+                #logging.info(f"Possibilities: {sorted_data}")
+                possible_acid_base = find_acid_base(G, reactant_node, sorted_data, 'B', self.args.stoichiometry, self.args.strongest_only)
             if not possible_acid_base: continue
 
             for acid_base in possible_acid_base:
@@ -366,7 +370,7 @@ class Template_process:
 
         self.template_list = new_templates
 
-    def get_explcit_H_template(self):
+    def get_explicit_H_template(self):
 
         new_templ_list = []
         for templ in self.template_list:
@@ -379,15 +383,12 @@ class Template_process:
 
         self.template_list = new_templ_list
 
-def find_acid_base(node, reactant_node, filtered_list, ab_condition, stoichiometry=False):
+def find_acid_base(node, reactant_node, filtered_list, ab_condition, stoichiometry=False, strongest_only=True):
     possible_acid_base=[]
-    # print(filtered_list)
     mols = node['mol'].copy()
     rmols = reactant_node['mol']
     if stoichiometry:
-        mols+=rmols
-    # print('mols in acid_base', [Chem.MolToSmiles(mol) for mol in mols])
-    # print(mols)
+        mols += rmols
 
     for acid_base in filtered_list:
         if ab_condition=='A':
@@ -399,12 +400,38 @@ def find_acid_base(node, reactant_node, filtered_list, ab_condition, stoichiomet
 
         patt = Chem.MolFromSmarts(reactant)
         patt.UpdatePropertyCache(strict=False)
-
+        
         for mol in mols:
             mol.UpdatePropertyCache(strict=False)
             try:
+                #logging.info(f"Trying: {Chem.MolToSmiles(mol)}")
                 if mol and mol.GetSubstructMatch(patt) and [reactant, product] not in possible_acid_base:
                     # print(reactant)
+                    if mol.GetNumHeavyAtoms() > 14: # pretty arbitrary
+                        continue
                     possible_acid_base.append([reactant, product])
+                    # reaction = reactant + ">>" + product
+                    # reaction = AllChem.ReactionFromSmarts(reaction)
+                    # Chem.MolToSmiles(mol, isomericSmiles=False, canonical=True)
+
+                    if strongest_only:
+                        
+                        #logging.info(f"A/B used: {possible_acid_base}")
+                        return possible_acid_base
             except: continue #TODO: CO makes error with a pattern of '[O:96]=[CH:97][C:99]([NH2:98])=[O:100]'
+        # if stoichiometry:
+        #     for mol in rmols:
+        #         mol.UpdatePropertyCache(strict=False)
+        #         try:
+        #             if mol and mol.GetSubstructMatch(patt) and [reactant, product] not in possible_acid_base:
+        #                 # print(reactant)
+        #                 possible_acid_base.append([reactant, product])
+        #                 if strongest_only:
+        #                     # logging.info(f'A/B used: {acid_base}')
+        #                     return possible_acid_base
+
+        #         except: continue #TODO:
+    
     return possible_acid_base
+
+

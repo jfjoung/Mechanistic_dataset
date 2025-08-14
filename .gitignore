@@ -39,11 +39,16 @@ Thumbs.db
 # data files #
 ######################
 data/
+finalized_data/
+outputs/
 results/
+scripts/oxidation_states
+scripts/processing_pistachio
+test_runs/
+untemplated/
 logs/
 logs2/
 old/
-run/
 ver2/
 results2/
 flower_ver2/
@@ -62,7 +67,6 @@ scratch/
 logs/
 
 kekulization.py
-scripts/setting.py
 run.py
 labeling.ipynb
 check_sequences.ipynb

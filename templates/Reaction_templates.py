@@ -1,3 +1,12 @@
+try:
+    from new_templates.reaction_templates import class_reaction_templates
+    # print(class_reaction_templates)
+
+except ImportError:
+    raise Exception("Not imported properly")
+
+
+'''
 class_reaction_templates={
     ('Carboxylic acid + amine condensation',
      'Carboxylic acid + sulfonamide condensation',
@@ -1012,7 +1021,7 @@ class_reaction_templates={
 
     {'Reaction with element Pd':
      {'Reagent': ['[Pd;D0;+0]',], 'Exclude_reagent': ['[P]'],
-   'Stages': {0: {'Templates': ['[Cl,Br,I,O$([O]-S):7]-[#6;+0:5].[Pd;D0;+0:6]>>[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]',],
+   'Stages': {0: {'Templates': ['[Cl,Br,I,O$([O]-S):1]-[#6;+0:2].[Pd;D0;+0:3]>>[Cl,Br,I,O$([O]-S):1]-[Pd:3]-[#6;+0:2]',],
      'pKa': [None],
      'Description': 'Oxidative addition'},
     1: {'Templates': ['[#8;+0;H2:8].[Cl,Br,I,O$([O]-S):7]-[Pd:6]-[#6;+0:5]>>[Cl,Br,I,O$([O]-S);H1;+0:7].[#8;H1;+0:8]-[Pd:6]-[#6;+0:5]',
@@ -5872,3 +5881,5 @@ class_reaction_templates={
 #      }},
 #      },  
 }
+
+'''

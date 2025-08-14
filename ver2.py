@@ -1,22 +1,25 @@
-
+from ast import Num
 import os
 import logging
 import json
 import pickle
 from multiprocessing import Pool, Value
+import traceback
 
 # Third-party libraries
 from rdkit import Chem, RDLogger
-from rdkit.Chem import AllChem
+from rdkit.Chem import AllChem, rdchem, rdmolops
 from rdkit.Chem.rdMolDescriptors import CalcMolFormula
 import networkx as nx
 from tqdm import tqdm
+from logging_config import setup_logging
 
 # Custom modules
 from scripts.setting import Args
 from scripts.generate_mech_data import reagent_matching_for_single_reaction, calling_rxn_template
 from utils import template_process2
 from utils.template_process2 import remove_atom_map, isotope_to_atommap, get_plain_smiles, flatten_list
+
 
 # Disable RDKit warnings
 RDLogger.DisableLog('rdApp.*')
@@ -33,6 +36,20 @@ class Reaction_Network:
         self.pruned_graph = None
         self.product_nodes = None
         self.atom_mapping()
+        self.final_completed_step = -1
+        self.metals = [
+            3, 4, 11, 12, 13, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+            31, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 55, 56,
+            57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
+            74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 87, 88, 89, 90, 91, 92, 93,
+            94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108,
+            113, 114, 115, 116
+        ]
+        self.max_allowed_valences = {
+            7 : 3, 
+            8 : 2,
+        }
+        self.root_dict = {}
 
 
     def atom_mapping(self):
@@ -96,7 +113,7 @@ class Reaction_Network:
             atom.SetIsotope(atom_map)
             atom_map+=1
         # print(atom_map)
-        # print(Chem.MolToSmiles(rmol))
+        # print("Isotope labelled", Chem.MolToSmiles(rmol))
         # Generate the SMILES and molecular representations
         smiles_w_isotope = Chem.MolToSmiles(rmol) #)
         # print('smiles_w_isotope', smiles_w_isotope)
@@ -145,7 +162,6 @@ class Reaction_Network:
         
     def run_reaction(self):
         G = self.rxn_network
-
         for step in range(self.length):
             frontier_nodes = [node for node in G if G.out_degree(node) == 0]
             if self.args.verbosity:
@@ -161,9 +177,10 @@ class Reaction_Network:
                 for key, value in new_node.items():
                     G.nodes[node][key] = value
                 if self.args.verbosity: 
-                    print_plain_smiles = []
                     if template_reactant_dict:
-                        print('template_reactant_dict', template_reactant_dict)
+                        logging.info(f'template_reactant_dict: {template_reactant_dict}')
+                    else:
+                        logging.info('template reactant dict empty')
                     # for templ, mol_pairs in template_reactant_dict.items():
                     #     print(f"Template: {templ}")
                     #     for mol_list in mol_pairs:
@@ -174,11 +191,11 @@ class Reaction_Network:
                 # print(G.nodes[node]['smiles'])
 
                 for templ, reactants in template_reactant_dict.items():
-                    # print(len(reactants))
 
                     if len(reactants) > self.args.num_combination:
                         continue
                         # raise ValueError('Too many combinations')
+
                     rxn = AllChem.ReactionFromSmarts(templ)
 
                     for reactant in reactants:
@@ -188,19 +205,25 @@ class Reaction_Network:
 
                         rmols = [mol for mol in reactant]
                         # print(rmols)
-                        reactant_isotopes = set([atom.GetIsotope() for mol in reactant for atom in mol.GetAtoms() ])
+                        reactant_isotopes = set([atom.GetIsotope() for mol in reactant for atom in mol.GetAtoms()])
                         # print('reactant_isotopes', reactant_isotopes)
-                        
                         try:
-                            outcomes = rxn.RunReactants(rmols)
-                            # print(outcomes)
+                            if self.args.verbosity:
+                                assert rxn is not None, "Reaction parsing failed"
+                                logging.info(f"Attempting to run: {templ}")
+                                logging.info(f"{[Chem.MolToSmiles(mol) for mol in rmols]}")
 
+                            outcomes = rxn.RunReactants(rmols)
                         except Exception as e:
-                            # print(e)
+                            if self.args.verbosity:
+                                logging.error(traceback.format_exc())
                             continue
 
                         if not outcomes:
+                            if self.args.verbosity:
+                                logging.info("No products obtained")
                             continue
+
                         # if self.args.verbosity:
                             # printing_rsmi = [G.nodes[idx]['mol_node'].__str__() for idx in reactant] #TODO: printing the reactants
                             # logging.info(f'Reactants are {printing_rsmi}')
@@ -210,6 +233,8 @@ class Reaction_Network:
 
                             if self.args.verbosity: 
                                 logging.info(f'{templ} were used')
+                                for o in outcome:
+                                    logging.info(Chem.MolToSmiles(o))
 
                             # from rdkit.Chem.rdMolDescriptors import CalcMolFormula
                             # [prod.UpdatePropertyCache(strict=False) for prod in outcome]
@@ -223,17 +248,28 @@ class Reaction_Network:
                             prod_mol.UpdatePropertyCache(strict=False)
                             product_formula = CalcMolFormula(prod_mol)
                             product_isotopes = [atom.GetIsotope() for mol in outcome for atom in mol.GetAtoms()]
-                            # print('product_isotopes', product_isotopes)
+                            
+                            if self.args.verbosity:
+                                logging.info(f'product_isotopes: {product_isotopes}')
 
                             set_product_isotopes = set(product_isotopes)
+
                             if len(product_isotopes) != len(set_product_isotopes):
+                                if self.args.verbosity: 
+                                    logging.info(f"Product isotope labelling error: {prod_smi}")
                                 continue
                             if set_product_isotopes != reactant_isotopes:
+                                # print(set_product_isotopes)
+                                # print(reactant_isotopes)
+                                if self.args.verbosity: 
+                                    logging.info("Product and reactant isotope mismatch")
                                 continue
-
                             if reactant_formula != product_formula:
+                                # print(reactant_formula)
+                                # print(product_formula)
+                                if self.args.verbosity:
+                                    logging.info("Product and reactant atom mismatch")
                                 continue
-
                             # print('product_isotopes', product_isotopes)
                             # print('prod_smi', prod_smi)
 
@@ -245,10 +281,10 @@ class Reaction_Network:
                             # print(prod_spec_smi)
 
                             plain_smiles = get_plain_smiles(Chem.MolFromSmiles(prod_spec_smi, sanitize=False))
-                            # print('plain_smiles', plain_smiles)
-                            if self.args.verbosity and plain_smiles not in print_plain_smiles: 
-                                print('plain_smiles:', plain_smiles)
-                                print_plain_smiles.append(plain_smiles)
+                            #logging.info(f'plain_smiles: {plain_smiles}')
+                            # if self.args.verbosity and plain_smiles not in print_plain_smiles: 
+                            #     logging.info('plain_smiles: {plain_smiles}')
+                            #     print_plain_smiles.append(plain_smiles)
 
                             matching_nodes = [idx for idx in G.nodes 
                                             if G.nodes[idx].get('type') == 'mol_node' and G.nodes[idx].get('smiles') == plain_smiles
@@ -257,7 +293,6 @@ class Reaction_Network:
                             # print('matching_nodes', matching_nodes)
                             
                             if not matching_nodes:
-
                                 rxn_node_count = len([node for node, data in G.nodes(data=True) if data['type'] == 'rxn_node'])
                                 G.add_node(f'rxn {rxn_node_count}', rxn_node=rxn_node, type='rxn_node')
                                 G.add_edge(node, f'rxn {rxn_node_count}')
@@ -269,12 +304,14 @@ class Reaction_Network:
                                 G.nodes[self.node_id]['smiles'] = get_plain_smiles(isotope_to_atommap(Chem.MolFromSmiles(prod_spec_smi, sanitize=False)))
                                 G.nodes[self.node_id]['mol'] = [Chem.MolFromSmiles(smi, sanitize=False) for smi in prod_spec_smi.split('.')]
                                 G.nodes[self.node_id]['type'] = 'mol_node'
+                                if self.args.verbosity:
+                                    logging.info(f"Added node {self.node_id} from node {node}")
 
                                 # if self.args.verbosity:
                                 #     print(G.nodes[self.node_id]['smiles'])
-
-
-                                G.add_edge(f'rxn {rxn_node_count}', self.node_id)
+                                if step > self.final_completed_step:
+                                    self.final_completed_step = step
+                                G.add_edge(f'rxn {rxn_node_count}', self.node_id, step=step)
 
                             else:
                                 for node_idx in matching_nodes:
@@ -290,10 +327,56 @@ class Reaction_Network:
                                         rxn_node_count = len([node for node, data in G.nodes(data=True) if data['type'] == 'rxn_node'])
                                         G.add_node(f'rxn {rxn_node_count}', rxn_node=rxn_node, type='rxn_node')
                                         G.add_edge(node, f'rxn {rxn_node_count}')
-                                        G.add_edge(f'rxn {rxn_node_count}', node_idx)
+                                        G.add_edge(f'rxn {rxn_node_count}', node_idx, step=step)
+                                        if self.args.verbosity:
+                                            logging.info(f"Dupe node {self.node_id} with degree {G.out_degree(self.node_id)}")
+
+                                        if step > self.final_completed_step:
+                                            self.final_completed_step = step
 
         # self.print_graph()
                                 
+    def fullSanitize (self, smi):
+        '''
+        Takes molecule smi -> fixes valence errors associated with charge/coordination by using dative bonds
+        '''
+        try: 
+            smi = Chem.MolToSmiles(Chem.MolFromSmiles(smi,self.ps), isomericSmiles=False, canonical=True)
+            return smi
+        except (rdchem.AtomValenceException, rdchem.KekulizeException): 
+            try:
+                settings = Chem.SmilesParserParams()
+                settings.removeHs = False
+                settings.sanitize = False
+                mol = Chem.RWMol(Chem.MolFromSmiles(smi, settings))
+                for atom in mol.GetAtoms():
+                    Z = atom.GetAtomicNum()
+                    valence = sum(bond.GetBondTypeAsDouble() for bond in atom.GetBonds())
+                    max_val = self.max_allowed_valences.get(Z, None)
+                    if max_val is not None and valence > max_val or atom.GetFormalCharge() < 0:
+                        for bond in atom.GetBonds():
+                            neighbor = bond.GetOtherAtom(atom)
+                            if neighbor.GetAtomicNum() in self.metals:
+
+                                begin_idx = atom.GetIdx()
+                                end_idx = neighbor.GetIdx()
+                                mol.RemoveBond(begin_idx, end_idx)
+                                mol.AddBond(begin_idx, end_idx, rdchem.BondType.DATIVE)
+
+                                if self.args.verbosity:
+                                    logging.info(f"Changed bond {atom.GetIdx()}–{neighbor.GetIdx()} to dative")
+
+                Chem.SanitizeMol(mol)
+                return Chem.MolToSmiles(mol, isomericSmiles=False, canonical=True)
+
+            except Exception as e:
+                if self.args.verbosity:
+                    logging.error(traceback.format_exc())
+
+        except Exception as e:
+            if self.args.verbosity: 
+                logging.error(traceback.format_exc())
+            
 
     def find_product(self):
         # print(self.psmi)
@@ -303,39 +386,33 @@ class Reaction_Network:
         self.ps.sanitize = True
 
         psmi =  Chem.MolToSmiles(Chem.MolFromSmiles(self.psmi,self.ps), isomericSmiles=False,canonical=True)
-        # print('psmi', psmi)
+        # print('psmi   ', psmi)
+        # print (frontier_nodes)
         for node_id in frontier_nodes:
-            # print(node_id)
-            # print(G.nodes[node_id]['smiles'])
-            try:
-                smi = [Chem.MolToSmiles(Chem.MolFromSmiles(smi,self.ps), isomericSmiles=False, canonical=True) for smi in G.nodes[node_id]['smiles'].split('.')]
-            except Exception as e:
-                # print(e)
+            #logging.info(node_id)
+            #print(G.nodes[node_id])
+            #print(G.in_edges(node_id, data=True))
+            
+            if not any(G.edges[u, v].get('step') == self.final_completed_step for u, v in G.in_edges(node_id)):
+                if self.args.verbosity:
+                    logging.info("Frontier node not end of reaction")
                 continue
 
+            smi = [self.fullSanitize(smi) for smi in G.nodes[node_id]['smiles'].split('.')]
+
             if psmi in smi:
+                if self.args.verbosity:
+                    logging.info(f"Prod Smi: {smi}")
                 product_nodes.append(node_id)
+            else:
+                if self.args.verbosity:
+                    logging.info(f"No product found on node {node_id}")
 
-        # patt = Chem.MolToSmiles(Chem.MolFromSmiles(self.psmi,sanitize=False))
-        # patt.UpdatePropertyCache(strict=False)
-
-        # for node_id in frontier_nodes:
-        #     for mol in G.nodes[node_id]['mol']:
-        #         mol.UpdatePropertyCache(strict=False)
-        #         if mol.GetSubstructMatch(patt):
-        #             if self.args.verbosity:
-        #                 logging.info('Product is formed')
-        #             product_nodes.append(node_id)
-
-            # if self.psmi in G.nodes[node_id]['smiles']:
-            #     product_nodes.append(node_id)
-        # print('product_nodes', product_nodes)
-        
         if not self.args.do_not_pruning:
             self.product_nodes = product_nodes
             if self.product_nodes:
                 self.pruning()
-
+    
     def pruning(self):
         G = self.rxn_network
         # print('self.product_nodes', self.product_nodes)
@@ -359,9 +436,6 @@ class Reaction_Network:
         self.check_stoichiometry()
 
     def check_stoichiometry(self):
-        # G = 
-
-        # self.print_graph()
 
         for G in self.pruned_graphs:
 
@@ -388,27 +462,30 @@ class Reaction_Network:
                         reactant_mapping_numbers.update(atom_map)
 
                 visited_node.append(node_idx)
-            
-        # self.print_graph()
+            # self.print_graph()
 
+    
     def get_rxn(self):
 
         global NUM
         
         elem_rxn = []
-        root_dict ={}
         # NUM += 1
 
 
         for G in self.pruned_graphs[:self.args.max_pathways]:
             with NUM.get_lock():
-                if G.nodes[0]['smiles'] in root_dict:
-                    num_rxn = root_dict[G.nodes[0]['smiles']]
+                if G.nodes[0]['smiles'] in self.root_dict:
+                    num_rxn = self.root_dict[G.nodes[0]['smiles']]
                 else:
                     NUM.value += 1
-                    root_dict[G.nodes[0]['smiles']] = NUM.value
+                    self.root_dict[G.nodes[0]['smiles']] = NUM.value
                     num_rxn = NUM.value
             rxn_node_indices = sorted(idx for idx, data in G.nodes(data=True) if data.get('type') == 'rxn_node')
+            rxn_node_indices = [
+                n for n in nx.topological_sort(G) 
+                if G.nodes[n].get('type') == 'rxn_node'
+            ]
             if len(rxn_node_indices) >= self.args.num_reaction_node:
                 continue
             for r_node in rxn_node_indices:
@@ -447,9 +524,6 @@ def extract_atom_mapping_numbers(smiles):
     mol = Chem.MolFromSmiles(smiles, sanitize=False)
     return {atom.GetAtomMapNum() for atom in mol.GetAtoms() if atom.GetAtomMapNum() > 0}
 
-
-
-
 def generate_elementary_reaction(input):
     """
     It makes elementary reactions for a single overall reactions.
@@ -457,8 +531,11 @@ def generate_elementary_reaction(input):
     It returns two dictionaries for the reaction networks and statistics
     """
     line, args = input
-
-    rxn = line.split()[0]
+    
+    try:
+        rxn = line.split()[0]
+    except:
+        return "ignore", [None, "ignore", "ignore"]
     if len(line.split()[1:]) == 1:
         label = line.split()[-1]
     else:
@@ -466,53 +543,61 @@ def generate_elementary_reaction(input):
 
     # When reaction class is specified, then corresponding reactions will only be considered.
     if args.rxn_class and args.rxn_class not in label:
-        return None
+        return rxn, [None, label, rxn]
     if args.exclude_rxn and label in args.exclude_rxn:
-        return None
+        return rxn, [None, label, rxn]
 
     rxn_dict = {'reaction_name': label,
                 'reaction_smiles': rxn, }
 
     # try:
     rxn_dict = reagent_matching_for_single_reaction(rxn_dict, label)
-    # print(rxn_dict)
+
     if not rxn_dict['conditions']:
         statistics = {'No templates' : 1}
-        return rxn, []
+        return rxn, [None, label, rxn]
     try:
         results = get_mechanistic_network(rxn_dict, args)
         return rxn, results
     except Exception as e:
-        print(e)
-    #     if args.verbosity:
-    #         logging.info(f'{e}')
-        return rxn, []
-
-
+        if args.verbosity:
+            logging.error(traceback.format_exc())
+        return rxn, [None, label, rxn]
 
 def get_mechanistic_network(rxn, args):
     conditions = calling_rxn_template(rxn)
     if args.verbosity:
         logging.info('Generating mechanism for: ' + rxn['reaction_smiles'])
     elem_rxns = []
+    
     for i, cond in enumerate(conditions):
         # try:
+        if args.verbosity:
+            logging.info(f"Trying {cond}")
         reaction = Reaction_Network(rxn, i, args)
         reaction.set_template_dict(cond)
         reaction.run_reaction()
         reaction.find_product()
         if reaction.product_nodes:
-            # print('Product has been formed')
             elem_rxn = reaction.get_rxn()
             elem_rxns.append(elem_rxn)
-
+        # else:
+        #     return [None, rxn['reaction_name'], rxn['reaction_smiles']]
         # except Exception as e: 
         # #     # print(e)
         #     continue
 
+    if not elem_rxns:
+        return [None, rxn['reaction_name'], rxn['reaction_smiles']]
+    # else: 
+    #     with NUM.get_lock():
+    #         NUM.value += 1
+    #     elem_rxns = [[f"{r}|{NUM.value}" for r in elem_rxn] for elem_rxn in elem_rxns]
+
     return flatten_list(elem_rxns)
 
 def generate_mechdata_multiprocess(args):
+
     '''
     Input format is a string of 'reaction_smiles NameRXN_name'
     '''
@@ -547,9 +632,13 @@ def generate_mechdata_multiprocess(args):
         writing_format = 'wb'
     else: writing_format = 'w'
 
-    with open(args.save, writing_format) as fout, open(debug_file_path, 'w') as file_debug:
+    with open(args.save, writing_format) as fout, open(debug_file_path, 'w') as file_debug, open(args.not_templated, 'w') as not_templated:
+        count = 0
         for results in tqdm(p.imap_unordered(generate_elementary_reaction, iterables), total=len(lines)):
-            if results is not None:
+            count += 1
+            if count % 10000 == 0:
+                print(f"Processed {count} lines")
+            if results[1][0] is not None:
                 rxn, elem_rxns = results
                 if elem_rxns:
                     # num_used_rxn += 1
@@ -569,7 +658,8 @@ def generate_mechdata_multiprocess(args):
                     
                 # if args.stat:
                 #     merge_dicts(statistics, stat)
-
+            else:
+                not_templated.write(results[1][2] + " " + results[1][1] + '\n')
         # if args.stat:
         #     base_file_root, _ = os.path.splitext(args.save)
         #     stat_file_path = f"{base_file_root}_statistics.json"
@@ -577,14 +667,14 @@ def generate_mechdata_multiprocess(args):
         #         json.dump(statistics, file, indent=4)
 
 
-    # if not args.debug:
-    #     os.remove(debug_file_path)
+    if not args.debug:
+        os.remove(debug_file_path)
 
     # logging.info(f'In total, {num_used_rxn} overall reactions were utilized')
     # logging.info(f'{num_generated_rxn} elementary steps were generated')
     # logging.info(f'Mechanistic dataset generation is done')
 
-
 if __name__ == '__main__':
-    args=Args()
+    setup_logging()
+    args = Args()
     generate_mechdata_multiprocess(args)
