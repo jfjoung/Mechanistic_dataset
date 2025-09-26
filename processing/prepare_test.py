@@ -5,8 +5,16 @@ import re
 
 # Parameters
 input_file = "../outputs/p_labeled.parquet"             # Path to input parquet file
-output_file = "../data/p_kumada.txt"      # Output .txt file
-allowed_values = {'Palladium Kumada coupling'} 
+output_file = "../data/cu_new.txt"      # Output .txt file
+allowed_values = {'Bromo Goldberg reaction',
+ 'Chan-Lam alkylamine coupling',
+ 'Chan-Lam arylamine coupling',
+ 'Chloro Goldberg reaction',
+ 'Fluoro Goldberg reaction',
+ 'Goldberg reaction',
+ 'Iodo Goldberg reaction',
+ 'Rosenmund von Braun cyanation',
+ 'Ullmann condensation'} 
 
 parquet_file = pq.ParquetFile(input_file)
 

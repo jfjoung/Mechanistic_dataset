@@ -59,8 +59,8 @@ from scripts.setting import Args
 #     args = Args()
 #     main(args)
 
-input_file = 'test_runs/nickel_negishi/templated.txt'
-output_file = 'test_runs/nickel_negishi/templated_d.txt'
+input_file = 'finalized_data/hms_train.txt'
+output_file = 'finalized_data/hms_train_d.txt'
 
 with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', encoding='utf-8') as outfile:
     for line in infile:

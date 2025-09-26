@@ -457,6 +457,68 @@ catalyst_preparation = {
         }
 }
 
+def general_cu_coupling (cycle, offset=0, global_reagent=[], global_exclude=[], modifier="", partner=""):
+    return {
+        f'Cu(I)-X ligandless {modifier}':{
+            'Reagent': [] + global_reagent,
+            'Exclude_reagent': [f'[{fg.n_n_ligand_check}]',f'[{fg.n_o_ligand}]','[O]=[C]-[C]-[C]=[O]','[Pd]'],
+            'Stages': cycle(offset, partner , 1)
+        },
+        f'Cu(I)-X with ligand {modifier}':{
+            'Reagent': [f'[{fg.n_n_ligand_check}]'] + global_reagent,
+            'Exclude_reagent': ['[Pd]'],
+            'Stages': {
+                **catalyst_preparation['Attach ligands'](offset, "Cu", f"#7;{fg.n_n_ligand}", c = 1),
+                **cycle(offset + 2, partner , 3)}
+        },
+        f'Cu(I)-X with n,o ligand {modifier}':{
+            'Reagent': [f'[{fg.n_o_ligand}]'] + global_reagent,
+            'Exclude_reagent': ['[Pd]'],
+            'Stages': {
+                offset : {
+                    'Templates': ["[O;H1:1]-[C:2](=[O:3])-[C:4]-[N:5]>>[O;-1;H0:1]-[C:2](=[O:3])-[C:4]-[N:5]",
+                                  "[O;H1:1]-[c:2]:[c:4]:[n:5]>>[O;H0;-1:1]-[c:2]:[c:4]:[n:5]",
+                                  "[O;H1:1]-[C:2](=[O:3])-[c:4]:[n:5]>>[O;H0;-1:1]-[C:2](=[O:3])-[c:4]:[n:5]"
+                                  ],
+                    'pKa': [{'B' : 3}, {'B' : 3}, {'B' : 3}],
+                    'Description': 'Deprotonate'
+                },
+                offset + 1 : {
+                    'Templates': ["[O;$([O;-1]-[C](=[O])-[C]-[N]),$([O;-1]-[c]:[c]:[n]),$([O;-1]-[C](=[O])-[c]:[n]),$([O;-1]-[C](=[O])-[c]:[n]):1].[Cu;D1:2]>>[Cu;-1:2]-[O;+0:1]"],
+                    'pKa': [None],
+                    'Description': 'Attach first ligand'
+                },
+                offset + 2 : {
+                    'Templates': ["[Cu;-1:1]-[#8:2].[#7;$([N]-[C]-[C](=[O])-[O]),$([n]:[c]:[c]-[O]),$([n]:[c]-[C](=[O])-[O]),$([n]:[c]-[C](=[O])-[O]):3]>>[#7:3]-[Cu:1]-[#8:2]"],
+                    'pKa': [None],
+                    'Description': 'Attach second ligand'
+                },
+                **cycle(offset + 3, partner, 3)}
+        },
+        f'Cu(I)-X with diketone {modifier}':{
+            'Reagent': ['[O]=[C]-[C]-[C]=[O]'] + global_reagent,
+            'Exclude_reagent': ['[Pd]'],
+            'Stages': {
+                offset : {
+                    'Templates': ["[O:1]=[C:2]-[C;H1:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H0:3]-[C:4]=[O:5]",
+                                  "[O:1]=[C:2]-[C;H2:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H1:3]-[C:4]=[O:5]"
+                                  ],
+                    'pKa': [{'B' : 3},{'B' : 3}],
+                    'Description': 'Deprotonate'
+                },
+                offset + 1 : {
+                    'Templates': ["[O;-1;$([O]-[C]=[C]-[C]=[O]):1].[Cu;D1:2]>>[Cu;-1:2]-[O;+0:1]"],
+                    'pKa': [None],
+                    'Description': 'Attach first ligand'
+                },
+                offset + 2 : {
+                    'Templates': ["[Cu;-1:1]-[#8:2].[O;$([O]=[C]-[C]=[C]-[O]-[Cu]):3]>>[#8:3]-[Cu:1]-[#8:2]"],
+                    'pKa': [None],
+                    'Description': 'Attach second ligand'
+                },
+                **cycle(offset + 3, partner, 3)}
+        },
+    }
 
 def general_pd_coupling (cycle, offset=0, global_reagent=[], global_exclude=[], modifier=""):
     return {
@@ -829,15 +891,7 @@ catalytic_cycles = {
         },
     "Ullman C-N" : lambda offset, R , l = 3:
         {
-            offset : {
-                'Templates' : [
-                    '[n;H1:1]:[n;H0:2]>>[n;H0:1]:[n;H1:2]',
-                    #'[n;H1:1]:[n;H0:2]>>[n;H1:1]:[n;H0:2]'
-                ],
-                'pKa' : [None],
-                'Description' : 'Tautomerization'
-            },
-            offset + 1: {
+            offset: {
                 'Templates': [ 
                         f'[#7;D3;H2;+0:3].[Cu;D{l}:1]-[{fg.X}:2]>>[Cu:1]-[#7;H1;+0:3].[{fg.X};H0;-1:2]',
                         f'[#7;D3;H1;+0:3].[Cu;D{l}:1]-[{fg.X}:2]>>[Cu:1]-[#7;H0;+0:3].[{fg.X};H0;-1:2]',
@@ -846,14 +900,14 @@ catalytic_cycles = {
                 'pKa': [{'B': -6}, {'B': -6}, {'B': -6}],
                 'Description': 'Deprotonation',
             },
-            offset + 2: {
+            offset + 1: {
                 'Templates' : [
                     steps["Oxidative addition"]("Cu", f";D{l};!$([Cu]-[{fg.X}])")
                 ],
                 'pKa' : [None],
                 'Description' : 'Oxidative addition', 
             },
-            offset  + 3: {
+            offset + 2: {
                 'Templates' : [
                     steps["Reductive elimination"]["Normal"]("Cu", "#6", R)
                 ],
@@ -1877,203 +1931,161 @@ class_reaction_templates = {
         'Fluoro Goldberg reaction',
     ): 
     {
-        'Cu(I)-X ligandless':{
-            'Reagent': [f'[Cu;D1]-[{fg.X}]'],
-            'Exclude_reagent': [f'[{fg.n_n_ligand}]',f'[{fg.n_o_ligand}]','[O]=[C]-[C]-[C]=[O]','[Pd]'],
-            'Stages': catalytic_cycles['Ullman C-N'](0, "#7", 1)
-        },
-        'Cu(I)-X with ligand':{
-            'Reagent': [f'[Cu;D1]-[{fg.X}]',f'[{fg.n_n_ligand}]'],
-            'Exclude_reagent': ['[Pd]'],
-            'Stages': {
-                **catalyst_preparation['Attach ligands'](0, "Cu", f"#7;{fg.n_n_ligand}", c = 1),
-                **catalytic_cycles['Ullman C-N'](2, "#7;D3", 3)}
-        },
-        'Cu(I)-X with n,o ligand':{
-            'Reagent': [f'[Cu;D1]-[{fg.X}]',f'[{fg.n_o_ligand}]'],
-            'Exclude_reagent': ['[Pd]'],
-            'Stages': {
-                0 : {
-                    'Templates': ["[O;H1:1]-[C:2](=[O:3])-[C:4]-[N:5]>>[O;-1;H0:1]-[C:2](=[O:3])-[C:4]-[N:5]",
-                                  "[O;H1:1]-[c:2]:[c:4]:[n:5]>>[O;H0;-1:1]-[c:2]:[c:4]:[n:5]",
-                                  "[O;H1:1]-[C:2](=[O:3])-[c:4]:[n:5]>>[O;H0;-1:1]-[C:2](=[O:3])-[c:4]:[n:5]"
-                                  ],
-                    'pKa': [{'B' : 3}, {'B' : 3}, {'B' : 3}],
-                    'Description': 'Deprotonate'
-                },
-                **catalyst_preparation['Attach ligands'](1, "Cu", f"{fg.o_n_ligand}", c = 1, lig_2=f"{fg.n_o_ligand}"),
-                **catalytic_cycles['Ullman C-N'](3, "#7;D3", 3)}
-        },
-        'Cu(I)-X with diketone':{
-            'Reagent': [f'[Cu;D1]-[{fg.X}]','[O]=[C]-[C]-[C]=[O]'],
-            'Exclude_reagent': ['[Pd]'],
-            'Stages': {
-                0 : {
-                    'Templates': ["[O:1]=[C:2]-[C;H1:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H0:3]-[C:4]=[O:5]",
-                                  "[O:1]=[C:2]-[C;H2:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H1:3]-[C:4]=[O:5]"
-                                  ],
-                    'pKa': [{'B' : 3},{'B' : 3}],
-                    'Description': 'Deprotonate'
-                },
-                **catalyst_preparation['Attach ligands'](1, "Cu", f"O;-1;$([O]-[C]=[C]-[C]=[O])", c = 1, lig_2=f"O;$([O]=[C]-[C]=[C]-[O]-[Cu])"),
-                **catalytic_cycles['Ullman C-N'](3, "#7;D3", 3)}
-        },
-        'CuI2 ligandless' : {
-            'Reagent': [f'[I]-[Cu;D2]-[I]'],
-            'Exclude_reagent': [f'[{fg.n_n_ligand}]',f'[{fg.n_o_ligand}]','[O]=[C]-[C]-[C]=[O]','[Pd]'],
-            'Stages': {
-                0: {
+        **general_cu_coupling(catalytic_cycles['Ullman C-N'], offset=0, partner="#7;D3", global_reagent=[f'[Cu;D1]-[{fg.X}]']),
+        **general_cu_coupling(lambda o, r, l: {
+            0: {
                 'Templates' : [
-                    "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
+                "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
                 ],
                 'pKa' : [None],
                 'Description' : 'CuI2 Decomposition', 
-                },
-                **catalytic_cycles['Ullman C-N'](1, "#7", 1)
-            }
-        },
-        'CuI2 with ligand' : {
-            'Reagent': [f'[I]-[Cu;D2]-[I]', f'[{fg.n_n_ligand}]'],
-            'Exclude_reagent': ['[Pd]'],
-            'Stages': {
-                0: {
+            },
+            **catalytic_cycles['Ullman C-N'](o, r, l)},
+            offset = 1, partner = "#7;D3", modifier="CuI2", global_reagent = [f'[I]-[Cu;D2]-[I]']
+        ),
+        **general_cu_coupling(lambda o, r, l: {
+            0: {
                 'Templates' : [
-                    "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
+                    '[n;H1:1]:[n;H0:2]>>[n;H0:1]:[n;H1:2]',
+                ],
+                'pKa' : [None],
+                'Description' : 'Tautomerization'
+            },
+            **catalytic_cycles['Ullman C-N'](o, r, l)},
+            offset = 1, partner = "#7;D3", modifier="Tautomerization", global_reagent = [f'[Cu;D1]-[{fg.X}]']),
+        **general_cu_coupling(lambda o, r, l: { 
+            0 : {
+                'Templates' : [
+                "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
                 ],
                 'pKa' : [None],
                 'Description' : 'CuI2 Decomposition', 
-                },
-                **catalyst_preparation['Attach ligands'](1, "Cu", f"#7;{fg.n_n_ligand}", c = 1),
-                **catalytic_cycles['Ullman C-N'](3, "#7;D3", 3)
-            }
-        },
-        'CuI2 with n,o ligand':{
-            'Reagent': [f'[I]-[Cu;D2]-[I]', f'[{fg.n_o_ligand}]'],
-            'Exclude_reagent': ['[Pd]'],
-            'Stages': {
-                0: {
-                    'Templates' : [
-                    "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
-                    ],
-                    'pKa' : [None],
-                    'Description' : 'CuI2 Decomposition', 
-                },
-                1 : {
-                    'Templates': ["[O;H1:1]-[C:2](=[O:3])-[C:4]-[N:5]>>[O;-1;H0:1]-[C:2](=[O:3])-[C:4]-[N:5]",
-                                  "[O;H1:1]-[c:2]:[c:4]:[n:5]>>[O;H0;-1:1]-[c:2]:[c:4]:[n:5]",
-                                  "[O;H1:1]-[C:2](=[O:3])-[c:4]:[n:5]>>[O;H0;-1:1]-[C:2](=[O:3])-[c:4]:[n:5]"
-                                  ],
-                    'pKa': [{'B' : 3}, {'B' : 3}, {'B' : 3}],
-                    'Description': 'Deprotonate'
-                },
-                **catalyst_preparation['Attach ligands'](2, "Cu", f"{fg.o_n_ligand}", c = 1, lig_2=f"{fg.n_o_ligand}"),
-                **catalytic_cycles['Ullman C-N'](4, "#7;D3", 3)}
-        },
-        'CuI2 with diketone':{
-            'Reagent': [f'[I]-[Cu;D2]-[I]','[O]=[C]-[C]-[C]=[O]'],
-            'Exclude_reagent': ['[Pd]'],
-            'Stages': {
-                0: {
-                    'Templates' : [
-                    "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
-                    ],
-                    'pKa' : [None],
-                    'Description' : 'CuI2 Decomposition', 
-                },
-                1 : {
-                    'Templates': ["[O:1]=[C:2]-[C;H1:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H0:3]-[C:4]=[O:5]",
-                                  "[O:1]=[C:2]-[C;H2:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H1:3]-[C:4]=[O:5]"
-                                  ],
-                    'pKa': [{'B' : 3},{'B' : 3}],
-                    'Description': 'Deprotonate'
-                },
-                **catalyst_preparation['Attach ligands'](2, "Cu", f"O;-1;$([O]-[C]=[C]-[C]=[O])", c = 1, lig_2=f"O;$([O]=[C]-[C]=[C]-[O]-[Cu])"),
-                **catalytic_cycles['Ullman C-N'](4, "#7;D3", 3)}
-        },
-
-        # 'Cu2O ligandless' : {
-        #     'Reagent': [f'[Cu;D1]-[O]-[Cu;D1]'],
-        #     'Exclude_reagent': [fg.n_n_ligand],
-        #     'Stages': catalytic_cycles['Ullman'](0, "#7", ";D1")
-        # }
-
+            },
+            1: {
+                'Templates' : [
+                    '[n;H1:1]:[n;H0:2]>>[n;H0:1]:[n;H1:2]',
+                ],
+                'pKa' : [None],
+                'Description' : 'Tautomerization'
+            },
+            **catalytic_cycles['Ullman C-N'](o, r, l)},
+            offset = 2, partner = "#7;D3", modifier="Tautomerization CuI2", global_reagent = [f'[I]-[Cu;D2]-[I]'])
     },
 
     (
         'Ullmann condensation'
     ):
     {
-        'Cu(I)-X ligandless':{
-            'Reagent': [f'[Cu]-[{fg.X}]'],
-            'Exclude_reagent': [f'[{fg.n_n_ligand}]',f'[{fg.n_o_ligand}]','[O]=[C]-[C]-[C]=[O]','[Pd]'],
-            'Stages': {
-                0: {
+        **general_cu_coupling(catalytic_cycles['Ullman C-O'], offset=0, partner="#8", global_reagent=[f'[Cu;D1]-[{fg.X}]']),
+        **general_cu_coupling(lambda o, r, l: {
+            0: {
                 'Templates' : [
-                    "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
+                "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
                 ],
                 'pKa' : [None],
                 'Description' : 'CuI2 Decomposition', 
-                },
-                **catalytic_cycles['Ullman C-O'](1, "#8", 1)
-            }
-        },
-        'Cu(I)-X with ligand':{
-            'Reagent': [f'[Cu]-[{fg.X}]',f'[{fg.n_n_ligand}]'],
-            'Exclude_reagent': ['[Pd]'],
-            'Stages': {
-                0: {
+            },
+            **catalytic_cycles['Ullman C-O'](o, r, l)},
+            offset = 1, partner = "#8", modifier="CuI2", global_reagent = [f'[I]-[Cu;D2]-[I]']
+        ),
+        **general_cu_coupling(lambda o, r, l: {
+            0: {
                 'Templates' : [
-                    "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
+                    '[n;H1:1]:[n;H0:2]>>[n;H0:1]:[n;H1:2]',
+                ],
+                'pKa' : [None],
+                'Description' : 'Tautomerization'
+            },
+            **catalytic_cycles['Ullman C-O'](o, r, l)},
+            offset = 1, partner = "#8", modifier="Tautomerization", global_reagent = [f'[Cu;D1]-[{fg.X}]']),
+        **general_cu_coupling(lambda o, r, l: { 
+            0 : {
+                'Templates' : [
+                "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
                 ],
                 'pKa' : [None],
                 'Description' : 'CuI2 Decomposition', 
-                },
-                **catalyst_preparation['Attach ligands'](1, "Cu", f"#7;{fg.n_n_ligand}", c = 1),
-                **catalytic_cycles['Ullman C-O'](3, "#8", 3)}
-        },
-        'Cu(I)-X with n,o ligand':{
-            'Reagent': [f'[Cu]-[{fg.X}]',f'[{fg.n_o_ligand}]'],
-            'Exclude_reagent': ['[Pd]'],
-            'Stages': {
-                0: {
+            },
+            1: {
                 'Templates' : [
-                    "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
+                    '[n;H1:1]:[n;H0:2]>>[n;H0:1]:[n;H1:2]',
                 ],
                 'pKa' : [None],
-                'Description' : 'CuI2 Decomposition', 
-                },
-                1 : {
-                    'Templates': ["[O;H1:1]-[C:2](=[O:3])-[C:4]-[N:5]>>[O;-1;H0:1]-[C:2](=[O:3])-[C:4]-[N:5]",
-                                  "[O;H1:1]-[c:2]:[c:4]:[n:5]>>[O;H0;-1:1]-[c:2]:[c:4]:[n:5]",
-                                  "[O;H1:1]-[C:2](=[O:3])-[c:4]:[n:5]>>[O;H0;-1:1]-[C:2](=[O:3])-[c:4]:[n:5]"
-                                  ],
-                    'pKa': [{'B' : 3}, {'B' : 3}, {'B' : 3}],
-                    'Description': 'Deprotonate'
-                },
-                **catalyst_preparation['Attach ligands'](2, "Cu", f"{fg.o_n_ligand}", c = 1, lig_2=f"{fg.n_o_ligand}"),
-                **catalytic_cycles['Ullman C-O'](4, "#8", 3)}
-        },
-        'Cu(I)-X with diketone':{
-            'Reagent': [f'[Cu]-[{fg.X}]','[O]=[C]-[C]-[C]=[O]'],
-            'Exclude_reagent': ['[Pd]'],
-            'Stages': {
-                0: {
-                'Templates' : [
-                    "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
-                ],
-                'pKa' : [None],
-                'Description' : 'CuI2 Decomposition', 
-                },
-                1 : {
-                    'Templates': ["[O:1]=[C:2]-[C;H1:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H0:3]-[C:4]=[O:5]",
-                                  "[O:1]=[C:2]-[C;H2:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H1:3]-[C:4]=[O:5]"
-                                  ],
-                    'pKa': [{'B' : 3},{'B' : 3}],
-                    'Description': 'Deprotonate'
-                },
-                **catalyst_preparation['Attach ligands'](2, "Cu", f"O;-1;$([O]-[C]=[C]-[C]=[O])", c = 1, lig_2=f"O;$([O]=[C]-[C]=[C]-[O]-[Cu])"),
-                **catalytic_cycles['Ullman C-O'](4, "#8", 3)}
-        },
+                'Description' : 'Tautomerization'
+            },
+            **catalytic_cycles['Ullman C-O'](o, r, l)},
+            offset = 2, partner = "#8", modifier="Tautomerization CuI2", global_reagent = [f'[I]-[Cu;D2]-[I]']),
+        # 'Cu(I)-X ligandless':{
+        #     'Reagent': [f'[Cu]-[{fg.X}]'],
+        #     'Exclude_reagent': [f'[{fg.n_n_ligand}]',f'[{fg.n_o_ligand}]','[O]=[C]-[C]-[C]=[O]','[Pd]'],
+        #     'Stages': {
+        #         0: {
+        #         'Templates' : [
+        #             "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
+        #         ],
+        #         'pKa' : [None],
+        #         'Description' : 'CuI2 Decomposition', 
+        #         },
+        #         **catalytic_cycles['Ullman C-O'](1, "#8", 1)
+        #     }
+        # },
+        # 'Cu(I)-X with ligand':{
+        #     'Reagent': [f'[Cu]-[{fg.X}]',f'[{fg.n_n_ligand}]'],
+        #     'Exclude_reagent': ['[Pd]'],
+        #     'Stages': {
+        #         0: {
+        #         'Templates' : [
+        #             "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
+        #         ],
+        #         'pKa' : [None],
+        #         'Description' : 'CuI2 Decomposition', 
+        #         },
+        #         **catalyst_preparation['Attach ligands'](1, "Cu", f"#7;{fg.n_n_ligand}", c = 1),
+        #         **catalytic_cycles['Ullman C-O'](3, "#8", 3)}
+        # },
+        # 'Cu(I)-X with n,o ligand':{
+        #     'Reagent': [f'[Cu]-[{fg.X}]',f'[{fg.n_o_ligand}]'],
+        #     'Exclude_reagent': ['[Pd]'],
+        #     'Stages': {
+        #         0: {
+        #         'Templates' : [
+        #             "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
+        #         ],
+        #         'pKa' : [None],
+        #         'Description' : 'CuI2 Decomposition', 
+        #         },
+        #         1 : {
+        #             'Templates': ["[O;H1:1]-[C:2](=[O:3])-[C:4]-[N:5]>>[O;-1;H0:1]-[C:2](=[O:3])-[C:4]-[N:5]",
+        #                           "[O;H1:1]-[c:2]:[c:4]:[n:5]>>[O;H0;-1:1]-[c:2]:[c:4]:[n:5]",
+        #                           "[O;H1:1]-[C:2](=[O:3])-[c:4]:[n:5]>>[O;H0;-1:1]-[C:2](=[O:3])-[c:4]:[n:5]"
+        #                           ],
+        #             'pKa': [{'B' : 3}, {'B' : 3}, {'B' : 3}],
+        #             'Description': 'Deprotonate'
+        #         },
+        #         **catalyst_preparation['Attach ligands'](2, "Cu", f"{fg.o_n_ligand}", c = 1, lig_2=f"{fg.n_o_ligand}"),
+        #         **catalytic_cycles['Ullman C-O'](4, "#8", 3)}
+        # },
+        # 'Cu(I)-X with diketone':{
+        #     'Reagent': [f'[Cu]-[{fg.X}]','[O]=[C]-[C]-[C]=[O]'],
+        #     'Exclude_reagent': ['[Pd]'],
+        #     'Stages': {
+        #         0: {
+        #         'Templates' : [
+        #             "[I:1]-[Cu;D2:2]-[I:3].[I:4]-[Cu;D2:5]-[I:6]>>[Cu;D1:2]-[I:3].[Cu;D1:5]-[I:4].[I:1]-[I:6]"
+        #         ],
+        #         'pKa' : [None],
+        #         'Description' : 'CuI2 Decomposition', 
+        #         },
+        #         1 : {
+        #             'Templates': ["[O:1]=[C:2]-[C;H1:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H0:3]-[C:4]=[O:5]",
+        #                           "[O:1]=[C:2]-[C;H2:3]-[C:4]=[O:5]>>[O;-1:1]-[C:2]=[C;H1:3]-[C:4]=[O:5]"
+        #                           ],
+        #             'pKa': [{'B' : 3},{'B' : 3}],
+        #             'Description': 'Deprotonate'
+        #         },
+        #         **catalyst_preparation['Attach ligands'](2, "Cu", f"O;-1;$([O]-[C]=[C]-[C]=[O])", c = 1, lig_2=f"O;$([O]=[C]-[C]=[C]-[O]-[Cu])"),
+        #         **catalytic_cycles['Ullman C-O'](4, "#8", 3)}
+        # },
     },
 
     ('Alkyne to alkane hydrogenation', 

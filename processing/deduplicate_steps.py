@@ -28,6 +28,7 @@ def setup_logger(name, log_dir):
             logging.FileHandler(log_file),
             logging.StreamHandler()
         ]
+        
     )
     logging.info(f"Logging to {log_file}")
 
@@ -60,7 +61,7 @@ def fullSanitize (smi):
                 Z = atom.GetAtomicNum()
                 valence = sum(bond.GetBondTypeAsDouble() for bond in atom.GetBonds())
                 max_val = max_allowed_valences.get(Z, None)
-                if max_val is not None and valence > max_val or atom.GetFormalCharge() < 0:
+                if max_val is not None and valence > (max_val + atom.GetFormalCharge()) or atom.GetFormalCharge() < 0:
                     for bond in atom.GetBonds():
                         neighbor = bond.GetOtherAtom(atom)
                         if neighbor.GetAtomicNum() in metals:
@@ -76,6 +77,20 @@ def fullSanitize (smi):
                             end_idx = atom.GetIdx()
                             mol.RemoveBond(begin_idx, end_idx)
                             mol.AddBond(begin_idx, end_idx, rdchem.BondType.DATIVE)
+                elif atom.GetAtomicNum() == 46:
+                    for bond in atom.GetBonds():
+                        neighbor = bond.GetOtherAtom(atom)
+                        if neighbor.GetAtomicNum() == 15:
+                            begin_idx = neighbor.GetIdx()
+                            end_idx = atom.GetIdx()
+                            mol.RemoveBond(begin_idx, end_idx)
+                            mol.AddBond(begin_idx, end_idx, rdchem.BondType.DATIVE)
+                        elif neighbor.GetAtomicNum() == 8 and neighbor.GetFormalCharge() == 1 and any(nb.GetAtomicNum() == 5 for nb in neighbor.GetNeighbors()):
+                            begin_idx = neighbor.GetIdx()
+                            end_idx = atom.GetIdx()
+                            mol.RemoveBond(begin_idx, end_idx)
+                            mol.AddBond(begin_idx, end_idx, Chem.rdchem.BondType.SINGLE)
+
             quit = False
             while not quit:
                 try:
@@ -157,7 +172,9 @@ settings.sanitize = False
 
 def canonicalize_reaction_smiles(rxn_smiles):
     # Split reaction into reactants, agents, products
-    parts = rxn_smiles.split(">")
+    #parts = rxn_smiles.split(">")
+    parts = rxn_smiles.split(">>")
+    #print(parts)
     if len(parts) == 2:
         reactants, products = parts[0], parts[1]
         agents = ""
@@ -224,7 +241,7 @@ def process_line(line):
 def main(args):
     setup_logger("reaction_deduplication", args.log_dir)
     data_dir = Path(args.data_dir)
-    file_path = data_dir / "templated.txt"
+    file_path = data_dir / "cu_train1.txt"
     # Change output_file to a .txt extension by default or allow user to specify
     output_file = Path(args.output_file)
     if output_file.suffix != '.txt':

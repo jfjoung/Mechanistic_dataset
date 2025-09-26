@@ -39,10 +39,13 @@ def find_matched_reactions(mols, rxns):
                 if mol.GetSubstructMatch(reactant):
                     used_mols.add(mol)
                     found_reactants.append(mol)
-                    #print(f"Mol: {Chem.MolToSmiles(mol)}   Pat: {Chem.MolToSmiles(reactant)}")
+                    # print(f"Mol: {Chem.MolToSmiles(mol)}   Pat: {Chem.MolToSmiles(reactant)}")
         
+        # print(found_reactants)
+        # print(reactants)
         if len(found_reactants) == len(reactants):
             matched_reactions[reaction] = found_reactants
+            #print(matched_reactions)
 
     return matched_reactions
 
@@ -90,8 +93,8 @@ def preprocess(input, output, rxns):
                 o.write(line + "\n")
 
 if __name__ == '__main__':
-    input_file = 'data/p_kumada.txt'
-    #input_file = 'preprocess_test.txt'
+    #input_file = '../dataset_balancing/h_m_s.txt'
+    input_file = '../data/cu_new.txt'
     base, ext = os.path.splitext(input_file)
     output_file = base + '_processed' + ext
     # reactants = preprocess(input_file)

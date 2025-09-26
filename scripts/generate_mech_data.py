@@ -82,8 +82,8 @@ def reagent_matching_for_single_reaction(reaction, class_key):
                     for mol in mols:
                         mol.UpdatePropertyCache(strict=False)
                         if mol.GetSubstructMatch(patt):
-                            # print('Matched Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
-                            # print("Excluding")
+                            #print('Matched Mol :', Chem.MolToSmiles(mol), 'Pat :', Chem.MolToSmarts(patt))
+                            #print("Excluding")
                             exclude = True
                             break
                     if exclude: break

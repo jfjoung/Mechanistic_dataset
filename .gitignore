@@ -39,6 +39,7 @@ Thumbs.db
 # data files #
 ######################
 data/
+dataset_balancing/
 finalized_data/
 outputs/
 results/
@@ -72,3 +73,5 @@ labeling.ipynb
 check_sequences.ipynb
 example.ipynb
 deduplicate.sh
+
+!dataset_balancing/diversity_sampling.py
