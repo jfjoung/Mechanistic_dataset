@@ -162,9 +162,11 @@ def fullSanitize (smi):
             return Chem.MolToSmiles(mol, isomericSmiles=False, canonical=True)
 
         except Exception as e:
-            print(f"Error sanitizing SMILES {smi}: {e}")
+            pass
+            #print(f"Error sanitizing SMILES {smi}: {e}")
     except Exception as e:
-        print(f"Error processing SMILES {smi}: {e}")
+        pass
+        #print(f"Error processing SMILES {smi}: {e}")
 
 settings = Chem.SmilesParserParams()
 settings.removeHs = False
@@ -211,7 +213,7 @@ def canonicalize_reaction_smiles(rxn_smiles):
 
     # Rebuild canonical reaction SMILES
     if can_agents:
-        return f"{can_reactants}>{can_agents}>{can_products}"
+        return f"{can_reactants}.{can_agents}>>{can_products}"
     else:
         return f"{can_reactants}>>{can_products}"
     
@@ -222,14 +224,15 @@ def process_line(line):
     line = line.strip()
     if not line:
         return None
+    #parts = line.split(' ') 
     parts = line.split('|')
     if len(parts) < 2:
         return None
     SMILES = parts[0]
-    # rxn_class = parts[1]
-    # template_name = parts[2]
-    # step = parts[3]
-    # num = parts[4]
+    rxn_class = parts[1]
+    template_name = parts[2]
+    step = parts[3]
+    num = parts[4]
     num = parts[-1]
     can_smiles = canonicalize_reaction_smiles(SMILES)
     if can_smiles is None:
@@ -241,7 +244,7 @@ def process_line(line):
 def main(args):
     setup_logger("reaction_deduplication", args.log_dir)
     data_dir = Path(args.data_dir)
-    file_path = data_dir / "cu_train1.txt"
+    file_path = data_dir / "templated.txt"
     # Change output_file to a .txt extension by default or allow user to specify
     output_file = Path(args.output_file)
     if output_file.suffix != '.txt':

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Load the file with newline as delimiter
-file_path = '../data/cu_new_processed.txt'
+file_path = '../data/o_allyl/o_allyl_processed.txt'
 with open(file_path, 'r') as file:
     data = file.read().split('\n')
 
@@ -17,8 +17,11 @@ np.random.seed(random_seed)
 shuffled_data = data.sample(frac=1, random_state=random_seed).reset_index(drop=True)
 
 # Calculate the split indices
-train_end = int(0.89 * len(shuffled_data))
-valid_end = int(0.9 * len(shuffled_data))
+#train_end = int(0.89 * len(shuffled_data))
+#valid_end = int(0.9 * len(shuffled_data))
+
+train_end = 32
+valid_end = 64
 
 # Split the data
 train_data = shuffled_data[:train_end]
@@ -32,9 +35,9 @@ def save_to_textfile(dataframe, filename):
             f.write(f"{text}\n")
 
 # Save the datasets into separate text files
-save_to_textfile(train_data, 'cu_train.txt')
-save_to_textfile(valid_data, 'cu_valid.txt')
-save_to_textfile(test_data, 'cu_test.txt')
+save_to_textfile(train_data, 'o_allyl_train.txt')
+save_to_textfile(valid_data, 'o_allyl_valid.txt')
+save_to_textfile(test_data, 'o_allyl_test.txt')
 
 # Display the first few rows of each dataset
 print("Train Data:")

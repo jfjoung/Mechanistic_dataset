@@ -5,16 +5,8 @@ import re
 
 # Parameters
 input_file = "../outputs/p_labeled.parquet"             # Path to input parquet file
-output_file = "../data/cu_new.txt"      # Output .txt file
-allowed_values = {'Bromo Goldberg reaction',
- 'Chan-Lam alkylamine coupling',
- 'Chan-Lam arylamine coupling',
- 'Chloro Goldberg reaction',
- 'Fluoro Goldberg reaction',
- 'Goldberg reaction',
- 'Iodo Goldberg reaction',
- 'Rosenmund von Braun cyanation',
- 'Ullmann condensation'} 
+output_file = "../data/o_allyl.txt"      # Output .txt file
+allowed_values = {'O-allyl deprotection'} 
 
 parquet_file = pq.ParquetFile(input_file)
 

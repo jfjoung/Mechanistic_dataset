@@ -21,7 +21,7 @@ class Args:
         #self.data = 'data/p_heck_mod.txt'
         #self.data = 'data/reactions/p_suzuki_sample.txt'
         #self.data = 'test_runs/cu/untemplated.txt'  # Path to the file containing overall reactions.
-        self.data = 'data/pd1_valid.txt'  # Path to the file containing overall reactions.
+        self.data = 'data/o_allyl/o_allyl_processed.txt'  # Path to the file containing overall reactions.
         #self.data = 'data/test_data.txt'
         self.save = 'results/templated.txt'  # Path to the file where results will be saved.
         self.not_templated = 'results/untemplated.txt' # Path to untemplated reactions

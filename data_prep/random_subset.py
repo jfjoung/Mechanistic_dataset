@@ -1,7 +1,7 @@
 import random
 
-input_file = "old_2/cu_test.txt"
-output_file = "cu_test_sub.txt"
+input_file = "../finalized_data/test_d.txt"
+output_file = "../finalized_data/test_d_sub.txt"
 sample_fraction = 0.05  # 5%
 random_seed = 42  # change this for different reproducible results
 
