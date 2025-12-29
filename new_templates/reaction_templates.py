@@ -858,36 +858,36 @@ catalytic_cycles = {
                 'pKa': [{'B': -6}],
                 'Description': 'Reductive elimination',
             },
-            offset + 4: {
-                'Templates': [ 
-                    steps["Oxidative addition"]("Pd", l=l)
-                ],
-                'pKa': [None],
-                'Description': 'Oxidative addition',
-            },
-            offset + 5: {
-                'Templates': [
-                    steps["Migratory insertion"]['Normal']("Pd", "#6", "#6", "#6", b_type = "#"),
-                    steps["Migratory insertion"]['Normal']("Pd", "#6", "#6", "#6", b_type = "="),
-                ],
-                'pKa': [None, None],
-                'Description': 'Migratory insertion',
-            },
-            offset + 6: {
-                'Templates': [
-                    steps["Beta-hydride elimination"]("Pd", "#6", "#6;H2"),
-                    steps["Beta-hydride elimination"]("Pd", "#6", "#6;H1")
-                ],
-                'pKa': [None, None],
-                'Description': 'Beta-hydride elimination',
-            },
-            offset + 7: {
-                'Templates': [
-                    steps["Reductive elimination"]["Hydride - BA"]("Pd", fg.X)
-                ],
-                'pKa': [{'B': -6}],
-                'Description': 'Reductive elimination',
-            },
+            # offset + 4: {
+            #     'Templates': [ 
+            #         steps["Oxidative addition"]("Pd", l=l)
+            #     ],
+            #     'pKa': [None],
+            #     'Description': 'Oxidative addition',
+            # },
+            # offset + 5: {
+            #     'Templates': [
+            #         steps["Migratory insertion"]['Normal']("Pd", "#6", "#6", "#6", b_type = "#"),
+            #         steps["Migratory insertion"]['Normal']("Pd", "#6", "#6", "#6", b_type = "="),
+            #     ],
+            #     'pKa': [None, None],
+            #     'Description': 'Migratory insertion',
+            # },
+            # offset + 6: {
+            #     'Templates': [
+            #         steps["Beta-hydride elimination"]("Pd", "#6", "#6;H2"),
+            #         steps["Beta-hydride elimination"]("Pd", "#6", "#6;H1")
+            #     ],
+            #     'pKa': [None, None],
+            #     'Description': 'Beta-hydride elimination',
+            # },
+            # offset + 7: {
+            #     'Templates': [
+            #         steps["Reductive elimination"]["Hydride - BA"]("Pd", fg.X)
+            #     ],
+            #     'pKa': [{'B': -6}],
+            #     'Description': 'Reductive elimination',
+            # },
         },
     "Ullman C-N" : lambda offset, R , l = 3:
         {
@@ -1510,7 +1510,177 @@ catalytic_cycles = {
             'pKa' : [None],
             'Description' : 'Beta-carbon elimination'
         }
-    }
+    },
+
+    'Decarboxylative coupling' : lambda offset, l = ";D2" : {
+        **core_cat_cycle([offset, None , offset + 4], "Pd", "#14;-1", f"[{fg.X}:5]", "[#6:6]", "#6", "#6", l1=l),
+        offset + 1 : {
+            'Templates' : [f'[{fg.COO};H1:1]>>[{fg.COO};-1;H0:1]'],
+            'pKa' : [{'B' : 3}],
+            'Description' : 'Deprotonation'
+        },
+        offset + 2 : {
+            'Templates' : [f'[Pd:1]-[{fg.X}:2].[{fg.COO};H0;-1:3]>>[Pd:1]-[{fg.COO};H0;+0:3].[{fg.X};-1:2]',
+                           f'[Pd:1]-[{fg.X}:2].[{fg.COO};H0:3]-[{fg.AM}:4]>>[Pd:1]-[{fg.COO};H0;+0:3].[{fg.X};-1:2].[{fg.AM};+1:4]'],
+            'pKa' : [None, None],
+            'Description' : 'Halide exhange'
+        },
+        offset + 3 : {
+            'Templates' : [steps["Pd decarboxylation"]],
+            'pKa' : [None],
+            'Description' : 'Decarboxylation'
+        }
+    },
+
+    'Hirao' : lambda offset, l = ";D2" : {
+        **core_cat_cycle([offset, None , offset + 4], "Pd", "#14;-1", f"[{fg.X}:5]", "[#6:6]", "#6", "P", l1=l),
+        offset + 1 : {
+            'Templates' : [f'[P;H1:1]=[O:2]>>[P;H0:1]-[O;H1:2]'],
+            'pKa' : [None],
+            'Description' : 'P-H isomerization'
+        },
+        offset + 2 : {
+            'Templates' : [f'[Pd:1]-[{fg.X}:2].[P;$([P](-[O])(-[O])(-[O])):3]>>[Pd:1]-[P;H0;+1:3].[{fg.X};-1:2]'],
+            'pKa' : [None],
+            'Description' : 'Halide exhange'
+        },
+        offset + 3 : {
+            'Templates' : ['[Pd:1]-[P;+1:2]-[O;H1:3]>>[Pd:1]-[P;+0:2]=[O;H0:3]'],
+            'pKa' : [{'B' : -1}],
+            'Description' : 'Deprotonation'
+        }
+    },
+
+    'Barluenga' : lambda offset, l = ";D1" : {
+        **core_cat_cycle([offset, None , None], "Pd", "#14;-1", f"[{fg.X}:5]", "[#6:6]", "#6", "#6", l1=l),
+        offset + 1 : {
+            'Templates' : [f'[N$([N]-[S](=[O])(=[O]));H1:1]>>[N;H0;-1:1]'],
+            'pKa' : [{'B' : 5}],
+            'Description' : 'NNHTs Deprotonation'
+        },
+        offset + 2 : {
+            'Templates' : [f'[N:4]-[N;-1:1]-[S:2]=[O:3]>>[N;+1:4]=[N;-1:1].[S:2]-[O;-1:3]'],
+            'pKa' : [None],
+            'Description' : 'Ts- leaving'
+        },
+        offset + 3 : {
+            'Templates' : [f'[C:1]=[N;+1:2]=[N;-1:3].[Pd;D3,D4:4]>>[N;+0:2]#[N;+0:3].[Pd:4]=[C:1]'],
+            'pKa' : [None],
+            'Description' : 'Pd-carbene formation'
+        },
+        offset + 4 : {
+            'Templates' : ['[#6:2]-[Pd:4]=[C:1]>>[Pd:4]-[C:1]-[#6:2]'],
+            'pKa' : [None],
+            'Description' : '1,1-migratory insertion'
+        },
+        offset + 5: {
+                'Templates': [
+                    steps["Beta-hydride elimination"]("Pd", "#6", "#6;H2"),
+                    steps["Beta-hydride elimination"]("Pd", "#6", "#6;H1")
+                ],
+                'pKa': [None, None],
+                'Description': 'Beta-hydride elimination',
+        },
+        offset + 6: {
+            'Templates': [
+                steps["Reductive elimination"]["Hydride - BA"]("Pd", fg.X)
+            ],
+            'pKa': [{'B': -6}],
+            'Description': 'Reductive elimination',
+        },
+    },
+    
+    'Hydroxy or amino Tsuji-Trost' : lambda offset, l = ";D2" : {
+        offset : {
+            'Templates' : [f'[Pd{l}:1].[Br,I,O$([O]-[C]=[O]):2]-[C:3]-[C:4]=[C:5]>>[Br,I,O;-1:2].[Pd;+1:1]-[C:3]-[C:4]=[C:5]'],
+            'pKa' : [None],
+            'Description' : 'Oxidative addition'
+        },
+        # offset + 1 : {
+        #     'Templates' : [f'[Pd;+1:1]-[C:3]-[C:4]=[C:5]>>[Pd;+1:1]-[C:5]-[C:4]=[C:3]'],
+        #     'pKa' : [None],
+        #     'Description' : 'Pd-allyl resonance'
+        # },
+        offset + 1: {
+            'Templates' : ['[N,O:1]-[H:2].[Pd;+1:4]-[C:5]-[C:6]=[C:7]>>[H:2]-[N,O;+1:1]-[C:7]-[C:6]=[C:5].[Pd;+0:4]'],
+            'pKa' : [None],
+            'Description' : 'Amine attack'
+        },
+        offset + 2: {
+            'Templates' : ['[N;H3;+1:1]>>[N;H2;+0:1]',
+                            '[N;H2;+1:1]>>[N;H1;+0:1]',
+                            '[N;H1;+1:1]>>[N;H0;+0:1]',
+                            '[O;H1;+1:1]>>[O;H0;+0:1]'],
+            'pKa' : [{'B': -1},{'B': -1},{'B': -1},{'B': -1}],
+            'Description' : 'Deprotonation'
+        }
+    },
+    'Hydroxy or amino Tsuji-Trost - resonance' : lambda offset, l = ";D2" : {
+        offset : {
+            'Templates' : [f'[Pd{l}:1].[Br,I,O$([O]-[C]=[O]):2]-[C:3]-[C:4]=[C:5]>>[Br,I,O;-1:2].[Pd;+1:1]-[C:3]-[C:4]=[C:5]'],
+            'pKa' : [None],
+            'Description' : 'Oxidative addition'
+        },
+        offset + 1 : {
+            'Templates' : [f'[Pd;+1:1]-[C:3]-[C:4]=[C:5]>>[Pd;+1:1]-[C:5]-[C:4]=[C:3]'],
+            'pKa' : [None],
+            'Description' : 'Pd-allyl resonance'
+        },
+        offset + 2: {
+            'Templates' : ['[N,O:1]-[H:2].[Pd;+1:4]-[C:5]-[C:6]=[C:7]>>[H:2]-[N,O;+1:1]-[C:7]-[C:6]=[C:5].[Pd;+0:4]'],
+            'pKa' : [None],
+            'Description' : 'Amine attack'
+        },
+        offset + 3: {
+            'Templates' : ['[N;H3;+1:1]>>[N;H2;+0:1]',
+                            '[N;H2;+1:1]>>[N;H1;+0:1]',
+                            '[N;H1;+1:1]>>[N;H0;+0:1]',
+                            '[O;H1;+1:1]>>[O;H0;+0:1]'],
+            'pKa' : [{'B': -1},{'B': -1},{'B': -1},{'B': -1}],
+            'Description' : 'Deprotonation'
+        }
+    },
+    'Carbon Tsuji-Trost - resonance' : lambda offset, l = ";D2" : {
+        offset : {
+            'Templates' : [f'[Pd{l}:1].[Br,I,O$([O]-[C]=[O]):2]-[C:3]-[C:4]=[C:5]>>[Br,I,O;-1:2].[Pd;+1:1]-[C:3]-[C:4]=[C:5]'],
+            'pKa' : [None],
+            'Description' : 'Oxidative addition'
+        },
+        offset + 1 : {
+            'Templates' : [f'[Pd;+1:1]-[C:3]-[C:4]=[C:5]>>[Pd;+1:1]-[C:5]-[C:4]=[C:3]'],
+            'pKa' : [None],
+            'Description' : 'Pd-allyl resonance'
+        },
+        offset + 2: {
+            'Templates' : [f'[{fg.acidic_CH};H2:2]>>[{fg.acidic_CH};H1;-1:2]',
+                           f'[{fg.acidic_CH};H1:2]>>[{fg.acidic_CH};H0;-1:2]'],
+            'pKa' : [{'B':1},{'B':1}],
+            'Description' : 'Deprotonation of carbon nucleophile'
+        },
+        offset + 3: {
+            'Templates' : ['[C;-1:1].[Pd;+1:4]-[C:5]-[C:6]=[C:7]>>[C;+0:1]-[C:7]-[C:6]=[C:5].[Pd;+0:4]'],
+            'pKa' : [None],
+            'Description' : 'Carbon attack'
+        },
+    },
+    'Carbon Tsuji-Trost' : lambda offset, l = ";D2" : {
+        offset : {
+            'Templates' : [f'[Pd{l}:1].[Br,I,O$([O]-[C]=[O]):2]-[C:3]-[C:4]=[C:5]>>[Br,I,O;-1:2].[Pd;+1:1]-[C:3]-[C:4]=[C:5]'],
+            'pKa' : [None],
+            'Description' : 'Oxidative addition'
+        },
+        offset + 1: {
+            'Templates' : [f'[{fg.acidic_CH};H2:2]>>[{fg.acidic_CH};H1;-1:2]',
+                           f'[{fg.acidic_CH};H1:2]>>[{fg.acidic_CH};H0;-1:2]'],
+            'pKa' : [{'B':1},{'B':1}],
+            'Description' : 'Deprotonation of carbon nucleophile'
+        },
+        offset + 2: {
+            'Templates' : ['[C;-1:1].[Pd;+1:4]-[C:5]-[C:6]=[C:7]>>[C;+0:1]-[C:7]-[C:6]=[C:5].[Pd;+0:4]'],
+            'pKa' : [None],
+            'Description' : 'Carbon attack'
+        },
+    },
 
 }
 
@@ -2192,54 +2362,54 @@ class_reaction_templates = {
         **general_pd_coupling(catalytic_cycles['Miyaura borylation'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]'])
     },
 
-    # ('Simmons-Smith-Furukawa reaction') : {
-    #     'Furukawa' : {
-    #         'Reagent': ['[C;H3]-[C;H2]-[Zn;D2;+0]-[C;H2]-[C;H3]',f'[C;H2](-[I,Cl])-[I]'],
-    #         'Exclude_reagent' : ['[C;$([C](-[F])(-[F])-[F])]-[C](=[O])-[O;H1]'],
-    #         'Stages': {
-    #             0 : {
-    #                 'Templates': ['[Zn;D2;+0:1]-[#6:2].[C;H2:3](-[I,Cl:5])-[I:4]>>[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:5].[#6:2]-[I:4]'
-    #                 ],
-    #             'pKa': [None],
-    #             'Description': 'Zinc-halogen exchange',
-    #             },
-    #             1 : {
-    #                 'Templates': ['[#6:2]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:4].[#6:5]=[#6:6]>>[I,Cl:4]-[Zn:1]-[#6:2].[#6:5]1-[#6:6]-[C;H2:3]-1',
-    #                             '[#6:2]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:4].[#6:5]:[#6:6]>>[I,Cl:4]-[Zn:1]-[#6:2].[#6:5]1-[#6:6]-[C;H2:3]-1'
-    #                 ],
-    #             'pKa': [None],
-    #             'Description': 'Cyclopropanation',
-    #             },
-    #         }
+    ('Simmons-Smith-Furukawa reaction') : {
+        'Furukawa' : {
+            'Reagent': ['[C;H3]-[C;H2]-[Zn;D2;+0]-[C;H2]-[C;H3]',f'[C;H2](-[I,Cl])-[I]'],
+            'Exclude_reagent' : ['[C;$([C](-[F])(-[F])-[F])]-[C](=[O])-[O;H1]'],
+            'Stages': {
+                0 : {
+                    'Templates': ['[Zn;D2;+0:1]-[#6:2].[C;H2:3](-[I,Cl:5])-[I:4]>>[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:5].[#6:2]-[I:4]'
+                    ],
+                'pKa': [None],
+                'Description': 'Zinc-halogen exchange',
+                },
+                1 : {
+                    'Templates': ['[#6:2]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:4].[#6:5]=[#6:6]>>[I,Cl:4]-[Zn:1]-[#6:2].[#6:5]1-[#6:6]-[C;H2:3]-1',
+                                '[#6:2]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:4].[#6:5]:[#6:6]>>[I,Cl:4]-[Zn:1]-[#6:2].[#6:5]1-[#6:6]-[C;H2:3]-1'
+                    ],
+                'pKa': [None],
+                'Description': 'Cyclopropanation',
+                },
+            }
 
-    #     },
-    #     'Shi' : {
-    #         'Reagent': ['[C;H3]-[C;H2]-[Zn;D2;+0]-[C;H2]-[C;H3]',f'[C;H2](-[I,Cl])-[I]','[C;$([C](-[F])(-[F])-[F])]-[C](=[O])-[O;H1]'],
-    #         'Exclude_reagent' : None,
-    #         'Stages': {
-    #             0 : {
-    #                 'Templates': ['[Zn;D2;+0:1]-[#6;H2:2].[C;$([C](-[F])(-[F])-[F]):6]-[C:5](=[O:4])-[O;H1:3]>>[#6;H3:2].[C;$([C](-[F])(-[F])-[F]):6]-[C:5](=[O:4])-[O;H0:3]-[Zn;D2;+0:1]'
-    #                 ],
-    #             'pKa': [None],
-    #             'Description': 'TFA for ethyl',
-    #             },
-    #             1 : {
-    #                 'Templates': ['[O:6]-[Zn;D2;+0:1]-[#6:2].[C;H2:3](-[I,Cl:5])-[I:4]>>[O:6]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:5].[#6:2]-[I:4]'
-    #                 ],
-    #             'pKa': [None],
-    #             'Description': 'Zinc-halogen exchange',
-    #             },
-    #             2 : {
-    #                 'Templates': ['[O:2]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:4].[#6:5]=[#6:6]>>[I,Cl:4]-[Zn:1]-[O:2].[#6:5]1-[#6:6]-[C;H2:3]-1',
-    #                               '[O:2]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:4].[#6:5]:[#6:6]>>[I,Cl:4]-[Zn:1]-[O:2].[#6:5]1-[#6:6]-[C;H2:3]-1'
-    #                 ],
-    #             'pKa': [None],
-    #             'Description': 'Cyclopropanation',
-    #             },
-    #         },
+        },
+        'Shi' : {
+            'Reagent': ['[C;H3]-[C;H2]-[Zn;D2;+0]-[C;H2]-[C;H3]',f'[C;H2](-[I,Cl])-[I]','[C;$([C](-[F])(-[F])-[F])]-[C](=[O])-[O;H1]'],
+            'Exclude_reagent' : None,
+            'Stages': {
+                0 : {
+                    'Templates': ['[Zn;D2;+0:1]-[#6;H2:2].[C;$([C](-[F])(-[F])-[F]):6]-[C:5](=[O:4])-[O;H1:3]>>[#6;H3:2].[C;$([C](-[F])(-[F])-[F]):6]-[C:5](=[O:4])-[O;H0:3]-[Zn;D2;+0:1]'
+                    ],
+                'pKa': [None],
+                'Description': 'TFA for ethyl',
+                },
+                1 : {
+                    'Templates': ['[O:6]-[Zn;D2;+0:1]-[#6:2].[C;H2:3](-[I,Cl:5])-[I:4]>>[O:6]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:5].[#6:2]-[I:4]'
+                    ],
+                'pKa': [None],
+                'Description': 'Zinc-halogen exchange',
+                },
+                2 : {
+                    'Templates': ['[O:2]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:4].[#6:5]=[#6:6]>>[I,Cl:4]-[Zn:1]-[O:2].[#6:5]1-[#6:6]-[C;H2:3]-1',
+                                  '[O:2]-[Zn;D2;+0:1]-[C;H2:3]-[I,Cl:4].[#6:5]:[#6:6]>>[I,Cl:4]-[Zn:1]-[O:2].[#6:5]1-[#6:6]-[C;H2:3]-1'
+                    ],
+                'pKa': [None],
+                'Description': 'Cyclopropanation',
+                },
+            },
             
-    #     }
-    # },
+        }
+    },
 
     ('Nitro to amino') : {
         'Pd and H2' : {
@@ -2389,11 +2559,27 @@ class_reaction_templates = {
         **general_pd_coupling(catalytic_cycles['Hiyama with copper'], offset=0, global_reagent=['[Cu]', '[F]'], global_exclude=[fg.nhc, '[Fe;D0]'], modifier="copper"),
         **general_pd_coupling(catalytic_cycles['Hiyama base activation with Cu'], offset=0, global_reagent=['[Cu]'], global_exclude=[fg.nhc, '[Fe;D0]', '[F]'], modifier="copper and base"),
         **general_pd_coupling(catalytic_cycles['Hiyama base activation'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]', '[F]', '[Cu]'], modifier="base"),
-         **general_pd_coupling(catalytic_cycles['Hiyama with copper, electron rich Si'], offset=0, global_reagent=['[Cu]'], global_exclude=[fg.nhc, '[Fe;D0]', '[F]'], modifier="electron rich silane"),
+        **general_pd_coupling(catalytic_cycles['Hiyama with copper, electron rich Si'], offset=0, global_reagent=['[Cu]'], global_exclude=[fg.nhc, '[Fe;D0]', '[F]'], modifier="electron rich silane"),
     },
 
     ('Keto alpha-arylation') : {
         **general_pd_coupling(catalytic_cycles['Alpha arylation'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]'])
+    },
+    ('Decarboxylative coupling') : {
+        **general_pd_coupling(catalytic_cycles['Decarboxylative coupling'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]'])
+    },
+    ('Hirao coupling') : {
+        **general_pd_coupling(catalytic_cycles['Hirao'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]'])
+    },
+    ('Barluenga cross-coupling') : {
+        **general_pd_coupling(catalytic_cycles['Barluenga'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]'])
+    },
+    ('Hydroxy Tsuji-Trost reaction','Amino Tsuji-Trost reaction','Tsuji-Trost reaction') : {
+        **general_pd_coupling(catalytic_cycles['Hydroxy or amino Tsuji-Trost'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]']),
+        **general_pd_coupling(catalytic_cycles['Hydroxy or amino Tsuji-Trost - resonance'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]'], modifier="resonance"),
+        **general_pd_coupling(catalytic_cycles['Carbon Tsuji-Trost'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]'], modifier="carbon"),
+        **general_pd_coupling(catalytic_cycles['Carbon Tsuji-Trost - resonance'], offset=0, global_reagent=[], global_exclude=[fg.nhc, '[Fe;D0]'], modifier="carbon and resonance")
+
     },
 
     ('O-allyl deprotection') : {
@@ -2408,9 +2594,21 @@ class_reaction_templates = {
                     'Description' : 'Oxidative addition'
                 },
                 3 : {
-                    'Templates' : ['[N:1]-[H:2].[O;-1:3].[Pd;+1:4]-[C:5]-[C:6]=[C:7]>>[O;+0:3]-[H:2].[N:1]-[C:7]-[C:6]=[C:5].[Pd;+0:4]'],
+                    'Templates' : ['[N:1]-[H:2].[Pd;+1:4]-[C:5]-[C:6]=[C:7]>>[H:2]-[N;+1:1]-[C:7]-[C:6]=[C:5].[Pd;+0:4]'],
                     'pKa' : [None],
                     'Description' : 'Amine attack'
+                },
+                4 : {
+                    'Templates' : ['[N;H3;+1:1]>>[N;H2;+0:1]',
+                                   '[N;H2;+1:1]>>[N;H1;+0:1]',
+                                   '[N;H1;+1:1]>>[N;H0;+0:1]'],
+                    'pKa' : [{'B': -1},{'B': -1},{'B': -1}],
+                    'Description' : 'Deprotonation'
+                },
+                5 : {
+                    'Templates' : ['[O;-1:3]>>[O;+0;H1:3]'],
+                    'pKa' : [{'A' : 15}],
+                    'Description' : 'Protonation of product'
                 }
             }
         },
@@ -2425,14 +2623,14 @@ class_reaction_templates = {
                     'Description' : 'Oxidative addition'
                 },
                 3 : {
-                    'Templates' : ['[C;H3:1]-[O;H1:2]>>[O;-1:2]-[C;H3:1]'],
-                    'pKa' : [{'B' : 3}],
-                    'Description' : 'Deprotonation'
+                    'Templates' : ['[O:1]-[H:2].[Pd;+1:4]-[C:5]-[C:6]=[C:7]>>[H:2]-[O;+1:1]-[C:7]-[C:6]=[C:5].[Pd;+0:4]'],
+                    'pKa' : [None],
+                    'Description' : 'Alcohol attack'
                 },
                 4 : {
-                    'Templates' : ['[O;-1:3].[Pd;+1:4]-[C:5]-[C:6]=[C:7]>>[O;+0:3]-[C:7]-[C:6]=[C:5].[Pd;+0:4]'],
-                    'pKa' : [None],
-                    'Description' : 'Alkoxide attack'
+                    'Templates' : ['[O;H1;+1:1]>>[O;H0;+0:1]'],
+                    'pKa' : [{'B': -1}],
+                    'Description' : 'Deprotonation'
                 },
                 5 : {
                     'Templates' : ['[O;-1:3]>>[O;+0;H1:3]'],

@@ -1,10 +1,10 @@
 import numpy as np
 
 # File paths
-input_path = '../data/o_allyl/templated_d.txt'
-train_path = '../data/o_allyl/train.txt'
-valid_path = '../data/o_allyl/val.txt'
-test_path  = '../data/o_allyl/test.txt'
+input_path = '../results/templated_d.txt'
+train_path = '../data/barluenga/train.txt'
+valid_path = '../data/barluenga/val.txt'
+test_path  = '../data/barluenga/test.txt'
 
 # Set seed and initialize
 random_seed = 1205
@@ -27,8 +27,8 @@ np.random.shuffle(unique_numbers)
 n = len(unique_numbers)
 
 train_keys = set(unique_numbers[:32])
-valid_keys = set(unique_numbers[32:64])
-test_keys  = set(unique_numbers[64:])
+valid_keys = set(unique_numbers[32:40])
+test_keys  = set(unique_numbers[40:])
 
 # Step 3: Stream through input file and write to appropriate output
 print("Streaming and writing output...")

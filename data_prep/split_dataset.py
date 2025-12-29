@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Load the file with newline as delimiter
-file_path = '../data/o_allyl/o_allyl_processed.txt'
+file_path = '../data/barluenga_processed.txt'
 with open(file_path, 'r') as file:
     data = file.read().split('\n')
 
@@ -21,7 +21,7 @@ shuffled_data = data.sample(frac=1, random_state=random_seed).reset_index(drop=T
 #valid_end = int(0.9 * len(shuffled_data))
 
 train_end = 32
-valid_end = 64
+valid_end = 40
 
 # Split the data
 train_data = shuffled_data[:train_end]
@@ -35,9 +35,9 @@ def save_to_textfile(dataframe, filename):
             f.write(f"{text}\n")
 
 # Save the datasets into separate text files
-save_to_textfile(train_data, 'o_allyl_train.txt')
-save_to_textfile(valid_data, 'o_allyl_valid.txt')
-save_to_textfile(test_data, 'o_allyl_test.txt')
+save_to_textfile(train_data, 'barluenga_train.txt')
+save_to_textfile(valid_data, 'barluenga_valid.txt')
+save_to_textfile(test_data, 'barluenga_test.txt')
 
 # Display the first few rows of each dataset
 print("Train Data:")

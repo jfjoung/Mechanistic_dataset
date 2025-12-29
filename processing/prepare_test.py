@@ -5,8 +5,8 @@ import re
 
 # Parameters
 input_file = "../outputs/p_labeled.parquet"             # Path to input parquet file
-output_file = "../data/o_allyl.txt"      # Output .txt file
-allowed_values = {'O-allyl deprotection'} 
+output_file = "../data/fujiwara_moritani.txt"      # Output .txt file
+allowed_values = {'Fujiwara-Moritani reaction'} 
 
 parquet_file = pq.ParquetFile(input_file)
 

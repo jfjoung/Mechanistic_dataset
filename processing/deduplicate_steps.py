@@ -90,7 +90,12 @@ def fullSanitize (smi):
                             end_idx = atom.GetIdx()
                             mol.RemoveBond(begin_idx, end_idx)
                             mol.AddBond(begin_idx, end_idx, Chem.rdchem.BondType.SINGLE)
-
+                        elif neighbor.GetAtomicNum() == 6 and bond.GetBondType() == rdchem.BondType.DOUBLE:
+                            begin_idx = neighbor.GetIdx()
+                            end_idx = atom.GetIdx()
+                            mol.RemoveBond(begin_idx, end_idx)
+                            mol.AddBond(begin_idx, end_idx, rdchem.BondType.DATIVE)
+                            
             quit = False
             while not quit:
                 try:
@@ -243,8 +248,7 @@ def process_line(line):
 
 def main(args):
     setup_logger("reaction_deduplication", args.log_dir)
-    data_dir = Path(args.data_dir)
-    file_path = data_dir / "templated.txt"
+    file_path = Path(args.in_file)
     # Change output_file to a .txt extension by default or allow user to specify
     output_file = Path(args.output_file)
     if output_file.suffix != '.txt':
@@ -278,7 +282,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Deduplicate reaction data and save as a text file.")
-    parser.add_argument("--data_dir", type=str, default="./data/reactions", help="Input reaction data directory")
+    parser.add_argument("--in_file", type=str, default="./data/reactions", help="Input reaction data directory")
     # Change default output file name to reflect .txt output
     parser.add_argument("--output_file", type=str, default="./data/reactions_deduplicated.txt", help="Output text file")
     parser.add_argument("--log_dir", type=str, default="./logs/dataset_curation", help="Log directory")

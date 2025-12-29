@@ -39,6 +39,7 @@ Thumbs.db
 # data files #
 ######################
 data/
+vocab_expts/
 dataset_balancing/
 finalized_data/
 outputs/
@@ -66,6 +67,12 @@ flower_ver2/
 __pycache__/
 scratch/
 logs/
+
+processing/filter_unrecognized.py
+processing/prepare_test.py
+data_prep/take_sample.py
+data_prep/split_templated.py
+data_prep/random_subset.py
 
 kekulization.py
 run.py

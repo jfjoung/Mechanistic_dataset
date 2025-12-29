@@ -94,7 +94,7 @@ def preprocess(input, output, rxns):
 
 if __name__ == '__main__':
     #input_file = '../dataset_balancing/h_m_s.txt'
-    input_file = '../data/o_allyl.txt'
+    input_file = '../data/barluenga.txt'
     base, ext = os.path.splitext(input_file)
     output_file = base + '_processed' + ext
     # reactants = preprocess(input_file)

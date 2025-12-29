@@ -21,9 +21,10 @@ class Args:
         #self.data = 'data/p_heck_mod.txt'
         #self.data = 'data/reactions/p_suzuki_sample.txt'
         #self.data = 'test_runs/cu/untemplated.txt'  # Path to the file containing overall reactions.
-        self.data = 'data/o_allyl/o_allyl_processed.txt'  # Path to the file containing overall reactions.
+        #self.data = 'data/barluenga_processed.txt'  # Path to the file containing overall reactions.
+        self.data = 'data_prep/barluenga_valid.txt'
         #self.data = 'data/test_data.txt'
-        self.save = 'results/templated.txt'  # Path to the file where results will be saved.
+        self.save = 'results/barluenga_val.txt'  # Path to the file where results will be saved.
         self.not_templated = 'results/untemplated.txt' # Path to untemplated reactions
         self.debug = True  # Reccdords reactions with errors for debugging purposes.
         self.all_info = False  # Saves all reactions, including the reaction network.
